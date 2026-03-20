@@ -21,7 +21,10 @@ const navLinks = [
   { name: 'About', href: '/about' },
 ];
 
+import { useBooking } from './BookingContext';
+
 const Navbar = () => {
+  const { openBookingModal } = useBooking();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -62,7 +65,7 @@ const Navbar = () => {
 
         {/* Button Outside */}
         <div className="flex-shrink-0 ml-8">
-          <Button variant="gray">
+          <Button variant="gray" onClick={openBookingModal}>
             Book Now
           </Button>
         </div>

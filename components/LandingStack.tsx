@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Button from './ui/Button';
 import { LucideIcon, Smartphone, ShieldCheck, UserCheck } from 'lucide-react';
+import { useBooking } from '@/components/BookingContext';
 
 // ----------------------------------------------------------------------
 // DATA
@@ -144,10 +145,12 @@ const understandingContent = [
 ];
 
 export const LandingStack = () => {
+  const { openBookingModal } = useBooking();
   const card1Ref = React.useRef<HTMLElement>(null);
   const cta1Ref = React.useRef<HTMLDivElement>(null);
   const card2Ref = React.useRef<HTMLElement>(null);
   const cta2Ref = React.useRef<HTMLButtonElement>(null);
+  const cta2MobileRef = React.useRef<HTMLButtonElement>(null);
   const card3Ref = React.useRef<HTMLElement>(null);
   const cta3Ref = React.useRef<HTMLButtonElement>(null);
 
@@ -176,8 +179,14 @@ export const LandingStack = () => {
         return Math.min(targetViewportY - ctaCenterOffset, 0);
       };
 
+      const getActiveCta2 = () => {
+        if (cta2Ref.current && cta2Ref.current.offsetWidth > 0) return cta2Ref.current;
+        if (cta2MobileRef.current && cta2MobileRef.current.offsetWidth > 0) return cta2MobileRef.current;
+        return cta2Ref.current;
+      };
+
       setStickyTop1(getOffset(card1Ref.current, cta1Ref.current));
-      setStickyTop2(getOffset(card2Ref.current, cta2Ref.current));
+      setStickyTop2(getOffset(card2Ref.current, getActiveCta2()));
       setStickyTop3(getOffset(card3Ref.current, cta3Ref.current));
     };
 
@@ -223,7 +232,7 @@ export const LandingStack = () => {
                 Evidence-based online therapy delivered by licensed clinicians — supporting you through anxiety, depression, stress, trauma, and relationship challenges. Start your personalized care journey today
               </p>
               <div className="flex flex-row items-center gap-6 mt-4">
-                <Button variant="gray" className="w-[241px] h-[56px] text-[20px] px-6 whitespace-nowrap">Start Feeling Better !</Button>
+                <Button variant="gray" className="w-[241px] h-[56px] text-[20px] px-6 whitespace-nowrap" onClick={openBookingModal}>Start Feeling Better !</Button>
                 <img src="/assets/Group 54.svg" alt="Try now!" className="h-[60px] w-auto mt-2" />
               </div>
             </div>
@@ -260,9 +269,11 @@ export const LandingStack = () => {
                 ))}
               </div>
               <div ref={cta1Ref} className="mt-20 flex flex-row items-center gap-6">
-                <Button variant="black" className="w-[241px] h-[56px] text-[20px] px-6 whitespace-nowrap">Start Feeling Better !</Button>
+                <Button variant="black" className="w-[241px] h-[56px] text-[20px] px-6 whitespace-nowrap" onClick={openBookingModal}>Start Feeling Better !</Button>
                 <img src="/assets/Group 54.svg" alt="Try now!" className="h-[50px] w-auto mt-2 invert" />
               </div>
+              {/* Spacer to prevent CTA from being covered by next card's rounded top */}
+              <div className="h-[150px] md:h-[250px] w-full" />
             </div>
           </div>
         </div>
@@ -321,11 +332,16 @@ export const LandingStack = () => {
               </div>
             </div>
 
-            {/* Mobile CTA (Below Image) */}
-            <div className="md:hidden mt-8 flex flex-col items-center w-full">
-               <button className="bg-[#E5E5E5] hover:bg-white text-black font-nunito font-bold text-[18px] px-8 py-3 rounded-full w-[260px] transition-colors">
+            {/* Mobile CTA Button (visible only below md) */}
+            <div className="w-full flex justify-center mt-6 md:hidden">
+              <Button 
+                ref={cta2MobileRef}
+                variant="black" 
+                className="w-full max-w-[300px] h-[50px] text-[18px] px-4 font-bold"
+                onClick={openBookingModal}
+              >
                  Book a free demo
-               </button>
+              </Button>
                <div className="flex flex-col items-center mt-3">
                  {/* The SVG itself contains 'Try now!' so we don't need a span */}
                  <img src="/assets/Group 54.svg" alt="Arrow" className="h-[40px] w-auto invert ml-8" />
@@ -349,6 +365,9 @@ export const LandingStack = () => {
                <span className="font-nunito font-semibold text-[20px] md:text-[24px] text-white mt-1">Monthly Users</span>
              </div>
           </div>
+          
+          {/* Spacer to prevent content from being covered by next card's rounded top */}
+          <div className="h-[100px] md:h-[150px] w-full" />
         </div>
       </section>
 
@@ -358,7 +377,7 @@ export const LandingStack = () => {
       */}
       <section 
         ref={card3Ref}
-        className="sticky z-30 w-full flex justify-center pt-[100px] -mt-10 md:-mt-20 pointer-events-none bg-[#111111]"
+        className="sticky z-30 w-full flex justify-center  -mt-10 md:-mt-20 pointer-events-none bg-[#111111]"
         style={{ top: `${stickyTop3}px` }}
       >
         <div className="w-[95vw] max-w-[1840px] bg-[#FEFEFC] rounded-t-[40px] rounded-b-[40px] pt-24 md:pt-32 pb-24 px-6 md:px-12 lg:px-24 flex flex-col items-center shadow-[0_-20px_50px_rgba(0,0,0,0.3)] pointer-events-auto min-h-screen">
@@ -380,10 +399,8 @@ export const LandingStack = () => {
             </div>
 
             {/* Right side Accordion */}
-            <div className="w-full lg:w-1/2 flex flex-col gap-6 justify-center">
-              {faqData.map((faq, index) => {
-                return <FAQItem key={index} faq={faq} index={index} />;
-              })}
+            <div className="w-full lg:w-1/2 flex flex-col justify-center">
+              <FAQAccordion data={faqData} />
             </div>
           </div>
 
@@ -407,6 +424,8 @@ export const LandingStack = () => {
             <TestimonialCarousel testimonials={testimonialData} />
           </div>
 
+          {/* Spacer to prevent content from being covered by next component */}
+          <div className="h-[100px] md:h-[150px] w-full" />
         </div>
       </section>
 
@@ -425,12 +444,28 @@ export const LandingStack = () => {
 // ----------------------------------------------------------------------
 // SUBCOMPONENTS
 // ----------------------------------------------------------------------
-const FAQItem = ({ faq, index }: { faq: any, index: number }) => {
-  const [isOpen, setIsOpen] = useState(index === 0);
+const FAQAccordion = ({ data }: { data: any[] }) => {
+  const [activeIndex, setActiveIndex] = useState<number | null>(0);
+
+  return (
+    <div className="w-full flex flex-col gap-6">
+      {data.map((faq, index) => (
+        <FAQItem 
+          key={index} 
+          faq={faq} 
+          isOpen={activeIndex === index} 
+          onClick={() => setActiveIndex(activeIndex === index ? null : index)} 
+        />
+      ))}
+    </div>
+  );
+};
+
+const FAQItem = ({ faq, isOpen, onClick }: { faq: any, isOpen: boolean, onClick: () => void }) => {
   return (
     <div 
       className={`w-full bg-white rounded-[16px] border border-gray-100 p-6 md:p-8 cursor-pointer transition-all duration-300 ${isOpen ? 'shadow-[0_10px_30px_rgba(0,0,0,0.08)]' : 'shadow-[0_5px_15px_rgba(0,0,0,0.04)] hover:shadow-md'}`}
-      onClick={() => setIsOpen(!isOpen)}
+      onClick={onClick}
     >
       <h4 className="font-nunito font-bold text-[18px] md:text-[20px] text-black pr-8 relative">
         {faq.question}

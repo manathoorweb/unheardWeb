@@ -23,6 +23,9 @@ export const metadata: Metadata = {
   description: "Experience professional therapy and counseling services with unHeard.",
 };
 
+import { BookingProvider } from "@/components/BookingContext";
+import { Footer } from "@/components/Footer";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -33,8 +36,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${nunito.variable} antialiased min-h-screen bg-[#111111] text-white`}
       >
-        <Navbar />
-        {children}
+        <BookingProvider>
+          <Navbar />
+          {children}
+          <Footer />
+        </BookingProvider>
       </body>
     </html>
   );
