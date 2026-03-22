@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import Button from './ui/Button';
+import { useBooking } from './BookingContext';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -21,41 +23,72 @@ const navLinks = [
   { name: 'About', href: '/about' },
 ];
 
-import { useBooking } from './BookingContext';
-
 const Navbar = () => {
+  const pathname = usePathname();
+  const isLandingPage = pathname === '/';
+  
   const { openBookingModal } = useBooking();
   const [isOpen, setIsOpen] = useState(false);
+  const [isDark, setIsDark] = useState(true);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const scrolled = scrollY > 50;
+      setIsScrolled(scrolled);
+
+      if (!isLandingPage) {
+        setIsDark(false); // Sub-pages always use light theme box
+        setIsScrolled(true); // Always show the box on sub-pages
+        return;
+      }
+
+      // Landing Page: Transparent at top, Light box on scroll
+      setIsDark(!scrolled); 
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isLandingPage]);
 
   return (
-    <nav className="fixed top-[55px] left-1/2 -translate-x-1/2 z-50 w-[90vw] max-w-[1440px]">
+    <nav className={cn(
+      "fixed top-[55px] left-1/2 -translate-x-1/2 z-50 w-[95vw] xl:w-[90vw] max-w-[1440px] transition-all duration-300",
+      !isDark && "top-[20px]" // Subtle shift when on light theme
+    )}>
       {/* Desktop Layout */}
-      <div className="hidden lg:flex items-center w-full">
+      <div className="hidden xl:flex items-center w-full">
         {/* Logo Outside */}
-        <Link href="/" className="flex-shrink-0 mr-8"> {/* Added margin right to control gap */}
+        <Link href="/" className="flex-shrink-0 mr-4 xl:mr-8">
           <img 
             src="/assets/logo unherd white.svg" 
-            alt="unHeard Logo" 
-            className="h-[40px] w-auto"
+            alt="unHeard Logo"
+            className={cn("h-[35px] xl:h-[40px] w-auto transition-all", !isDark && "brightness-0")}
           />
         </Link>
 
         {/* Glass Container with Links */}
         <div 
           className={cn(
-            "h-[63px] px-16 flex items-center justify-center flex-grow mx-4", // Widened padding and added flex-grow
-            "bg-[rgba(39,37,37,0.05)] border border-[rgba(255,255,255,0.08)]",
-            "shadow-[0px_0px_7.9px_rgba(0,0,0,0.25)] rounded-[15px]",
-            "backdrop-blur-[8px]",
-            "max-w-[850px]" // Constraint for the glass box
+            "h-[63px] px-8 xl:px-16 flex items-center justify-center flex-grow mx-2 xl:mx-4 transition-all duration-300",
+            !isScrolled || isDark 
+              ? "bg-[rgba(39,37,37,0.05)] border border-[rgba(255,255,255,0.08)] shadow-[0px_0px_7.9px_rgba(0,0,0,0.25)] backdrop-blur-[8px]" 
+              : "bg-white/80 border border-black/10 shadow-lg backdrop-blur-[8px]",
+            "rounded-[15px]",
+            "max-w-[850px]"
           )}
         >
-          <div className="flex items-center gap-[53px]">
+          <div className="flex items-center gap-6 lg:gap-10 xl:gap-[53px]">
             {navLinks.map((link) => (
               <Link 
                 key={link.name} 
                 href={link.href} 
-                className="text-[20px] font-medium text-white font-nunito whitespace-nowrap hover:text-white/70 transition-colors"
+                className={cn(
+                  "text-[16px] xl:text-[20px] font-medium font-nunito whitespace-nowrap transition-colors",
+                  isDark || !isScrolled ? "text-white hover:text-white/70" : "text-black hover:text-[#0F9393]"
+                )}
               >
                 {link.name}
               </Link>
@@ -64,38 +97,43 @@ const Navbar = () => {
         </div>
 
         {/* Button Outside */}
-        <div className="flex-shrink-0 ml-8">
-          <Button variant="gray" onClick={openBookingModal}>
+        <div className="flex-shrink-0 ml-4 xl:ml-8">
+          <Button 
+            variant={isDark || !isScrolled ? "gray" : "black"} 
+            onClick={openBookingModal} 
+            className="w-[140px] xl:w-[161px] h-[50px] xl:h-[56px] text-[16px] xl:text-[20px]"
+          >
             Book Now
           </Button>
         </div>
       </div>
 
-      {/* Mobile Layout */}
-      <div className="lg:hidden flex items-center justify-center w-full">
+      {/* Mobile/Tablet Layout */}
+      <div className="xl:hidden flex items-center justify-center w-full">
         <div 
           className={cn(
-            "w-full h-[63px] px-2 flex items-center justify-between",
-            "bg-[rgba(39,37,37,0.05)] border border-[rgba(255,255,255,0.08)]",
-            "shadow-[0px_0px_7.9px_rgba(0,0,0,0.25)] rounded-[15px]",
-            "backdrop-blur-[8px]"
+            "w-full h-[63px] px-4 flex items-center justify-between transition-all duration-300",
+            !isScrolled || isDark 
+              ? "bg-[rgba(39,37,37,0.05)] border border-[rgba(255,255,255,0.08)] shadow-[0px_0px_7.9px_rgba(0,0,0,0.25)] backdrop-blur-[8px]" 
+              : "bg-white/90 border border-black/10 shadow-lg backdrop-blur-[8px]",
+            "rounded-[15px]"
           )}
         >
           <Link href="/">
             <img 
               src="/assets/logo unherd white.svg" 
               alt="unHeard Logo" 
-              className="h-[30px] w-auto"
+              className={cn("h-[30px] w-auto transition-all", (!isDark && isScrolled) && "brightness-0")}
             />
           </Link>
 
           <div className="flex items-center gap-4">
-            <Button variant="gray" className="w-[120px] h-[40px] text-sm rounded-[15px]">
+            <Button variant={isDark || !isScrolled ? "gray" : "black"} className="w-[120px] h-[40px] text-sm rounded-[15px]" onClick={openBookingModal}>
               Book Now
             </Button>
             <button 
               onClick={() => setIsOpen(!isOpen)}
-              className="text-white p-1 hover:bg-white/10 rounded-md transition-colors"
+              className={cn("p-1 rounded-md transition-colors", (isDark || !isScrolled) ? "text-white hover:bg-white/10" : "text-black hover:bg-black/5")}
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -103,14 +141,14 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu Drawer */}
+      {/* Mobile/Tablet Menu Drawer */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="lg:hidden absolute top-[75px] left-4 right-4 bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 shadow-2xl backdrop-blur-xl"
+            className="xl:hidden absolute top-[75px] left-0 right-0 bg-[#1A1A1A]/95 border border-white/10 rounded-2xl p-6 shadow-2xl backdrop-blur-xl z-50 mx-4"
           >
             <div className="flex flex-col gap-4">
               {navLinks.map((link) => (

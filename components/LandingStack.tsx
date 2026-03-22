@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Button from './ui/Button';
 import { LucideIcon, Smartphone, ShieldCheck, UserCheck } from 'lucide-react';
 import { useBooking } from '@/components/BookingContext';
+import AnimatedCounter from './ui/AnimatedCounter';
 
 // ----------------------------------------------------------------------
 // DATA
@@ -310,23 +311,27 @@ export const LandingStack = () => {
               </picture>
               
               {/* Desktop Overlay Content */}
-              <div className="hidden md:flex absolute inset-0 flex-col justify-center pl-12 lg:pl-[8%] w-[60%] z-10">
-                 <h3 className="font-georgia font-bold text-[36px] lg:text-[46px] leading-[1.1] text-white tracking-[-0.02em]">
+              <div className="hidden md:flex absolute inset-0 flex-col justify-center pl-12 lg:pl-[8%] w-[70%] lg:w-[60%] z-10">
+                 <h3 className="font-georgia font-bold text-[28px] lg:text-[40px] xl:text-[46px] leading-[1.1] text-white tracking-[-0.02em]">
                    Thinking of the<br/>effectiveness<br/>of online consultation
                  </h3>
-                 <div className="mt-10 flex flex-row items-center">
-                   <button ref={cta2Ref} className="bg-[#E5E5E5] hover:bg-white text-black font-nunito font-bold text-[18px] px-8 py-3 rounded-full transition-colors whitespace-nowrap">
-                     Book a free demo
-                   </button>
-                   <div className="relative ml-4 flex items-center">
-                     <img src="/assets/Group 54.svg" alt="Arrow" className="h-[40px] w-auto invert object-contain" />
-                   </div>
+                 <div className="mt-6 flex flex-row items-center">
+                    <button 
+                      ref={cta2Ref} 
+                      className="bg-[#E5E5E5] hover:bg-white text-black font-nunito font-bold text-[16px] lg:text-[18px] px-6 lg:px-8 py-2.5 lg:py-3 rounded-full transition-colors whitespace-nowrap"
+                      onClick={openBookingModal}
+                    >
+                      Book a free demo
+                    </button>
+                    <div className="relative ml-2 flex items-center">
+                      <img src="/assets/Group 54.svg" alt="Arrow" className="h-[30px] lg:h-[40px] w-auto brightness-0 invert object-contain" />
+                    </div>
                  </div>
               </div>
               
               {/* Mobile Overlay Text */}
               <div className="md:hidden absolute inset-0 p-6 flex flex-col justify-center z-10 pointer-events-none">
-                 <h3 className="font-georgia font-bold text-[28px] leading-[1.2] text-white tracking-[-0.02em] max-w-[250px]">
+                 <h3 className="font-georgia font-bold text-[22px] sm:text-[28px] leading-[1.2] text-white tracking-[-0.02em] max-w-[250px]">
                    Thinking of the<br/>effectiveness<br/>of online consultation
                  </h3>
               </div>
@@ -344,25 +349,32 @@ export const LandingStack = () => {
               </Button>
                <div className="flex flex-col items-center mt-3">
                  {/* The SVG itself contains 'Try now!' so we don't need a span */}
-                 <img src="/assets/Group 54.svg" alt="Arrow" className="h-[40px] w-auto invert ml-8" />
+                 <img src="/assets/Group 54.svg" alt="Arrow" className="h-[40px] w-auto brightness-0 invert ml-8" />
                </div>
             </div>
 
           </div>
 
+
           {/* Stats Section */}
           <div className="mt-20 md:mt-28 w-full max-w-[1000px] flex flex-col md:flex-row items-center justify-between gap-12 md:gap-6 px-10">
              <div className="flex flex-col items-center text-center">
-               <span className="font-georgia font-bold text-[56px] md:text-[72px] text-white leading-none">1000+</span>
-               <span className="font-nunito font-semibold text-[20px] md:text-[24px] text-white mt-1">Monthly Users</span>
+               <span className="font-georgia font-bold text-[56px] md:text-[72px] text-white leading-none">
+                 <AnimatedCounter end={1500} suffix="+" />
+               </span>
+               <span className="font-nunito font-semibold text-[20px] md:text-[24px] text-white mt-1">Happy Patients</span>
              </div>
              <div className="flex flex-col items-center text-center">
-               <span className="font-georgia font-bold text-[56px] md:text-[72px] text-white leading-none">1000+</span>
-               <span className="font-nunito font-semibold text-[20px] md:text-[24px] text-white mt-1">Monthly Users</span>
+               <span className="font-georgia font-bold text-[56px] md:text-[72px] text-white leading-none">
+                 <AnimatedCounter end={80} suffix="+" />
+               </span>
+               <span className="font-nunito font-semibold text-[20px] md:text-[24px] text-white mt-1">Licensed Therapists</span>
              </div>
              <div className="flex flex-col items-center text-center">
-               <span className="font-georgia font-bold text-[56px] md:text-[72px] text-white leading-none">1000+</span>
-               <span className="font-nunito font-semibold text-[20px] md:text-[24px] text-white mt-1">Monthly Users</span>
+               <span className="font-georgia font-bold text-[56px] md:text-[72px] text-white leading-none">
+                 <AnimatedCounter end={2000} suffix="+" />
+               </span>
+               <span className="font-nunito font-semibold text-[20px] md:text-[24px] text-white mt-1">Hours of Therapy</span>
              </div>
           </div>
           
@@ -495,22 +507,26 @@ const TestimonialCarousel = ({ testimonials }: { testimonials: any[] }) => {
 
   return (
     <div className="w-full flex flex-col items-center">
-      <div className="min-h-[120px] flex items-center justify-center">
-        <p className="font-nunito text-[16px] md:text-[18px] font-bold text-black leading-relaxed max-w-[700px] px-4">
-          {testimonials[activeIndex].text}
-        </p>
-      </div>
-      
       {/* Dots */}
-      <div className="flex flex-row gap-3 mt-10">
+      <div className="flex flex-row gap-2 mb-10">
         {testimonials.map((_, i) => (
           <button 
             key={i} 
             onClick={() => setActiveIndex(i)}
-            className={`h-3 w-3 rounded-full transition-all duration-300 ${i === activeIndex ? 'bg-black' : 'bg-gray-300'}`}
+            className={`transition-all duration-500 rounded-full ${
+              i === activeIndex 
+                ? 'w-8 h-2 bg-black' 
+                : 'w-2 h-2 bg-gray-300 hover:bg-gray-400'
+            }`}
             aria-label={`Go to testimonial ${i + 1}`}
           />
         ))}
+      </div>
+
+      <div className="min-h-[100px] flex items-center justify-center">
+        <p className="font-nunito text-[16px] md:text-[20px] font-bold text-black/80 italic leading-relaxed max-w-[800px] px-4">
+          &quot;{testimonials[activeIndex].text}&quot;
+        </p>
       </div>
     </div>
   );

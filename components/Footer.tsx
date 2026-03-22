@@ -5,7 +5,13 @@ export function Footer() {
     <footer className="bg-black text-white py-12 px-6 md:px-12 w-full relative z-40 border-t border-[#333]">
       <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
         <div className="flex flex-col">
-          <h2 className="text-[32px] font-georgia font-bold text-[#0F9393] mb-2">unHeard.</h2>
+          <Link href="/">
+            <img 
+              src="/assets/logo unherd white.svg" 
+              alt="unHeard Logo" 
+              className="h-[35px] w-auto mb-4 hover:opacity-80 transition-opacity"
+            />
+          </Link>
           <p className="text-gray-400 font-nunito max-w-[400px]">Providing confidential, evidence-based online therapy to help you discover, reflect, and grow.</p>
         </div>
         
