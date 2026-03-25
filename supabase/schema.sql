@@ -17,6 +17,7 @@ CREATE TABLE public.user_roles (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE NOT NULL,
     role user_role DEFAULT 'patient' NOT NULL,
+    is_therapist BOOLEAN DEFAULT FALSE NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -27,9 +28,14 @@ CREATE TABLE public.therapist_profiles (
     full_name TEXT NOT NULL,
     bio TEXT,
     qualification TEXT,
+    qualification_desc TEXT,
     consultation_hours INT DEFAULT 0,
+    display_hours TEXT DEFAULT '0+',
     ratings DECIMAL(2,1) DEFAULT 5.0,
+    display_rating TEXT DEFAULT '5.0',
     specialties TEXT[] DEFAULT '{}',
+    note TEXT,
+    next_available_at TEXT, -- Using TEXT for flexibility as seen in mockup
     avatar_url TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
@@ -119,7 +125,8 @@ CREATE POLICY "Users can read own role" ON public.user_roles FOR SELECT USING (a
 -- 2. THERAPIST PROFILES Policies
 -- Publicly readable by anyone.
 CREATE POLICY "Public profiles" ON public.therapist_profiles FOR SELECT USING (true);
--- Therapists can update their own profile.
+-- Therapists can manage their own profile.
+CREATE POLICY "Therapists can insert own profile" ON public.therapist_profiles FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Therapists can update own profile" ON public.therapist_profiles FOR UPDATE USING (auth.uid() = user_id);
 
 -- 3. THERAPIST AVAILABILITY Policies

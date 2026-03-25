@@ -27,31 +27,43 @@ const Navbar = () => {
   const pathname = usePathname();
   const isLandingPage = pathname === '/';
   
+  // Safe check for admin pages
+  const isAdminPage = pathname?.startsWith('/admin') || pathname?.startsWith('/super-admin') || pathname === '/login';
+  
   const { openBookingModal } = useBooking();
   const [isOpen, setIsOpen] = useState(false);
   const [isDark, setIsDark] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+    // If it's an admin page, we don't need scroll listeners
+    if (isAdminPage) return;
+
     const handleScroll = () => {
       const scrollY = window.scrollY;
       const scrolled = scrollY > 50;
       setIsScrolled(scrolled);
 
       if (!isLandingPage) {
-        setIsDark(false); // Sub-pages always use light theme box
-        setIsScrolled(true); // Always show the box on sub-pages
+        setIsDark(false); 
+        setIsScrolled(true); 
         return;
       }
 
-      // Landing Page: Transparent at top, Light box on scroll
       setIsDark(!scrolled); 
     };
 
     window.addEventListener('scroll', handleScroll);
     handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [isLandingPage]);
+  }, [isLandingPage, isAdminPage]);
+
+  // Prevent hydration mismatch: only render on client
+  if (!mounted || isAdminPage) {
+    return null;
+  }
 
   return (
     <nav className={cn(

@@ -46,23 +46,34 @@ export async function updateSession(request: NextRequest) {
     // Role-based protection: fetch user role from our user_roles table
     const { data: roleData } = await supabase
       .from('user_roles')
-      .select('role')
+      .select('role, is_therapist')
       .eq('user_id', user.id)
       .single()
 
     const role = roleData?.role || 'patient'
+    const isTherapist = roleData?.is_therapist || false
+
+    // Handle legacy /dashboard redirect
+    if (pathname === '/dashboard') {
+      const url = request.nextUrl.clone()
+      if (role === 'super_admin') url.pathname = '/super-admin'
+      else if (role === 'admin' || isTherapist) url.pathname = '/admin/dashboard'
+      else url.pathname = '/'
+      return NextResponse.redirect(url)
+    }
 
     // Super Admin protection
     if (pathname.startsWith('/super-admin') && role !== 'super_admin') {
       const url = request.nextUrl.clone()
-      url.pathname = '/dashboard' // redirect unauthorized
+      url.pathname = '/' // redirect unauthorized to home
       return NextResponse.redirect(url)
     }
 
     // Admin (Therapist) protection
-    if (pathname.startsWith('/admin') && role !== 'admin' && role !== 'super_admin') {
+    // Allow access if user is admin OR if they have is_therapist flag (for super admins)
+    if (pathname.startsWith('/admin') && role !== 'admin' && !isTherapist && role !== 'super_admin') {
       const url = request.nextUrl.clone()
-      url.pathname = '/dashboard' // redirect unauthorized
+      url.pathname = '/' // redirect unauthorized to home
       return NextResponse.redirect(url)
     }
   }
