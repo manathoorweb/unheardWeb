@@ -22,6 +22,10 @@ export default function TherapistProfile({ params }: { params: Promise<{ id: str
         .eq('user_id', id)
         .single();
       
+      if (error) {
+        console.error('Error fetching therapist profile:', error);
+      }
+      
       if (data) {
         setTherapist(data);
       }
@@ -59,7 +63,7 @@ export default function TherapistProfile({ params }: { params: Promise<{ id: str
       <div className="fixed bottom-[-10%] right-[-10%] w-[60vw] md:w-[40vw] h-[60vw] md:h-[40vw] bg-[#0F9393]/5 rounded-full blur-[80px] md:blur-[120px] pointer-events-none z-0"></div>
 
       {/* SECTION 1: HERO (WHITE CARD - STICKY) */}
-      <section className="sticky top-[10px] md:top-[80px] z-10 w-full flex flex-col items-center px-2 md:px-0">
+      <section className="sticky top-[80px] md:top-[80px] z-10 w-full flex flex-col items-center px-2 md:px-0">
         <div className="relative w-full md:w-[95vw] max-w-[1780px] bg-[#FEFEFC] rounded-[32px] md:rounded-[40px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col min-h-[auto] lg:min-h-[85vh]">
           
           {/* Subtle White Card BG Blob */}
@@ -137,7 +141,7 @@ export default function TherapistProfile({ params }: { params: Promise<{ id: str
       </section>
 
       {/* SECTION 2: ABOUT & STATS (BLACK CARD - STICKY OVER HERO) */}
-      <section className="sticky top-[30px] md:top-[100px] z-20 w-full flex flex-col items-center mt-[-150px] md:mt-[-250px] px-2 md:px-0 pt-[200px] md:pt-[350px] bg-gradient-to-b from-transparent via-[#111111]/80 to-[#111111]">
+      <section className="sticky top-[100px] md:top-[100px] z-20 w-full flex flex-col items-center mt-[-80px] md:mt-[-250px] px-2 md:px-0 pt-[120px] md:pt-[350px] bg-gradient-to-b from-transparent via-[#111111]/80 to-[#111111]">
         <div className="relative w-full md:w-[95vw] max-w-[1780px] bg-[#171612] rounded-[32px] md:rounded-[40px] shadow-[0_40px_100px_rgba(0,0,0,0.5)] p-6 md:p-16 lg:p-24 flex flex-col gap-10 md:gap-20 min-h-[auto] lg:min-h-[80vh] overflow-hidden">
           
           {/* Animated Background Blob for Black Card */}
@@ -174,7 +178,7 @@ export default function TherapistProfile({ params }: { params: Promise<{ id: str
       </section>
 
       {/* SECTION 3: EXPERTISE & FINAL NOTE (BLACK CARD - STICKY OVER ABOUT) */}
-      <section className="sticky top-[50px] md:top-[120px] z-30 w-full flex flex-col items-center mt-[-150px] md:mt-[-250px] px-2 md:px-0 pt-[200px] md:pt-[350px] bg-gradient-to-b from-transparent via-[#111111]/80 to-[#111111]">
+      <section className="sticky top-[120px] md:top-[120px] z-30 w-full flex flex-col items-center mt-[-80px] md:mt-[-250px] px-2 md:px-0 pt-[120px] md:pt-[350px] bg-gradient-to-b from-transparent via-[#111111]/80 to-[#111111]">
         <div className="relative w-full md:w-[95vw] max-w-[1780px] bg-[#171612] rounded-[32px] md:rounded-[40px] shadow-[0_40px_100px_rgba(0,0,0,0.5)] p-6 md:p-16 lg:p-24 flex flex-col gap-12 md:gap-20 min-h-[auto] lg:min-h-[90vh] overflow-hidden">
           
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,#0F939311_0%,transparent_70%)]"></div>
