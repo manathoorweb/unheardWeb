@@ -18,6 +18,7 @@ CREATE TABLE public.user_roles (
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE NOT NULL,
     role user_role DEFAULT 'patient' NOT NULL,
     is_therapist BOOLEAN DEFAULT FALSE NOT NULL,
+    is_blogger BOOLEAN DEFAULT FALSE NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -104,6 +105,18 @@ CREATE TABLE public.contact_inquiries (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+-- 10. BLOGS
+CREATE TABLE public.blogs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    author_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+    title TEXT NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    content JSONB NOT NULL DEFAULT '[]'::jsonb, -- Array of content blocks
+    published BOOLEAN DEFAULT FALSE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
 -- =====================================================================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
 -- =====================================================================================
@@ -117,6 +130,7 @@ ALTER TABLE public.pre_booking_questionnaires ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.patient_history ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.prescriptions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.contact_inquiries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.blogs ENABLE ROW LEVEL SECURITY;
 
 -- 1. USER ROLES Policies
 -- Users can read their own role; super_admins can read/update all.
@@ -164,3 +178,34 @@ CREATE POLICY "Therapists manage prescriptions" ON public.prescriptions FOR ALL 
 -- 8. CONTACT INQUIRIES
 -- Anyone can insert; Only admins/super_admins can read (simplified: we'll check role via server, no public read).
 CREATE POLICY "Anyone can insert inquiries" ON public.contact_inquiries FOR INSERT WITH CHECK (true);
+
+-- 9. BLOGS
+-- Publicly readable if published.
+CREATE POLICY "Public can read published blogs" ON public.blogs 
+    FOR SELECT USING (published = true);
+
+-- Authors or admins can read any blog.
+CREATE POLICY "Authors or admins can read all blogs" ON public.blogs 
+    FOR SELECT USING (
+        auth.uid() = author_id OR 
+        EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role IN ('admin', 'super_admin'))
+    );
+
+-- Bloggers or admins can insert blogs.
+CREATE POLICY "Bloggers can insert blogs" ON public.blogs 
+    FOR INSERT WITH CHECK (
+        EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND (is_blogger = true OR role IN ('admin', 'super_admin')))
+    );
+
+-- Authors or admins can update/delete blogs.
+CREATE POLICY "Authors or admins can update blogs" ON public.blogs 
+    FOR UPDATE USING (
+        auth.uid() = author_id OR 
+        EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role IN ('admin', 'super_admin'))
+    );
+
+CREATE POLICY "Authors or admins can delete blogs" ON public.blogs 
+    FOR DELETE USING (
+        auth.uid() = author_id OR 
+        EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role IN ('admin', 'super_admin'))
+    );
