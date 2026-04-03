@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useMemo } from 'react';
 import BookingModal from '@/components/BookingModal';
 
 interface BookingContextType {
@@ -13,8 +13,13 @@ const BookingContext = createContext<BookingContextType | undefined>(undefined);
 export function BookingProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
 
+  const value = useMemo(() => ({
+    openBookingModal: () => setIsOpen(true),
+    closeBookingModal: () => setIsOpen(false)
+  }), []);
+
   return (
-    <BookingContext.Provider value={{ openBookingModal: () => setIsOpen(true), closeBookingModal: () => setIsOpen(false) }}>
+    <BookingContext.Provider value={value}>
       {children}
       <BookingModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </BookingContext.Provider>

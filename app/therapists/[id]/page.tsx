@@ -42,30 +42,7 @@ export default function TherapistProfile({ params }: { params: Promise<{ id: str
       if (data) {
         setTherapist(data);
       }
-      // Assuming 'scrolled' and 'setIsDark' are defined elsewhere in the component scope
-      // and are intended to be used here.
-      // This part of the instruction seems to be missing context from the full component.
-      // For now, I'm placing it where it syntactically fits within the getTherapist function.
-      // If 'scrolled' and 'setIsDark' are not defined, this will cause a runtime error.
-      // I'm also correcting the closing brace from the instruction to maintain syntax.
-      // The instruction's `};` was incorrectly closing the function and useEffect.
-      // I'm assuming `scrolled` is a boolean and `setIsDark` is a state setter.
-      // If these are not defined, this will lead to errors.
-      // For the purpose of faithful insertion, I'm adding it as requested.
-      // However, for a fully functional code, `scrolled` and `setIsDark` would need to be defined.
-      // For example:
-      // const [scrolled, setScrolled] = useState(false);
-      // const [isDark, setIsDark] = useState(true);
-      // And `scrolled` would need to be added to the dependency array if it's a state.
-      // Without that context, I'm inserting it as literally as possible while maintaining syntax.
-      // I'm also assuming `scrolled` is a variable accessible in this scope.
-      // If `scrolled` is not defined, this will be a reference error.
-      // If `setIsDark` is not defined, this will be a reference error.
-      // I will proceed with the insertion as requested, assuming these are defined elsewhere.
-      // If `scrolled` and `setIsDark` are meant to be part of a different useEffect or context,
-      // this placement might be logically incorrect for the overall application,
-      // but it is syntactically correct for the given instruction.
-      // I will add a placeholder for `scrolled` and `setIsDark` to make it syntactically valid.
+
       const scrolled = false; // Placeholder: Replace with actual state or prop
       const setIsDark = (value: boolean) => {}; // Placeholder: Replace with actual state setter
       if (scrolled) {
@@ -104,6 +81,12 @@ export default function TherapistProfile({ params }: { params: Promise<{ id: str
       setStickyTop3(getOffset(card3Ref.current, target3Ref.current));
     };
 
+    let resizeTimer: NodeJS.Timeout;
+    const debouncedCalculate = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(calculatePinOffset, 150);
+    };
+
     calculatePinOffset();
     
     // Multiple passes to handle layout-shifts from images/content
@@ -111,12 +94,13 @@ export default function TherapistProfile({ params }: { params: Promise<{ id: str
     const timer2 = setTimeout(calculatePinOffset, 500);
     const timer3 = setTimeout(calculatePinOffset, 2000);
 
-    window.addEventListener('resize', calculatePinOffset);
+    window.addEventListener('resize', debouncedCalculate);
     return () => {
-      window.removeEventListener('resize', calculatePinOffset);
+      window.removeEventListener('resize', debouncedCalculate);
       clearTimeout(timer1);
       clearTimeout(timer2);
       clearTimeout(timer3);
+      clearTimeout(resizeTimer);
     };
   }, [loading]); // Recalculate once therapist data is loaded and rendered
 
@@ -133,7 +117,7 @@ export default function TherapistProfile({ params }: { params: Promise<{ id: str
       <div className="min-h-screen bg-[#111111] flex flex-col items-center justify-center text-white font-nunito gap-6">
         <h1 className="text-[32px] font-bold">Therapist not found</h1>
         <Link href="/">
-          <Button variant="gray">Go Home</Button>
+          <Button variant="gray" className="rounded-full px-10">Go Home</Button>
         </Link>
       </div>
     );
@@ -174,6 +158,8 @@ export default function TherapistProfile({ params }: { params: Promise<{ id: str
                   fill 
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover" 
+                  priority
+                  quality={90}
                 />
               </div>
               {/* Glassmorphism Badge */}
@@ -220,8 +206,14 @@ export default function TherapistProfile({ params }: { params: Promise<{ id: str
                 <div className="flex items-center gap-4 md:gap-6 px-2">
                    <div className="flex -space-x-2 md:-space-x-3">
                      {[1,2,3].map(i => (
-                       <div key={i} className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-white bg-gray-200 overflow-hidden">
-                         <img src={`/assets/section_2_${i}.png`} alt="" className="w-full h-full object-cover" />
+                       <div key={i} className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-white bg-gray-200 overflow-hidden relative">
+                         <Image 
+                           src={`/assets/section_2_${i}.png`} 
+                           alt="" 
+                           fill 
+                           sizes="40px"
+                           className="object-cover" 
+                         />
                        </div>
                      ))}
                    </div>

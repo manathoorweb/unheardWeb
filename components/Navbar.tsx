@@ -5,20 +5,15 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { cn } from '@/lib/utils';
 import Button from './ui/Button';
 import { useBooking } from './BookingContext';
-
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
 
 const navLinks = [
   { name: 'Home', href: '/' },
   { name: 'Contact Us', href: '/contact' },
   { name: 'Services', href: '/services' },
-  { name: 'Therapist', href: '/therapist' },
+  { name: 'Therapist', href: '/therapists' },
   { name: 'Blog', href: '/blog' },
   { name: 'About', href: '/about' },
 ];
@@ -38,10 +33,20 @@ const Navbar = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
+    let resizeTimer: NodeJS.Timeout;
+    const checkMobile = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        setIsMobile(window.innerWidth < 768);
+      }, 150);
+    };
+    
+    setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      clearTimeout(resizeTimer);
+    };
   }, []);
 
   useEffect(() => {
@@ -49,24 +54,38 @@ const Navbar = () => {
     // If it's an admin page, we don't need scroll listeners
     if (isAdminPage) return;
 
+    let ticking = false;
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const scrolled = scrollY > 50;
-      setIsScrolled(scrolled);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          const scrolled = scrollY > 50;
+          setIsScrolled(scrolled);
 
-      if (!isLandingPage) {
-        setIsDark(false);
-        setIsScrolled(true);
-        return;
+          if (!isLandingPage) {
+            setIsDark(false);
+            setIsScrolled(true);
+          } else {
+            setIsDark(!scrolled);
+          }
+          ticking = false;
+        });
+        ticking = true;
       }
-
-      setIsDark(!scrolled);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Run immediately on path change to sync state
     handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [isLandingPage, isAdminPage]);
+    
+    // Also run with a small delay to ensure DOM is settled after navigation
+    const timer = setTimeout(handleScroll, 100);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(timer);
+    };
+  }, [pathname]); // Consolidated to only use pathname
 
   // Prevent hydration mismatch: only render on client
   if (!mounted || isAdminPage) {

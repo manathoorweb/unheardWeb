@@ -40,38 +40,38 @@ const TherapistCard = ({ t, openBooking }: { t: any, openBooking: () => void }) 
       </div>
 
       {/* Modern Info Section */}
-      <div className="p-8 pt-4 flex flex-col gap-6">
+      <div className="p-10 flex flex-col gap-8">
         
         {/* Keywords / Tags (Minimal Outline) */}
         <div className="flex flex-wrap gap-2">
-          {(t.specialties || ['Anxiety', 'Growth', 'Stress']).slice(0, 3).map((kw: string, i: number) => (
-            <span key={i} className="bg-black text-white text-[10px] px-4 py-1.5 rounded-full font-bold uppercase tracking-widest">
+          {(t.specialties || ['Anxiety', 'Growth', 'Stress']).slice(0, 4).map((kw: string, i: number) => (
+            <span key={i} className="bg-black text-white text-[11px] px-5 py-2 rounded-full font-bold uppercase tracking-widest">
               {kw}
             </span>
           ))}
         </div>
 
-        <div className="flex justify-between items-end">
+        <div className="flex justify-between items-end border-b border-black/5 pb-6">
           <div className="flex flex-col">
-            <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-1">Impact</span>
-            <span className="text-[16px] font-bold text-black leading-none font-georgia">{t.display_hours || '0+'} <span className="text-[13px] font-bold text-gray-400">Sessions</span></span>
+            <span className="text-[12px] font-black text-gray-400 uppercase tracking-widest mb-1">Impact</span>
+            <span className="text-[20px] font-bold text-black leading-none font-georgia">{t.display_hours || '0+'} <span className="text-[14px] font-bold text-gray-400">Sessions</span></span>
           </div>
           <div className="text-right">
-            <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-1 block">Availability</span>
-            <span className="px-3 py-1 bg-[#0F9393]/10 text-[#0F9393] rounded-full text-[13px] font-black inline-block">{t.next_available_at || 'Soon'}</span>
+            <span className="text-[12px] font-black text-gray-400 uppercase tracking-widest mb-1 block">Availability</span>
+            <span className="px-4 py-2 bg-[#0F9393]/10 text-[#0F9393] rounded-full text-[14px] font-black inline-block">{t.next_available_at || 'Soon'}</span>
           </div>
         </div>
 
         {/* Booking & Profile Action Grid */}
-        <div className="grid grid-cols-2 gap-4 mt-2">
+        <div className="grid grid-cols-2 gap-5 mt-2">
           <Link href={`/therapists/${t.user_id}`} className="w-full">
-            <button className="w-full h-[52px] border-2 border-black text-black rounded-[16px] font-black text-[14px] hover:bg-black hover:text-white transition-all active:scale-95 shadow-sm">
+            <button className="w-full h-[60px] border-2 border-black text-black rounded-full font-black text-[15px] hover:bg-black hover:text-white transition-all active:scale-95 shadow-sm">
               View Profile
             </button>
           </Link>
           <button 
             onClick={openBooking}
-            className="w-full h-[52px] bg-black text-white rounded-[16px] font-black text-[14px] hover:bg-[#1a1a1a] transition-all shadow-lg active:scale-95"
+            className="w-full h-[60px] bg-black text-white rounded-full font-black text-[15px] hover:bg-[#1a1a1a] transition-all shadow-lg active:scale-95"
           >
             Book Free Trial
           </button>
@@ -172,7 +172,7 @@ export default function TherapistListing() {
       </div>
 
       {/* THERAPIST GRID: WIDER LAYOUT (2 per row on laptop) */}
-      <div className="w-full max-w-[1400px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 lg:gap-12 min-h-[400px]">
+      <div className="w-full max-w-[1400px] grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 min-h-[400px]">
         {filteredTherapists.length === 0 ? (
           <div className="col-span-full flex flex-col items-center justify-center py-20 text-gray-500 gap-4">
              <span className="text-[48px]">📭</span>

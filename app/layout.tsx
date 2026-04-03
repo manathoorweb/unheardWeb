@@ -19,12 +19,14 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "unHeard - Professional Therapy & Counseling",
-  description: "Experience professional therapy and counseling services with unHeard.",
+  title: "unHeard - Clarity For Your Inner World",
+  description: "Professional psychological counseling that listens, understands context, and responds with clarity. Begin with understanding at unHeard.",
 };
 
 import { BookingProvider } from "@/components/BookingContext";
 import { Footer } from "@/components/Footer";
+
+import { NotificationProvider } from "@/components/NotificationContext";
 
 export default function RootLayout({
   children,
@@ -34,12 +36,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${nunito.variable} antialiased min-h-screen bg-[#111111] text-white`}
+        className={`${geistSans.variable} ${geistMono.variable} ${nunito.variable} antialiased min-h-screen bg-[#111111] text-white overflow-x-clip`}
       >
         <BookingProvider>
-          <Navbar />
-          {children}
-          <Footer />
+          <NotificationProvider>
+            <Navbar />
+            {children}
+            <Footer />
+          </NotificationProvider>
         </BookingProvider>
       </body>
     </html>
