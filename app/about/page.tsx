@@ -285,10 +285,7 @@ export default function AboutPage() {
                </div>
                
                <div className="flex flex-col md:flex-row items-center gap-8">
-                <div className="flex flex-row items-center gap-4 md:gap-6">
                   <Button variant="black" className="w-[280px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full text-[16px] md:text-[20px] font-extrabold shadow-2xl transition-transform hover:-translate-y-1" onClick={openBookingModal}>Start Your Transformation</Button>
-                  <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 -mt-2" />
-                </div>
                  <Link href="/therapists">
                    <button className="w-280px md:w-[300px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full border-[3px] border-black text-black font-black text-[16px] md:text-[20px] hover:bg-black hover:text-white transition-all text-center">Explore Counselors</button>
                  </Link>

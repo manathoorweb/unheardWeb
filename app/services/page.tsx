@@ -253,7 +253,7 @@ export default function ServicesPage() {
               ))}
             </div>
 
-            <div className="relative overflow-hidden p-10 md:p-16 rounded-[40px] border border-white/5 w-full flex flex-col md:flex-row items-center justify-between gap-12 mt-8 group">
+            <div className="relative overflow-hidden p-12 md:p-20 lg:p-24 rounded-[50px] md:rounded-[70px] border border-white/5 w-full flex flex-col md:flex-row items-center justify-between gap-12 mt-12 group transition-all duration-500 hover:shadow-[0_0_80px_rgba(15,147,147,0.1)]">
               {/* Background Image & Overlay */}
               <div className="absolute inset-0 z-0">
                 <Image
@@ -306,7 +306,7 @@ export default function ServicesPage() {
             <motion.div
               initial="hidden"
               whileInView="show"
-              viewport={{ once: true, margin: "0px 0px -50% 0px" }}
+              viewport={{ once: true, margin: "0px 0px -30% 0px" }}
               variants={{
                 hidden: { opacity: 0 },
                 show: {
