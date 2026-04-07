@@ -61,13 +61,7 @@ const Navbar = () => {
           const scrollY = window.scrollY;
           const scrolled = scrollY > 50;
           setIsScrolled(scrolled);
-
-          if (!isLandingPage) {
-            setIsDark(false);
-            setIsScrolled(true);
-          } else {
-            setIsDark(!scrolled);
-          }
+          setIsDark(!scrolled);
           ticking = false;
         });
         ticking = true;
@@ -94,7 +88,7 @@ const Navbar = () => {
 
   return (
     <nav className={cn(
-      "fixed top-[45px] md:top-[55px] left-1/2 -translate-x-1/2 z-50 w-[97vw] max-w-[2440px] transition-all duration-300",
+      "fixed top-[45px] md:top-[55px] left-1/2 -translate-x-1/2 z-[100] w-[97vw] max-w-[2440px] transition-all duration-300",
       !isDark && "top-[20px]"
     )}>
       {/* Container with All Elements (Logo, Links, Button) */}

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import { useBooking } from '@/components/BookingContext';
@@ -10,7 +11,7 @@ import { BlogCard } from '@/components/landing/BlogCard';
 
 export default function ServicesPage() {
   const { openBookingModal } = useBooking();
-  
+
   // SECTION PINNING REFS
   const card1Ref = useRef<HTMLElement>(null);
   const target1Ref = useRef<HTMLDivElement>(null);
@@ -29,12 +30,14 @@ export default function ServicesPage() {
   const [stickyTop3, setStickyTop3] = useState(0);
   const [stickyTop4, setStickyTop4] = useState(0);
   const [stickyTop5, setStickyTop5] = useState(0);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const calculatePinOffset = () => {
       const getOffset = (card: HTMLElement | null, target: HTMLElement | null) => {
         if (!card || !target) return 0;
-        
+
         // Calculate vertical distance from card top to target's center using offsetTop loop
         let targetCenterOffset = target.offsetHeight / 2;
         let curr: HTMLElement | null = target;
@@ -66,7 +69,7 @@ export default function ServicesPage() {
     };
 
     calculatePinOffset();
-    
+
     // Multiple passes for layout stability (handling font loads/images)
     const timers = [
       setTimeout(calculatePinOffset, 100),
@@ -76,7 +79,7 @@ export default function ServicesPage() {
 
     window.addEventListener('resize', debouncedCalculate);
     window.addEventListener('popstate', calculatePinOffset);
-    
+
     return () => {
       window.removeEventListener('resize', debouncedCalculate);
       window.removeEventListener('popstate', calculatePinOffset);
@@ -85,13 +88,17 @@ export default function ServicesPage() {
     };
   }, []);
 
+  if (!mounted) {
+    return <div className="min-h-screen bg-[#111111]" />;
+  }
+
   return (
     <div className="relative w-full bg-[#111111] overflow-x-clip pb-[40vh]">
-      
+
       {/* 
         SECTION 1: HERO & INDIVIDUAL PSYCHOLOGICAL WORK (White Card)
       */}
-      <section 
+      <section
         ref={card1Ref}
         className="sticky z-10 w-full flex flex-col items-center"
         style={{ top: `${stickyTop1}px` }}
@@ -120,81 +127,82 @@ export default function ServicesPage() {
           </div>
 
           <div className="relative w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-[40px] md:rounded-[60px] shadow-[0_-20px_50px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col items-center pt-24 md:pt-32 pb-20 px-6 md:px-12 lg:px-24 -mt-[100px] md:-mt-[150px] z-20">
-          
-          <div className="absolute top-[10%] right-[5%] w-[400px] h-[400px] bg-[#0F9393]/5 rounded-full blur-[100px] pointer-events-none"></div>
 
-          <div className="relative z-10 w-full flex flex-col items-center text-center gap-12 lg:gap-20">
-            <div className="flex flex-col gap-6 items-center">
-              <span className="text-[#0F9393] font-bold uppercase tracking-[0.2em] text-[14px] md:text-[16px]">PILLAR 01</span>
-              <h1 className="text-[36px] md:text-[60px] lg:text-[80px] font-bold font-georgia text-black leading-[1.05] tracking-tight max-w-[1000px]">
-                Individual <br />
-                <span className="text-[#0F9393]">Psychological Work.</span>
-              </h1>
-              <p className="font-nunito font-bold text-[20px] md:text-[26px] text-gray-500 max-w-[800px] leading-relaxed">
-                Strategic awareness and emotional restructuring for the modern individual functioning in a complex world.
-              </p>
-            </div>
+            <div className="absolute top-[10%] right-[5%] w-[400px] h-[400px] bg-[#0F9393]/5 rounded-full blur-[100px] pointer-events-none"></div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full mt-8">
-              {[
-                { 
-                  title: 'Personal Expansion', 
-                  desc: 'Decoding internal narratives that limit your potential and response loops. We work to identify the core cognitive structures that dictate your daily choices, enabling a conscious redesign of your life\'s path and future potential.',
-                  img: '/assets/service/1.webp'
-                },
-                { 
-                  title: 'Emotional Resilience', 
-                  desc: 'Building the core psychological strength to navigate high-stakes reality. Strengthen your internal architecture to handle pressure, uncertainty, and complex emotional landscapes without losing clarity or personal alignment.',
-                  img: '/assets/service/2.webp'
-                },
-                { 
-                  title: 'Clarity & Alignment', 
-                  desc: 'Syncing your internal identity with your external actions and ambitions. Achieve a state where your deep values, personal goals, and public actions are in perfect synchronization, reducing friction and maximizing impact.',
-                  img: '/assets/service/3.webp'
-                }
-              ].map((item, i) => (
-                <div key={i} className="relative p-10 rounded-[40px] overflow-hidden group shadow-xl transition-all h-full min-h-[400px] flex flex-col justify-end">
-                  {/* Background Image */}
-                  <div className="absolute inset-0 z-0">
-                    <Image 
-                      src={item.img} 
-                      alt={item.title} 
-                      fill 
-                      className="object-cover transition-transform duration-700 group-hover:scale-110" 
-                    />
-                    {/* Dark gradient overlay from left to right */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent z-10"></div>
+            <div className="relative z-10 w-full flex flex-col items-center text-center gap-12 lg:gap-20">
+              <div className="flex flex-col gap-6 items-center">
+                <span className="text-[#0F9393] font-bold uppercase tracking-[0.2em] text-[14px] md:text-[16px]">PILLAR 01</span>
+                <h1 className="text-[36px] md:text-[60px] lg:text-[80px] font-bold font-georgia text-black leading-[1.05] tracking-tight max-w-[1000px]">
+                  Individual <br />
+                  <span className="text-[#0F9393]">Psychological Work.</span>
+                </h1>
+                <p className="font-nunito font-bold text-[20px] md:text-[26px] text-gray-500 max-w-[800px] leading-relaxed">
+                  Strategic awareness and emotional restructuring for the modern individual functioning in a complex world.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full mt-8">
+                {[
+                  {
+                    title: 'Personal Expansion',
+                    desc: 'Decoding internal narratives that limit your potential and response loops. We work to identify the core cognitive structures that dictate your daily choices, enabling a conscious redesign of your life\'s path and future potential.',
+                    img: '/assets/service/1.webp'
+                  },
+                  {
+                    title: 'Emotional Resilience',
+                    desc: 'Building the core psychological strength to navigate high-stakes reality. Strengthen your internal architecture to handle pressure, uncertainty, and complex emotional landscapes without losing clarity or personal alignment.',
+                    img: '/assets/service/2.webp'
+                  },
+                  {
+                    title: 'Clarity & Alignment',
+                    desc: 'Syncing your internal identity with your external actions and ambitions. Achieve a state where your deep values, personal goals, and public actions are in perfect synchronization, reducing friction and maximizing impact.',
+                    img: '/assets/service/3.webp'
+                  }
+                ].map((item, i) => (
+                  <div key={i} className="relative p-10 rounded-[40px] overflow-hidden group shadow-xl transition-all h-full min-h-[600px] flex flex-col justify-end">
+                    {/* Background Image */}
+                    <div className="absolute inset-0 z-0">
+                      <Image
+                        src={item.img}
+                        alt={item.title}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                      {/* Dark gradient overlay from left to right */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent z-10"></div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="relative z-20 flex flex-col items-start text-left gap-4">
+                      <h3 className="text-[24px] md:text-[28px] font-bold font-georgia text-white leading-tight">{item.title}</h3>
+                      <div className="h-[2px] w-12 bg-[#0F9393] group-hover:w-20 transition-all"></div>
+                      <p className="text-[14px] md:text-[16px] font-medium text-white/90 font-nunito leading-relaxed">{item.desc}</p>
+                    </div>
                   </div>
-                  
-                  {/* Content */}
-                  <div className="relative z-20 flex flex-col items-start text-left gap-4">
-                    <h3 className="text-[24px] md:text-[28px] font-bold font-georgia text-white leading-tight">{item.title}</h3>
-                    <div className="h-[2px] w-12 bg-[#0F9393] group-hover:w-20 transition-all"></div>
-                    <p className="text-[14px] md:text-[16px] font-medium text-white/90 font-nunito leading-relaxed">{item.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
 
-            <div ref={target1Ref} className="mt-12">
-               <Button variant="black" className="w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full text-[16px] md:text-[20px] font-bold shadow-2xl transition-transform hover:-translate-y-1" onClick={openBookingModal}>Consult for Individuals</Button>
+              <div ref={target1Ref} className="mt-12 flex flex-row items-center gap-4 md:gap-6">
+                <Button variant="black" className="w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full text-[16px] md:text-[20px] font-bold shadow-2xl transition-transform hover:-translate-y-1" onClick={openBookingModal}>Consult for Individuals</Button>
+                <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 -mt-2" />
+              </div>
             </div>
+            <div className="h-[120px] md:h-[180px] w-full shrink-0" />
           </div>
-          <div className="h-[120px] md:h-[180px] w-full shrink-0" />
         </div>
-      </div>
       </section>
 
       {/* 
         SECTION 2: RELATIONSHIP & COUPLE DYNAMICS (Black Card)
       */}
-      <section 
+      <section
         ref={card2Ref}
         className="sticky z-20 w-full flex justify-center pb-20 -mt-[150px] pointer-events-none"
         style={{ top: `${stickyTop2}px` }}
       >
         <div className="relative w-[97vw] max-w-[2440px] bg-[#171612] rounded-[40px] md:rounded-[60px] shadow-[0_40px_100px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col items-center pt-32 pb-40 px-6 md:px-12 lg:px-24 pointer-events-auto">
-          
+
           <div className="absolute bottom-[-10%] left-[-10%] w-[60%] h-[60%] bg-[#0F9393]/5 rounded-full blur-[120px] pointer-events-none"></div>
 
           <div className="relative z-10 w-full flex flex-col items-center text-center gap-16 md:gap-24">
@@ -210,38 +218,77 @@ export default function ServicesPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
-               <div className="p-12 rounded-[50px] bg-white/5 border border-white/5 flex flex-col items-center text-center gap-8 group hover:bg-[#0F9393]/10 transition-all">
-                  <h3 className="text-[26px] md:text-[32px] font-bold text-[#0F9393] font-georgia">Pattern Decoding</h3>
-                  <p className="text-[17px] md:text-[20px] text-gray-400 font-bold font-nunito leading-relaxed max-w-[400px]">We identify the repetitive emotional loops that create friction and disconnect in shared spaces.</p>
-               </div>
-               <div className="p-12 rounded-[50px] bg-white/5 border border-white/5 flex flex-col items-center text-center gap-8 group hover:bg-white/10 transition-all">
-                  <h3 className="text-[26px] md:text-[32px] font-bold text-white font-georgia">Shared Alignment</h3>
-                  <p className="text-[17px] md:text-[20px] text-gray-400 font-bold font-nunito leading-relaxed max-w-[400px]">Building a new system of communication that prioritizes clarity over comfort and alignment over avoidance.</p>
-               </div>
+              {[
+                {
+                  title: 'Pattern Decoding',
+                  desc: 'We identify the repetitive emotional loops that create friction and disconnect in shared spaces. By analyzing interaction cycles, we provide the tools to break cycles of avoidance and build a foundation of psychological safety.',
+                  img: '/assets/service/4.webp'
+                },
+                {
+                  title: 'Shared Alignment',
+                  desc: 'Building a new system of communication that prioritizes clarity over comfort and alignment over avoidance. Syncing shared values and personal growth trajectories to ensure the partnership remains a vehicle for mutual elevation.',
+                  img: '/assets/service/5.webp'
+                }
+              ].map((item, i) => (
+                <div key={i} className="relative p-10 rounded-[40px] overflow-hidden group shadow-xl transition-all h-full min-h-[600px] flex flex-col justify-end">
+                  {/* Background Image */}
+                  <div className="absolute inset-0 z-0">
+                    <Image
+                      src={item.img}
+                      alt={item.title}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    {/* Dark gradient overlay from left to right */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent z-10"></div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="relative z-20 flex flex-col items-start text-left gap-4">
+                    <h3 className="text-[26px] md:text-[32px] font-bold font-georgia text-white leading-tight">{item.title}</h3>
+                    <div className="h-[2px] w-12 bg-[#0F9393] group-hover:w-20 transition-all"></div>
+                    <p className="text-[17px] md:text-[20px] font-medium text-white/90 font-nunito leading-relaxed">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
             </div>
 
-            <div className="bg-[#111111]/80 backdrop-blur-xl p-10 md:p-16 rounded-[40px] border border-white/5 w-full flex flex-col md:flex-row items-center justify-between gap-12 mt-8">
-               <div className="flex flex-col gap-4 text-center md:text-left">
-                  <h4 className="text-white font-bold text-[24px] md:text-[32px] font-georgia">Beyond Conversation.</h4>
-                  <p className="text-gray-400 font-bold font-nunito text-[16px] md:text-[19px] max-w-[500px]">Our approach to relationships is analytical and solution-focused, designed for long-term psychological sync.</p>
-               </div>
-               <Button ref={target2Ref} variant="black" className="bg-white text-black hover:bg-gray-100 rounded-full w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center font-bold text-[16px] md:text-[20px] shrink-0 shadow-2xl transition-transform hover:-translate-y-1" onClick={openBookingModal}>Optimize Relationship</Button>
+            <div className="relative overflow-hidden p-10 md:p-16 rounded-[40px] border border-white/5 w-full flex flex-col md:flex-row items-center justify-between gap-12 mt-8 group">
+              {/* Background Image & Overlay */}
+              <div className="absolute inset-0 z-0">
+                <Image
+                  src="/assets/service/6.webp"
+                  alt="Beyond Conversation"
+                  fill
+                  className="object-cover object-top transition-transform duration-1000 group-hover:scale-110 opacity-60"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent"></div>
+              </div>
+
+              <div className="relative z-10 flex flex-col gap-4 text-center md:text-left">
+                <h4 className="text-white font-bold text-[24px] md:text-[32px] font-georgia">Beyond Conversation.</h4>
+                <p className="text-gray-300 font-bold font-nunito text-[16px] md:text-[19px] max-w-[500px]">Our approach to relationships is analytical and solution-focused, designed for long-term psychological sync.</p>
+              </div>
+              <div className="relative z-10 flex flex-row items-center gap-4 md:gap-6">
+                <Button ref={target2Ref} variant="black" className="bg-white text-black hover:bg-gray-100 rounded-full w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center font-bold text-[16px] md:text-[20px] shrink-0 shadow-2xl transition-transform hover:-translate-y-1" onClick={openBookingModal}>Optimize Relationship</Button>
+                <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 invert -mt-2" />
+              </div>
             </div>
           </div>
-          
+
         </div>
       </section>
 
       {/* 
         SECTION 3: ADOLESCENT DEVELOPMENT SUPPORT (Off-white Card)
       */}
-      <section 
+      <section
         ref={card3Ref}
         className="sticky z-30 w-full flex justify-center pb-20 -mt-[150px] pointer-events-none"
         style={{ top: `${stickyTop3}px` }}
       >
         <div className="relative w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-[40px] md:rounded-[60px] shadow-[0_[-40px]_100px_rgba(0,0,0,0.2)] overflow-hidden flex flex-col items-center pt-32 pb-40 px-6 md:px-12 lg:px-24 pointer-events-auto">
-          
+
           <div className="absolute top-[20%] left-[-10%] w-[600px] h-[600px] bg-[#0F9393]/5 rounded-full blur-[120px] pointer-events-none"></div>
 
           <div className="relative z-10 w-full flex flex-col items-center text-center gap-16 md:gap-24">
@@ -256,36 +303,86 @@ export default function ServicesPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 w-full">
-               {['Identity Mapping', 'Impulse Management', 'Social Navigation', 'Academic Flow'].map((title, i) => (
-                 <div key={i} className="p-8 pb-12 rounded-[40px] bg-black/5 border border-black/5 flex flex-col items-center gap-6 group hover:bg-[#0F9393]/5 transition-all">
-                    <div className="w-12 h-12 rounded-full bg-[#0F9393]/10 flex items-center justify-center text-[#0F9393] font-black">{i+1}</div>
-                    <h3 className="text-[20px] font-bold text-black font-georgia">{title}</h3>
-                 </div>
-               ))}
-            </div>
+            <motion.div
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+              variants={{
+                hidden: { opacity: 0 },
+                show: {
+                  opacity: 1,
+                  transition: {
+                    staggerChildren: 0.3
+                  }
+                }
+              }}
+              className="flex flex-col md:flex-row items-center justify-between gap-6 w-full relative"
+            >
+              {['Identity Mapping', 'Impulse Management', 'Social Navigation', 'Academic Flow'].map((title, i, arr) => (
+                <React.Fragment key={i}>
+                  <motion.div
+                    variants={{
+                      hidden: { opacity: 0, y: 20 },
+                      show: { opacity: 1, y: 0 }
+                    }}
+                    className="flex-1 w-full flex flex-col items-center gap-6 group transition-all"
+                  >
+                    <div className="w-16 h-16 rounded-full bg-[#0F9393]/10 flex items-center justify-center text-[#0F9393] text-[20px] font-black border-2 border-[#0F9393]/20 group-hover:bg-[#0F9393] group-hover:text-white transition-all duration-500">{i + 1}</div>
+                    <h3 className="text-[22px] md:text-[24px] font-bold text-black font-georgia text-center">{title}</h3>
+                  </motion.div>
+
+                  {/* Animated Flow Arrow - Staggered Entry */}
+                  {i < arr.length - 1 && (
+                    <motion.div
+                      variants={{
+                        hidden: { opacity: 0, scale: 0.8 },
+                        show: { opacity: 1, scale: 1 }
+                      }}
+                      className="flex items-center justify-center text-[#0F9393] transition-all"
+                    >
+                      <svg
+                        width="32"
+                        height="32"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="md:rotate-0 rotate-90"
+                      >
+                        <path d="M5 12h14m-7-7 7 7-7 7" />
+                      </svg>
+                    </motion.div>
+                  )}
+                </React.Fragment>
+              ))}
+            </motion.div>
 
             <div className="mt-10 flex flex-col items-center gap-10">
-               <p className="text-[20px] md:text-[28px] font-extrabold text-[#0F9393] leading-relaxed italic max-w-[900px]">
-                 "Support that respects the adolescent's evolving agency while providing the tools for structural well-being."
-               </p>
-               <Button ref={target3Ref} variant="black" className="w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full text-[16px] md:text-[20px] font-bold shadow-2xl transition-transform hover:-translate-y-1" onClick={openBookingModal}>Support Your Child</Button>
+              <p className="text-[20px] md:text-[28px] font-extrabold text-[#0F9393] leading-relaxed italic max-w-[900px]">
+                "Support that respects the adolescent's evolving agency while providing the tools for structural well-being."
+              </p>
+              <div className="flex flex-row items-center gap-4 md:gap-6">
+                <Button ref={target3Ref} variant="black" className="w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full text-[16px] md:text-[20px] font-bold shadow-2xl transition-transform hover:-translate-y-1" onClick={openBookingModal}>Support Your Child</Button>
+                <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 -mt-2" />
+              </div>
             </div>
           </div>
-          
+
         </div>
       </section>
 
       {/* 
         SECTION 4: INSTITUTIONAL PROGRAMS (Schools & Colleges) (Grey Card)
       */}
-      <section 
+      <section
         ref={card4Ref}
         className="sticky z-40 w-full flex justify-center pb-20 -mt-[150px] pointer-events-none"
         style={{ top: `${stickyTop4}px` }}
       >
         <div className="relative w-[97vw] max-w-[2440px] bg-[#1a1a1a] rounded-[40px] md:rounded-[60px] shadow-[0_[-40px]_100px_rgba(0,0,0,0.4)] overflow-hidden flex flex-col items-center pt-32 pb-40 px-6 md:px-12 lg:px-24 text-white pointer-events-auto">
-          
+
           <div className="absolute center-0 w-[800px] h-[800px] bg-white/5 rounded-full blur-[150px] pointer-events-none"></div>
 
           <div className="relative z-10 w-full flex flex-col items-center text-center gap-16 md:gap-24">
@@ -301,35 +398,37 @@ export default function ServicesPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-[1100px]">
-               <div className="bg-white/5 p-12 rounded-[50px] border border-white/10 text-left flex flex-col gap-8 transition-all hover:bg-white/10">
-                  <h3 className="text-[28px] md:text-[34px] font-bold font-georgia text-[#0F9393]">For Schools</h3>
-                  <p className="text-gray-400 font-bold text-[16px] md:text-[19px] leading-relaxed">Integrated student counseling, teacher sensitization programs, and parent psychological workshops.</p>
-               </div>
-               <div className="bg-white/5 p-12 rounded-[50px] border border-white/10 text-left flex flex-col gap-8 transition-all hover:bg-white/10">
-                  <h3 className="text-[28px] md:text-[34px] font-bold font-georgia text-white">For Universities</h3>
-                  <p className="text-gray-400 font-bold text-[16px] md:text-[19px] leading-relaxed">High-performance mental coaching, peer-support networks, and crisis management protocols.</p>
-               </div>
+              <div className="bg-white/5 p-12 rounded-[50px] border border-white/10 text-left flex flex-col gap-8 transition-all hover:bg-white/10">
+                <h3 className="text-[28px] md:text-[34px] font-bold font-georgia text-[#0F9393]">For Schools</h3>
+                <p className="text-gray-400 font-bold text-[16px] md:text-[19px] leading-relaxed">Integrated student counseling, teacher sensitization programs, and parent psychological workshops.</p>
+              </div>
+              <div className="bg-white/5 p-12 rounded-[50px] border border-white/10 text-left flex flex-col gap-8 transition-all hover:bg-white/10">
+                <h3 className="text-[28px] md:text-[34px] font-bold font-georgia text-white">For Universities</h3>
+                <p className="text-gray-400 font-bold text-[16px] md:text-[19px] leading-relaxed">High-performance mental coaching, peer-support networks, and crisis management protocols.</p>
+              </div>
             </div>
 
-            <div className="mt-8 flex flex-col items-center gap-8">
-               <p className="text-[#0F9393] font-black uppercase tracking-[0.4em] text-[14px]">Transforming the system from within.</p>
-               <Button ref={target4Ref} variant="black" className="bg-white text-black hover:bg-gray-100 rounded-full w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center font-bold text-[16px] md:text-[20px] transition-transform hover:-translate-y-1" onClick={openBookingModal}>Partner with unHeard.</Button>
+            <div className="mt-2 flex flex-col items-center gap-8">
+              <div className="flex flex-row items-center gap-4 md:gap-6">
+                <Button ref={target4Ref} variant="black" className="bg-white text-black hover:bg-gray-100 rounded-full w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center font-bold text-[16px] md:text-[20px] transition-transform hover:-translate-y-1" onClick={openBookingModal}>Partner with unHeard.</Button>
+                <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 invert -mt-2" />
+              </div>
             </div>
           </div>
-          
+
         </div>
       </section>
 
       {/* 
         SECTION 5: CORPORATE MENTAL PERFORMANCE (Pure White/Teal Card)
       */}
-      <section 
+      <section
         ref={card5Ref}
         className="sticky z-50 w-full flex justify-center pb-20 -mt-[150px] pointer-events-none"
         style={{ top: `${stickyTop5}px` }}
       >
         <div className="relative w-[97vw] max-w-[2440px] bg-white rounded-[40px] md:rounded-[60px] shadow-[0_[-60px]_120px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col items-center pt-32 pb-40 px-6 md:px-12 lg:px-24 pointer-events-auto">
-          
+
           <div className="absolute top-0 left-0 w-full h-[150px] bg-gradient-to-b from-[#0F9393]/10 to-transparent"></div>
 
           <div className="relative z-10 w-full flex flex-col items-center text-center gap-16 md:gap-24">
@@ -345,41 +444,37 @@ export default function ServicesPage() {
             </div>
 
             <div className="w-full flex flex-col gap-16">
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
-                  <div className="flex flex-col gap-6 p-10 bg-black/5 rounded-[40px] border border-black/5 group hover:bg-[#0F9393] transition-all duration-500">
-                     <h3 className="text-[24px] font-bold text-black font-georgia group-hover:text-white transition-colors">Executive Coaching</h3>
-                     <p className="text-gray-500 font-bold group-hover:text-white/80 transition-colors">Decoding behavioral blocks and decision patterns for leaders at the peak.</p>
-                  </div>
-                  <div className="flex flex-col gap-6 p-10 bg-black/5 rounded-[40px] border border-black/5 group hover:bg-black transition-all duration-500">
-                     <h3 className="text-[24px] font-bold text-black font-georgia group-hover:text-[#0F9393] transition-colors">Culture Transformation</h3>
-                     <p className="text-gray-500 font-bold group-hover:text-white/60 transition-colors">Building structural safety that enables creative friction and sustainable growth.</p>
-                  </div>
-               </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+                <div className="flex flex-col gap-6 p-10 bg-black/5 rounded-[40px] border border-black/5 group hover:bg-[#0F9393] transition-all duration-500">
+                  <h3 className="text-[24px] font-bold text-black font-georgia group-hover:text-white transition-colors">Executive Coaching</h3>
+                  <p className="text-gray-500 font-bold group-hover:text-white/80 transition-colors">Decoding behavioral blocks and decision patterns for leaders at the peak.</p>
+                </div>
+                <div className="flex flex-col gap-6 p-10 bg-black/5 rounded-[40px] border border-black/5 group hover:bg-black transition-all duration-500">
+                  <h3 className="text-[24px] font-bold text-black font-georgia group-hover:text-[#0F9393] transition-colors">Culture Transformation</h3>
+                  <p className="text-gray-500 font-bold group-hover:text-white/60 transition-colors">Building structural safety that enables creative friction and sustainable growth.</p>
+                </div>
+              </div>
 
-               <div className="flex flex-col items-center gap-12 mt-10">
-                  <div className="flex flex-col items-center gap-6">
-                    <h3 className="text-[32px] md:text-[56px] font-bold font-georgia text-black tracking-tight">Operational Clarity.</h3>
-                    <p className="text-gray-500 font-bold text-[18px] md:text-[24px] font-nunito italic text-center">Unleash the cognitive potential of your organization.</p>
-                  </div>
-                  
-                  <div ref={target5Ref} className="flex flex-col md:flex-row items-center gap-8">
+              <div className="flex flex-col items-center gap-12 mt-10">
+                <div className="flex flex-col items-center gap-6">
+                  <h3 className="text-[32px] md:text-[56px] font-bold font-georgia text-black tracking-tight">Operational Clarity.</h3>
+                  <p className="text-gray-500 font-bold text-[18px] md:text-[24px] font-nunito italic text-center">Unleash the cognitive potential of your organization.</p>
+                </div>
+
+                <div ref={target5Ref} className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+                  <div className="flex flex-row items-center gap-4 md:gap-6">
                     <Button variant="black" className="w-[280px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full text-[16px] md:text-[20px] font-extrabold shadow-2xl transition-transform hover:-translate-y-1" onClick={openBookingModal}>Book for Organization</Button>
-                    <Link href="/contact">
-                      <button className="w-[280px] md:w-[300px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full border-[3px] border-black text-black font-black text-[16px] md:text-[20px] hover:bg-black hover:text-white transition-all text-center">Contact Sales</button>
-                    </Link>
+                    <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 invert -mt-2" />
                   </div>
-               </div>
+                  <Link href="/contact">
+                    <button className="w-[280px] md:w-[300px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full border-[3px] border-black text-black font-black text-[16px] md:text-[20px] hover:bg-black hover:text-white transition-all text-center">Contact Sales</button>
+                  </Link>
+                </div>
+              </div>
             </div>
-
-          <div className="mt-16 flex items-center gap-6 opacity-40 grayscale">
-            <div className="h-[2px] w-16 bg-black"></div>
-            <p className="text-black font-black uppercase tracking-[0.5em] text-[16px]">unHeard.</p>
-            <div className="h-[2px] w-16 bg-black"></div>
           </div>
-          <div className="h-[100px] md:h-[200px] w-full shrink-0" />
         </div>
-      </div>
-    </section>
+      </section>
 
       {/* 
         FOOTER BANNER: Unheard Truth (Mirrored from Landing)
@@ -407,7 +502,7 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      
+
     </div>
   );
 }
