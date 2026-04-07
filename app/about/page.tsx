@@ -108,7 +108,7 @@ export default function AboutPage() {
             </div>
             <div className="relative z-10 max-w-[800px] flex flex-col gap-8 mt-28 md:-mt-[100px]">
               <h1 className="text-[40px] md:text-[50px] font-bold leading-[1.1] tracking-[-0.02em] text-white font-georgia">
-                 Because patterns are not random. <br /> They are structural.
+                 Because patterns are not random.  They are structural.
               </h1>
               <p className="text-[18px] md:text-[22px] leading-relaxed text-white/90 font-nunito max-w-[600px]">
                 unHeard. is built on the understanding that most psychological distress is not random—it is patterned, reinforced, and often misinterpreted. We identify those patterns with precision and restructure them intentionally.
@@ -202,14 +202,15 @@ export default function AboutPage() {
                     { step: '03', title: 'Restructuring', desc: 'Intentional breaking and rebuilding of emotional response loops.', img: '/assets/service/3.webp' },
                     { step: '04', title: 'Integration', desc: 'Executing these subtle shifts into the fabric of your reality.', img: '/assets/landingimage.webp' }
                   ].map((item, i) => (
-                    <div key={i} className="relative p-10 rounded-[40px] overflow-hidden group transition-all h-full min-h-[360px] flex flex-col justify-end">
+                    <div key={i} className="relative p-10 rounded-[40px] overflow-hidden group shadow-xl transition-all h-full min-h-[500px] flex flex-col justify-end">
                       <div className="absolute inset-0 z-0 text-white">
                         <Image src={item.img} alt={item.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-40" />
                         <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent z-10"></div>
                       </div>
                       <div className="relative z-20 flex flex-col items-start text-left gap-4">
                         <div className="text-[32px] font-black text-[#0F9393]/40 group-hover:text-[#0F9393] transition-colors">{item.step}</div>
-                        <h3 className="text-[22px] md:text-[26px] font-bold text-white font-georgia">{item.title}</h3>
+                        <h3 className="text-[24px] md:text-[28px] font-bold text-white font-georgia leading-tight">{item.title}</h3>
+                        <div className="h-[2px] w-12 bg-[#0F9393] group-hover:w-20 transition-all"></div>
                         <p className="text-[14px] md:text-[16px] font-medium text-white/80 leading-relaxed font-nunito">{item.desc}</p>
                       </div>
                     </div>
