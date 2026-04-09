@@ -162,7 +162,7 @@ export default function ServicesPage() {
                     img: '/assets/service/3.webp'
                   }
                 ].map((item, i) => (
-                  <div key={i} className="relative p-10 rounded-[40px] overflow-hidden group shadow-xl transition-all h-full min-h-[600px] flex flex-col justify-end">
+                  <div key={i} className="relative p-8 md:p-10 rounded-[40px] overflow-hidden group transition-all h-full min-h-[480px] md:min-h-[520px] flex flex-col justify-end border border-black/5">
                     {/* Background Image */}
                     <div className="absolute inset-0 z-0">
                       <Image
@@ -186,7 +186,7 @@ export default function ServicesPage() {
               </div>
 
               <div ref={target1Ref} className="mt-12 flex flex-row items-center gap-4 md:gap-6">
-                <Button variant="black" className="w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full text-[16px] md:text-[20px] font-bold shadow-2xl transition-transform hover:-translate-y-1" onClick={openBookingModal}>Consult for Individuals</Button>
+                <Button variant="black" className="w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full text-[16px] md:text-[20px] font-bold transition-transform hover:-translate-y-1" onClick={openBookingModal}>Consult for Individuals</Button>
                 <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 -mt-2" />
               </div>
             </div>
@@ -231,7 +231,7 @@ export default function ServicesPage() {
                   img: '/assets/service/5.webp'
                 }
               ].map((item, i) => (
-                <div key={i} className="relative p-10 rounded-[40px] overflow-hidden group shadow-xl transition-all h-full min-h-[600px] flex flex-col justify-end">
+                  <div key={i} className="relative p-8 md:p-10 rounded-[40px] overflow-hidden group transition-all h-full min-h-[480px] md:min-h-[540px] flex flex-col justify-end border border-white/5">
                   {/* Background Image */}
                   <div className="absolute inset-0 z-0">
                     <Image
@@ -254,7 +254,7 @@ export default function ServicesPage() {
               ))}
             </div>
 
-            <div className="relative overflow-hidden p-12 md:p-20 lg:p-24 rounded-[50px] md:rounded-[70px] border border-white/5 w-full flex flex-col md:flex-row items-center justify-between gap-12 mt-12 group transition-all duration-500 hover:shadow-[0_0_80px_rgba(15,147,147,0.1)]">
+            <div className="relative overflow-hidden p-12 md:p-20 lg:p-24 rounded-[50px] md:rounded-[70px] border border-white/5 w-full flex flex-col md:flex-row items-center justify-between gap-12 mt-12 group transition-all duration-500">
               {/* Background Image & Overlay */}
               <div className="absolute inset-0 z-0">
                 <Image
@@ -271,7 +271,7 @@ export default function ServicesPage() {
                 <p className="text-gray-300 font-bold font-nunito text-[16px] md:text-[19px] max-w-[500px]">Our approach to relationships is analytical and solution-focused, designed for long-term psychological sync.</p>
               </div>
               <div className="relative z-10 flex flex-row items-center gap-4 md:gap-6">
-                <Button ref={target2Ref} variant="black" className="bg-white text-black hover:bg-gray-100 rounded-full w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center font-bold text-[16px] md:text-[20px] shrink-0 shadow-2xl transition-transform hover:-translate-y-1" onClick={openBookingModal}>Optimize Relationship</Button>
+                <Button ref={target2Ref} variant="black" className="bg-white text-black hover:bg-gray-100 rounded-full w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center font-bold text-[16px] md:text-[20px] shrink-0 transition-transform hover:-translate-y-1" onClick={openBookingModal}>Optimize Relationship</Button>
                 <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 invert -mt-2" />
               </div>
             </div>
@@ -364,7 +364,7 @@ export default function ServicesPage() {
                 "Support that respects the adolescent's evolving agency while providing the tools for structural well-being."
               </p>
               <div className="flex flex-row items-center gap-4 md:gap-6">
-                <Button ref={target3Ref} variant="black" className="w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full text-[16px] md:text-[20px] font-bold shadow-2xl transition-transform hover:-translate-y-1" onClick={openBookingModal}>Support Your Child</Button>
+                <Button ref={target3Ref} variant="black" className="w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full text-[16px] md:text-[20px] font-bold transition-transform hover:-translate-y-1" onClick={openBookingModal}>Support Your Child</Button>
                 <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 -mt-2" />
               </div>
             </div>
@@ -409,7 +409,7 @@ export default function ServicesPage() {
                   img: '/assets/service/8.webp'
                 }
               ].map((item, i) => (
-                <div key={i} className="relative p-10 md:p-12 rounded-[40px] md:rounded-[50px] overflow-hidden group shadow-2xl transition-all h-full min-h-[500px] flex flex-col justify-end border border-white/10">
+                <div key={i} className="relative p-10 md:p-12 rounded-[40px] md:rounded-[50px] overflow-hidden group transition-all h-full min-h-[500px] flex flex-col justify-end border border-white/10">
                   {/* Background Image & Overlay */}
                   <div className="absolute inset-0 z-0">
                     <Image
@@ -480,7 +480,7 @@ export default function ServicesPage() {
                     img: '/assets/service/9.webp'
                   }
                 ].map((item, i) => (
-                  <div key={i} className="relative p-10 rounded-[40px] overflow-hidden group shadow-xl transition-all h-full min-h-[600px] flex flex-col justify-end border border-black/5">
+                  <div key={i} className="relative p-8 md:p-10 rounded-[40px] overflow-hidden group transition-all h-full min-h-[480px] md:min-h-[540px] flex flex-col justify-end border border-black/5">
                     {/* Background Image & Overlay */}
                     <div className="absolute inset-0 z-0">
                       <Image
@@ -510,13 +510,13 @@ export default function ServicesPage() {
 
                 <div ref={target5Ref} className="flex flex-col items-center gap-6 md:flex-row md:gap-12">
                   <div className="relative flex flex-row items-center gap-4 md:gap-6">
-                    <Button variant="black" className="w-[280px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full text-[16px] md:text-[20px] font-extrabold shadow-2xl transition-transform hover:-translate-y-1" onClick={openBookingModal}>Book for Organization</Button>
+                    <Button variant="black" className="w-[280px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full text-[16px] md:text-[20px] font-extrabold transition-transform hover:-translate-y-1" onClick={openBookingModal}>Book for Organization</Button>
                     <div className="absolute left-full ml-4 md:relative md:ml-0">
                       <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 invert -mt-1" />
                     </div>
                   </div>
                   <Link href="/contact">
-                    <Button variant="white" className="w-[280px] md:w-[320px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full border-[3px] border-black text-black font-black text-[16px] md:text-[20px] hover:bg-black hover:text-white transition-all shadow-xl">Contact Sales</Button>
+                    <Button variant="white" className="w-[280px] md:w-[320px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full border-[3px] border-black text-black font-black text-[16px] md:text-[20px] hover:bg-black hover:text-white transition-all">Contact Sales</Button>
                   </Link>
                 </div>
               </div>
@@ -541,7 +541,7 @@ export default function ServicesPage() {
             {blogData.map((blog, idx) => <BlogCard key={idx} blog={blog} />)}
           </div>
           <div className="mt-20">
-            <button className="group flex items-center gap-4 bg-white p-1.5 pl-8 pr-2 rounded-full border-2 border-white hover:bg-gray-100 transition-all shadow-xl">
+            <button className="group flex items-center gap-4 bg-white p-1.5 pl-8 pr-2 rounded-full border-2 border-white hover:bg-gray-100 transition-all">
               <span className="text-black font-nunito font-black text-[18px]">View all</span>
               <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center transition-transform group-hover:translate-x-1">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-7-7 7 7-7 7" /></svg>

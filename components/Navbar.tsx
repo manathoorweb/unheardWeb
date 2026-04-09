@@ -87,17 +87,20 @@ const Navbar = () => {
   }
 
   return (
-    <nav className={cn(
-      "fixed top-[45px] md:top-[55px] left-1/2 -translate-x-1/2 z-[100] w-[97vw] max-w-[2440px] transition-all duration-300",
-      !isDark && "top-[20px]"
-    )}>
+    <nav 
+      className={cn(
+        "fixed top-[45px] md:top-[55px] left-1/2 -translate-x-1/2 z-[100] w-[97vw] max-w-[2440px] transition-all duration-300",
+        !isDark && "top-[20px]"
+      )}
+      style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden', willChange: 'transform, top' }}
+    >
       {/* Container with All Elements (Logo, Links, Button) */}
       <div
         className={cn(
           "relative h-[68px] md:h-[75px] px-4 md:px-8 lg:px-12 flex items-center justify-between transition-all duration-500 rounded-[20px] md:rounded-[24px] overflow-hidden shadow-2xl group/nav",
           (!isScrolled || isDark || isMobile)
-            ? "bg-[rgba(39,37,37,0.1)] border border-white/10 backdrop-blur-[12px] shadow-[0px_0px_10px_rgba(0,0,0,0.3)]"
-            : "bg-white/90 border border-black/5 shadow-xl backdrop-blur-[12px]"
+            ? "bg-[rgba(39,37,37,0.1)] border border-white/10 backdrop-blur-[8px]"
+            : "bg-white/90 border border-black/5 backdrop-blur-[8px]"
         )}
       >
         {/* Sub-blob background for extra glow on dark */}

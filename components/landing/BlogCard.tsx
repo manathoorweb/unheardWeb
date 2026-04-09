@@ -14,7 +14,10 @@ interface Blog {
 
 export const BlogCard = ({ blog }: { blog: Blog }) => {
   return (
-    <div className="group relative bg-[#1A1A1A]/60 backdrop-blur-2xl border border-white/10 rounded-[32px] p-5 flex flex-col gap-5 shadow-[0_20px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_30px_60px_rgba(0,0,0,0.5)] transition-all duration-500 hover:-translate-y-2 max-w-[420px] mx-auto w-full">
+    <div 
+      className="group relative bg-[#1A1A1A]/80 backdrop-blur-[12px] border border-white/10 rounded-[32px] p-5 flex flex-col gap-5 transition-all duration-500 hover:-translate-y-2 max-w-[420px] mx-auto w-full overflow-hidden"
+      style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
+    >
       
       {/* Image Container with Arrow */}
       <div className="relative aspect-[16/10] rounded-[24px] overflow-hidden">
