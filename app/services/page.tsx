@@ -104,13 +104,7 @@ export default function ServicesPage() {
       <section
         ref={card1Ref}
         className="sticky z-10 w-full flex flex-col items-center"
-        style={{ 
-          top: `${stickyTop1}px`,
-          transform: 'translateZ(0)',
-          backfaceVisibility: 'hidden',
-          willChange: 'transform',
-          isolation: 'isolate'
-        }}
+        style={{ top: `${stickyTop1}px` }}
       >
         <div className="w-full flex flex-col items-center">
           <div className="relative h-screen max-h-[1000px] w-full max-w-[2560px] flex items-center px-[5vw] lg:px-[10vw]">
@@ -135,9 +129,8 @@ export default function ServicesPage() {
             </div>
           </div>
 
-          <div className="relative w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-[40px] md:rounded-[60px] shadow-[0_-20px_50px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col items-center pt-24 md:pt-32 pb-20 px-6 md:px-12 lg:px-24 -mt-[100px] md:-mt-[150px] z-20">
-
-            <div className="absolute top-[10%] right-[5%] w-[400px] h-[400px] bg-[#0F9393]/5 rounded-full blur-[100px] pointer-events-none"></div>
+          <div className="relative w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-[40px] md:rounded-[60px] border border-black/5 overflow-hidden flex flex-col items-center pt-24 md:pt-32 pb-20 px-6 md:px-12 lg:px-24 -mt-[100px] md:-mt-[150px] z-20">
+            <div className="absolute top-[10%] right-[5%] w-[400px] h-[400px] bg-[#0F9393]/5 rounded-full blur-[60px] pointer-events-none"></div>
 
             <div className="relative z-10 w-full flex flex-col items-center text-center gap-12 lg:gap-20">
               <div className="flex flex-col gap-6 items-center">
@@ -208,17 +201,10 @@ export default function ServicesPage() {
       <section
         ref={card2Ref}
         className="sticky z-20 w-full flex justify-center pb-20 -mt-[150px] pointer-events-none"
-        style={{ 
-          top: `${stickyTop2}px`,
-          transform: 'translateZ(0)',
-          backfaceVisibility: 'hidden',
-          willChange: 'transform',
-          isolation: 'isolate'
-        }}
+        style={{ top: `${stickyTop2}px` }}
       >
-        <div className="relative w-[97vw] max-w-[2440px] bg-[#171612] rounded-[40px] md:rounded-[60px] shadow-[0_40px_100px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col items-center pt-32 pb-40 px-6 md:px-12 lg:px-24 pointer-events-auto">
-
-          <div className="absolute bottom-[-10%] left-[-10%] w-[60%] h-[60%] bg-[#0F9393]/5 rounded-full blur-[120px] pointer-events-none"></div>
+        <div className="relative w-[97vw] max-w-[2440px] bg-[#171612] rounded-[40px] md:rounded-[60px] border border-white/5 overflow-hidden flex flex-col items-center pt-32 pb-40 px-6 md:px-12 lg:px-24 pointer-events-auto">
+          <div className="absolute bottom-[-10%] left-[-10%] w-[60%] h-[60%] bg-[#0F9393]/5 rounded-full blur-[80px] pointer-events-none"></div>
 
           <div className="relative z-10 w-full flex flex-col items-center text-center gap-16 md:gap-24">
             <div className="flex flex-col gap-6 items-center">
@@ -300,17 +286,10 @@ export default function ServicesPage() {
       <section
         ref={card3Ref}
         className="sticky z-30 w-full flex justify-center pb-20 -mt-[150px] pointer-events-none"
-        style={{ 
-          top: `${stickyTop3}px`,
-          transform: 'translateZ(0)',
-          backfaceVisibility: 'hidden',
-          willChange: 'transform',
-          isolation: 'isolate'
-        }}
+        style={{ top: `${stickyTop3}px` }}
       >
-        <div className="relative w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-[40px] md:rounded-[60px] shadow-[0_[-40px]_100px_rgba(0,0,0,0.2)] overflow-hidden flex flex-col items-center pt-32 pb-40 px-6 md:px-12 lg:px-24 pointer-events-auto">
-
-          <div className="absolute top-[20%] left-[-10%] w-[600px] h-[600px] bg-[#0F9393]/5 rounded-full blur-[120px] pointer-events-none"></div>
+        <div className="relative w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-[40px] md:rounded-[60px] border border-black/5 overflow-hidden flex flex-col items-center pt-32 pb-40 px-6 md:px-12 lg:px-24 pointer-events-auto">
+          <div className="absolute top-[20%] left-[-10%] w-[600px] h-[600px] bg-[#0F9393]/5 rounded-full blur-[80px] pointer-events-none"></div>
 
           <div className="relative z-10 w-full flex flex-col items-center text-center gap-16 md:gap-24">
             <div className="flex flex-col gap-6 items-center">
@@ -400,17 +379,10 @@ export default function ServicesPage() {
       <section
         ref={card4Ref}
         className="sticky z-40 w-full flex justify-center pb-20 -mt-[150px] pointer-events-none"
-        style={{ 
-          top: `${stickyTop4}px`,
-          transform: 'translateZ(0)',
-          backfaceVisibility: 'hidden',
-          willChange: 'transform',
-          isolation: 'isolate'
-        }}
+        style={{ top: `${stickyTop4}px` }}
       >
-        <div className="relative w-[97vw] max-w-[2440px] bg-[#1a1a1a] rounded-[40px] md:rounded-[60px] shadow-[0_[-40px]_100px_rgba(0,0,0,0.4)] overflow-hidden flex flex-col items-center pt-32 pb-40 px-6 md:px-12 lg:px-24 text-white pointer-events-auto">
-
-          <div className="absolute center-0 w-[800px] h-[800px] bg-white/5 rounded-full blur-[150px] pointer-events-none"></div>
+        <div className="relative w-[97vw] max-w-[2440px] bg-[#1a1a1a] rounded-[40px] md:rounded-[60px] border border-white/5 overflow-hidden flex flex-col items-center pt-32 pb-40 px-6 md:px-12 lg:px-24 text-white pointer-events-auto">
+          <div className="absolute center-0 w-[800px] h-[800px] bg-white/5 rounded-full blur-[100px] pointer-events-none"></div>
 
           <div className="relative z-10 w-full flex flex-col items-center text-center gap-16 md:gap-24">
             <div className="flex flex-col gap-6 items-center">
@@ -476,15 +448,9 @@ export default function ServicesPage() {
       <section
         ref={card5Ref}
         className="sticky z-50 w-full flex justify-center pb-20 -mt-[150px] pointer-events-none"
-        style={{ 
-          top: `${stickyTop5}px`,
-          transform: 'translateZ(0)',
-          backfaceVisibility: 'hidden',
-          willChange: 'transform',
-          isolation: 'isolate'
-        }}
+        style={{ top: `${stickyTop5}px` }}
       >
-        <div className="relative w-[97vw] max-w-[2440px] bg-white rounded-[40px] md:rounded-[60px] shadow-[0_[-60px]_120px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col items-center pt-32 pb-40 px-6 md:px-12 lg:px-24 pointer-events-auto">
+        <div className="relative w-[97vw] max-w-[2440px] bg-white rounded-[40px] md:rounded-[60px] border border-black/5 overflow-hidden flex flex-col items-center pt-32 pb-40 px-6 md:px-12 lg:px-24 pointer-events-auto">
 
           <div className="absolute top-0 left-0 w-full h-[150px] bg-gradient-to-b from-[#0F9393]/10 to-transparent"></div>
 

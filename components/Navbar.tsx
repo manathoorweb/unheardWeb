@@ -40,7 +40,7 @@ const Navbar = () => {
         setIsMobile(window.innerWidth < 768);
       }, 150);
     };
-    
+
     setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', checkMobile);
     return () => {
@@ -71,7 +71,7 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     // Run immediately on path change to sync state
     handleScroll();
-    
+
     // Also run with a small delay to ensure DOM is settled after navigation
     const timer = setTimeout(handleScroll, 100);
 
@@ -162,9 +162,9 @@ const Navbar = () => {
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -30 }}
-            transition={{ 
-              type: "spring", 
-              damping: 25, 
+            transition={{
+              type: "spring",
+              damping: 25,
               stiffness: 200,
               opacity: { duration: 0.2 }
             }}
