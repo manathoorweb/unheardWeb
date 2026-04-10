@@ -12,83 +12,18 @@ import { BlogCard } from '@/components/landing/BlogCard';
 export default function ServicesPage() {
   const { openBookingModal } = useBooking();
 
-  // SECTION PINNING REFS
-  const card1Ref = useRef<HTMLElement>(null);
-  const target1Ref = useRef<HTMLDivElement>(null);
-  const card2Ref = useRef<HTMLElement>(null);
-  const target2Ref = useRef<HTMLButtonElement>(null);
-  const card3Ref = useRef<HTMLElement>(null);
-  const target3Ref = useRef<HTMLButtonElement>(null);
-  const card4Ref = useRef<HTMLElement>(null);
-  const target4Ref = useRef<HTMLButtonElement>(null);
-  const card5Ref = useRef<HTMLElement>(null);
-  const target5Ref = useRef<HTMLDivElement>(null);
-
-  // STICKY TOP OFFSETS
-  const [stickyTop1, setStickyTop1] = useState(0);
-  const [stickyTop2, setStickyTop2] = useState(0);
-  const [stickyTop3, setStickyTop3] = useState(0);
-  const [stickyTop4, setStickyTop4] = useState(0);
-  const [stickyTop5, setStickyTop5] = useState(0);
+  // STATE
   const [mounted, setMounted] = useState(false);
+  const [loadedCount, setLoadedCount] = useState(0);
+  const totalCritical = 6; // Hero + Pillar 1 (3) + Pillar 2 (2)
+  const isReady = mounted && loadedCount >= totalCritical;
+
+  const handleImageLoad = () => {
+    setLoadedCount(prev => prev + 1);
+  };
 
   useEffect(() => {
     setMounted(true);
-    const calculatePinOffset = () => {
-      const getOffset = (card: HTMLElement | null, target: HTMLElement | null) => {
-        if (!card || !target) return 0;
-
-        // Get absolute positions relative to the document
-        const cardRect = card.getBoundingClientRect();
-        const targetRect = target.getBoundingClientRect();
-        const scrollY = window.scrollY;
-
-        const cardTop = cardRect.top + scrollY;
-        const targetTop = targetRect.top + scrollY;
-
-        // Offset from the card top to the target
-        const targetOffsetInCard = targetTop - cardTop;
-        const targetHeight = target.offsetHeight;
-
-        // Pin when the target reaches ~40% of the viewport height (consistent with Landing)
-        const targetViewportY = window.innerHeight * 0.4;
-        const targetCenterOffset = targetOffsetInCard + (targetHeight / 2);
-
-        // Limit to 0 to prevent positive offsets which cause "jumping"
-        return Math.min(targetViewportY - targetCenterOffset, 0);
-      };
-
-      setStickyTop1(getOffset(card1Ref.current, target1Ref.current));
-      setStickyTop2(getOffset(card2Ref.current, target2Ref.current));
-      setStickyTop3(getOffset(card3Ref.current, target3Ref.current));
-      setStickyTop4(getOffset(card4Ref.current, target4Ref.current));
-      setStickyTop5(getOffset(card5Ref.current, target5Ref.current));
-    };
-
-    let resizeTimer: NodeJS.Timeout;
-    const debouncedCalculate = () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(calculatePinOffset, 150);
-    };
-
-    calculatePinOffset();
-
-    // Multiple passes for layout stability (handling font loads/images)
-    const timers = [
-      setTimeout(calculatePinOffset, 100),
-      setTimeout(calculatePinOffset, 500),
-      setTimeout(calculatePinOffset, 2000)
-    ];
-
-    window.addEventListener('resize', debouncedCalculate);
-    window.addEventListener('popstate', calculatePinOffset);
-
-    return () => {
-      window.removeEventListener('resize', debouncedCalculate);
-      window.removeEventListener('popstate', calculatePinOffset);
-      timers.forEach(clearTimeout);
-      clearTimeout(resizeTimer);
-    };
   }, []);
 
   if (!mounted) {
@@ -96,15 +31,51 @@ export default function ServicesPage() {
   }
 
   return (
-    <div className="relative w-full bg-[#111111] overflow-x-clip">
+    <>
+      {/* Premium Loading Screen */}
+      <motion.div
+        initial={{ opacity: 1 }}
+        animate={{ opacity: isReady ? 0 : 1 }}
+        transition={{ duration: 0.8, ease: "easeInOut" }}
+        onAnimationComplete={() => {
+          if (isReady) {
+            // Ready reveal
+          }
+        }}
+        className={`fixed inset-0 z-[2000] bg-[#111111] flex flex-col items-center justify-center pointer-events-none ${isReady ? 'hidden' : 'flex'}`}
+      >
+        <motion.img 
+          src="/assets/logo unherd white.svg" 
+          alt="unHeard" 
+          className="h-[40px] mb-8"
+          initial={{ opacity: 0.3, scale: 0.95 }}
+          animate={{ opacity: [0.3, 0.6, 0.3], scale: [0.95, 1, 0.95] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <div className="w-[120px] h-[2px] bg-white/10 rounded-full overflow-hidden relative">
+          <motion.div 
+            className="absolute inset-0 bg-[#0F9393]"
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: loadedCount / totalCritical }}
+            transition={{ duration: 0.3 }}
+            style={{ originX: 0 }}
+          />
+        </div>
+        <p className="mt-4 font-nunito text-white/40 text-[12px] uppercase tracking-[0.2em]">Preparing Clarity</p>
+      </motion.div>
+
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isReady ? 1 : 0 }}
+        transition={{ duration: 0.8 }}
+        className="relative w-full bg-[#111111] overflow-x-clip"
+      >
 
       {/* 
         SECTION 1: HERO & INDIVIDUAL PSYCHOLOGICAL WORK (White Card)
       */}
       <section
-        ref={card1Ref}
-        className="sticky z-10 w-full flex flex-col items-center"
-        style={{ top: `${stickyTop1}px` }}
+        className="sticky top-0 z-10 w-full flex flex-col items-center bg-[#111111]"
       >
         <div className="w-full flex flex-col items-center">
           <div className="relative h-screen max-h-[1000px] w-full max-w-[2560px] flex items-center px-[5vw] lg:px-[10vw]">
@@ -117,6 +88,7 @@ export default function ServicesPage() {
                 className="object-cover opacity-60"
                 priority
                 quality={90}
+                onLoad={handleImageLoad}
               />
             </div>
             <div className="relative z-10 max-w-[800px] flex flex-col gap-8 -mt-[100px]">
@@ -129,7 +101,7 @@ export default function ServicesPage() {
             </div>
           </div>
 
-          <div className="relative w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-[40px] md:rounded-[60px] border border-black/5 overflow-hidden flex flex-col items-center pt-24 md:pt-32 pb-20 px-6 md:px-12 lg:px-24 -mt-[100px] md:-mt-[150px] z-20">
+          <div className="relative w-full max-w-[2440px] bg-[#FEFEFC] rounded-[40px] md:rounded-[60px] border border-black/5 overflow-hidden flex flex-col items-center pt-24 md:pt-32 pb-20 px-6 md:px-12 lg:px-24 -mt-[100px] md:-mt-[150px] z-20 shadow-2xl">
             <div className="absolute top-[10%] right-[5%] w-[400px] h-[400px] bg-[#0F9393]/5 rounded-full blur-[60px] pointer-events-none"></div>
 
             <div className="relative z-10 w-full flex flex-col items-center text-center gap-12 lg:gap-20">
@@ -169,6 +141,8 @@ export default function ServicesPage() {
                         src={item.img}
                         alt={item.title}
                         fill
+                        priority={i < 3}
+                        onLoad={handleImageLoad}
                         sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
                         className="object-cover transition-transform duration-700 group-hover:scale-110"
                       />
@@ -186,7 +160,7 @@ export default function ServicesPage() {
                 ))}
               </div>
 
-              <div ref={target1Ref} className="mt-12 flex flex-row items-center gap-4 md:gap-6">
+              <div className="mt-12 flex flex-row items-center gap-4 md:gap-6">
                 <Button variant="black" className="w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full text-[16px] md:text-[20px] font-bold transition-transform hover:-translate-y-1" onClick={openBookingModal}>Consult for Individuals</Button>
                 <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 -mt-2" />
               </div>
@@ -200,11 +174,9 @@ export default function ServicesPage() {
         SECTION 2: RELATIONSHIP & COUPLE DYNAMICS (Black Card)
       */}
       <section
-        ref={card2Ref}
-        className="sticky z-20 w-full flex justify-center pb-20 -mt-[150px] pointer-events-none"
-        style={{ top: `${stickyTop2}px` }}
+        className="sticky top-0 z-20 w-full flex justify-center pb-20 -mt-[100px]"
       >
-        <div className="relative w-[97vw] max-w-[2440px] bg-[#171612] rounded-[40px] md:rounded-[60px] border border-white/5 overflow-hidden flex flex-col items-center pt-32 pb-40 px-6 md:px-12 lg:px-24 pointer-events-auto">
+        <div className="relative w-full max-w-[2440px] bg-[#171612] rounded-[40px] md:rounded-[60px] border border-white/5 overflow-hidden flex flex-col items-center pt-32 pb-40 px-6 md:px-12 lg:px-24 shadow-2xl">
           <div className="absolute bottom-[-10%] left-[-10%] w-[60%] h-[60%] bg-[#0F9393]/5 rounded-full blur-[80px] pointer-events-none"></div>
 
           <div className="relative z-10 w-full flex flex-col items-center text-center gap-16 md:gap-24">
@@ -239,6 +211,8 @@ export default function ServicesPage() {
                       src={item.img}
                       alt={item.title}
                       fill
+                      priority={i < 2}
+                      onLoad={handleImageLoad}
                       sizes="(max-width: 768px) 100vw, 50vw"
                       className="object-cover transition-transform duration-700 group-hover:scale-110"
                     />
@@ -274,7 +248,7 @@ export default function ServicesPage() {
                 <p className="text-gray-300 font-bold font-nunito text-[16px] md:text-[19px] max-w-[500px]">Our approach to relationships is analytical and solution-focused, designed for long-term psychological sync.</p>
               </div>
               <div className="relative z-10 flex flex-row items-center gap-4 md:gap-6">
-                <Button ref={target2Ref} variant="black" className="bg-white text-black hover:bg-gray-100 rounded-full w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center font-bold text-[16px] md:text-[20px] shrink-0 transition-transform hover:-translate-y-1" onClick={openBookingModal}>Optimize Relationship</Button>
+                <Button variant="black" className="bg-white text-black hover:bg-gray-100 rounded-full w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center font-bold text-[16px] md:text-[20px] shrink-0 transition-transform hover:-translate-y-1" onClick={openBookingModal}>Optimize Relationship</Button>
                 <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 invert -mt-2" />
               </div>
             </div>
@@ -287,11 +261,9 @@ export default function ServicesPage() {
         SECTION 3: ADOLESCENT DEVELOPMENT SUPPORT (Off-white Card)
       */}
       <section
-        ref={card3Ref}
-        className="sticky z-30 w-full flex justify-center pb-20 -mt-[150px] pointer-events-none"
-        style={{ top: `${stickyTop3}px` }}
+        className="sticky top-0 z-30 w-full flex justify-center pb-20 -mt-[100px]"
       >
-        <div className="relative w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-[40px] md:rounded-[60px] border border-black/5 overflow-hidden flex flex-col items-center pt-32 pb-40 px-6 md:px-12 lg:px-24 pointer-events-auto">
+        <div className="relative w-full max-w-[2440px] bg-[#FEFEFC] rounded-[40px] md:rounded-[60px] border border-black/5 overflow-hidden flex flex-col items-center pt-32 pb-40 px-6 md:px-12 lg:px-24 shadow-2xl">
           <div className="absolute top-[20%] left-[-10%] w-[600px] h-[600px] bg-[#0F9393]/5 rounded-full blur-[80px] pointer-events-none"></div>
 
           <div className="relative z-10 w-full flex flex-col items-center text-center gap-16 md:gap-24">
@@ -306,43 +278,17 @@ export default function ServicesPage() {
               </p>
             </div>
 
-            <motion.div
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, margin: "0px 0px -30% 0px" }}
-              variants={{
-                hidden: { opacity: 0 },
-                show: {
-                  opacity: 1,
-                  transition: {
-                    staggerChildren: 0.3
-                  }
-                }
-              }}
-              className="flex flex-col md:flex-row items-center justify-between gap-6 w-full relative"
-            >
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6 w-full relative">
               {['Identity Mapping', 'Impulse Management', 'Social Navigation', 'Academic Flow'].map((title, i, arr) => (
                 <React.Fragment key={i}>
-                  <motion.div
-                    variants={{
-                      hidden: { opacity: 0, y: 20 },
-                      show: { opacity: 1, y: 0 }
-                    }}
-                    className="flex-1 w-full flex flex-col items-center gap-6 group transition-all"
-                  >
+                  <div className="flex-1 w-full flex flex-col items-center gap-6 group transition-all">
                     <div className="w-16 h-16 rounded-full bg-[#0F9393]/10 flex items-center justify-center text-[#0F9393] text-[20px] font-black border-2 border-[#0F9393]/20 group-hover:bg-[#0F9393] group-hover:text-white transition-all duration-500">{i + 1}</div>
                     <h3 className="text-[22px] md:text-[24px] font-bold text-black font-georgia text-center">{title}</h3>
-                  </motion.div>
+                  </div>
 
                   {/* Animated Flow Arrow - Staggered Entry */}
                   {i < arr.length - 1 && (
-                    <motion.div
-                      variants={{
-                        hidden: { opacity: 0, scale: 0.8 },
-                        show: { opacity: 1, scale: 1 }
-                      }}
-                      className="flex items-center justify-center text-[#0F9393] transition-all"
-                    >
+                    <div className="flex items-center justify-center text-[#0F9393] transition-all">
                       <svg
                         width="32"
                         height="32"
@@ -356,18 +302,18 @@ export default function ServicesPage() {
                       >
                         <path d="M5 12h14m-7-7 7 7-7 7" />
                       </svg>
-                    </motion.div>
+                    </div>
                   )}
                 </React.Fragment>
               ))}
-            </motion.div>
+            </div>
 
             <div className="mt-10 flex flex-col items-center gap-10">
               <p className="text-[20px] md:text-[28px] font-extrabold text-[#0F9393] leading-relaxed italic max-w-[900px]">
                 "Support that respects the adolescent's evolving agency while providing the tools for structural well-being."
               </p>
               <div className="flex flex-row items-center gap-4 md:gap-6">
-                <Button ref={target3Ref} variant="black" className="w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full text-[16px] md:text-[20px] font-bold transition-transform hover:-translate-y-1" onClick={openBookingModal}>Support Your Child</Button>
+                <Button variant="black" className="w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full text-[16px] md:text-[20px] font-bold transition-transform hover:-translate-y-1" onClick={openBookingModal}>Support Your Child</Button>
                 <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 -mt-2" />
               </div>
             </div>
@@ -380,11 +326,9 @@ export default function ServicesPage() {
         SECTION 4: INSTITUTIONAL PROGRAMS (Schools & Colleges) (Grey Card)
       */}
       <section
-        ref={card4Ref}
-        className="sticky z-40 w-full flex justify-center pb-20 -mt-[150px] pointer-events-none"
-        style={{ top: `${stickyTop4}px` }}
+        className="sticky top-0 z-40 w-full flex justify-center pb-20 -mt-[100px]"
       >
-        <div className="relative w-[97vw] max-w-[2440px] bg-[#1a1a1a] rounded-[40px] md:rounded-[60px] border border-white/5 overflow-hidden flex flex-col items-center pt-32 pb-40 px-6 md:px-12 lg:px-24 text-white pointer-events-auto">
+        <div className="relative w-full max-w-[2440px] bg-[#1a1a1a] rounded-[40px] md:rounded-[60px] border border-white/5 overflow-hidden flex flex-col items-center pt-32 pb-40 px-6 md:px-12 lg:px-24 text-white shadow-2xl">
           <div className="absolute center-0 w-[800px] h-[800px] bg-white/5 rounded-full blur-[100px] pointer-events-none"></div>
 
           <div className="relative z-10 w-full flex flex-col items-center text-center gap-16 md:gap-24">
@@ -437,7 +381,7 @@ export default function ServicesPage() {
 
             <div className="mt-2 flex flex-col items-center gap-8">
               <div className="flex flex-row items-center gap-4 md:gap-6">
-                <Button ref={target4Ref} variant="black" className="bg-white text-black hover:bg-gray-100 rounded-full w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center font-bold text-[16px] md:text-[20px] transition-transform hover:-translate-y-1" onClick={openBookingModal}>Partner with unHeard.</Button>
+                <Button variant="black" className="bg-white text-black hover:bg-gray-100 rounded-full w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center font-bold text-[16px] md:text-[20px] transition-transform hover:-translate-y-1" onClick={openBookingModal}>Partner with unHeard.</Button>
                 <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 invert -mt-2" />
               </div>
             </div>
@@ -450,11 +394,9 @@ export default function ServicesPage() {
         SECTION 5: CORPORATE MENTAL PERFORMANCE (Pure White/Teal Card)
       */}
       <section
-        ref={card5Ref}
-        className="sticky z-50 w-full flex justify-center pb-20 -mt-[150px] pointer-events-none"
-        style={{ top: `${stickyTop5}px` }}
+        className="sticky top-0 z-50 w-full flex justify-center pb-20 -mt-[100px]"
       >
-        <div className="relative w-[97vw] max-w-[2440px] bg-white rounded-[40px] md:rounded-[60px] border border-black/5 overflow-hidden flex flex-col items-center pt-32 pb-40 px-6 md:px-12 lg:px-24 pointer-events-auto">
+        <div className="relative w-full max-w-[2440px] bg-white rounded-[40px] md:rounded-[60px] border border-black/5 overflow-hidden flex flex-col items-center pt-32 pb-40 px-6 md:px-12 lg:px-24 shadow-2xl">
 
           <div className="absolute top-0 left-0 w-full h-[150px] bg-gradient-to-b from-[#0F9393]/10 to-transparent"></div>
 
@@ -513,7 +455,7 @@ export default function ServicesPage() {
                   <p className="text-gray-500 font-bold text-[18px] md:text-[24px] font-nunito italic text-center">Unleash the cognitive potential of your organization.</p>
                 </div>
 
-                <div ref={target5Ref} className="flex flex-col items-center gap-6 md:flex-row md:gap-12">
+                <div className="flex flex-col items-center gap-6 md:flex-row md:gap-12">
                   <div className="relative flex flex-row items-center gap-4 md:gap-6">
                     <Button variant="black" className="w-[280px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full text-[16px] md:text-[20px] font-extrabold transition-transform hover:-translate-y-1" onClick={openBookingModal}>Book for Organization</Button>
                     <div className="absolute left-full ml-4 md:relative md:ml-0">
@@ -556,7 +498,7 @@ export default function ServicesPage() {
         </div>
       </section>
 
-
-    </div>
+      </motion.div>
+    </>
   );
 }
