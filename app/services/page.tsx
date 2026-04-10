@@ -108,7 +108,7 @@ export default function ServicesPage() {
       >
         <div className="w-full flex flex-col items-center">
           <div className="relative h-screen max-h-[1000px] w-full max-w-[2560px] flex items-center px-[5vw] lg:px-[10vw]">
-            <div className="absolute inset-0 z-0 text-white" style={{ position: 'absolute' }}>
+            <div className="absolute inset-0 z-0 text-white">
               <Image
                 src="/assets/servicesland.webp"
                 alt="Services Background"
@@ -169,6 +169,7 @@ export default function ServicesPage() {
                         src={item.img}
                         alt={item.title}
                         fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
                         className="object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                       {/* Dark gradient overlay from left to right */}
@@ -238,6 +239,7 @@ export default function ServicesPage() {
                       src={item.img}
                       alt={item.title}
                       fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
                       className="object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     {/* Dark gradient overlay from left to right */}
@@ -261,6 +263,7 @@ export default function ServicesPage() {
                   src="/assets/service/6.webp"
                   alt="Beyond Conversation"
                   fill
+                  sizes="100vw"
                   className="object-cover object-top transition-transform duration-1000 group-hover:scale-110 opacity-60"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent"></div>
@@ -416,6 +419,7 @@ export default function ServicesPage() {
                       src={item.img}
                       alt={item.title}
                       fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
                       className="object-cover transition-transform duration-1000 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/50 to-transparent"></div>
@@ -487,6 +491,7 @@ export default function ServicesPage() {
                         src={item.img}
                         alt={item.title}
                         fill
+                        sizes="(max-width: 768px) 100vw, 50vw"
                         className="object-cover transition-transform duration-1000 group-hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/40 to-transparent"></div>
