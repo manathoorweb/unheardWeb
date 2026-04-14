@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Button from './ui/Button';
 import { useBooking } from '@/components/BookingContext';
 import AnimatedCounter from './ui/AnimatedCounter';
-import { faqData, testimonialData, blogData, understandingContent } from '@/lib/data/landing';
+import { faqData, testimonialData, blogData, understandingContent, specialtiesData } from '@/lib/data/landing';
 import { FeatureCard } from '@/components/landing/FeatureCard';
 import { FAQAccordion } from '@/components/landing/FAQAccordion';
 import { TestimonialCarousel } from '@/components/landing/TestimonialCarousel';
@@ -245,7 +245,7 @@ export const LandingStack = () => {
               </div>
             </div>
           </div>
-          <div className="h-[200px] md:h-[250px] w-full shrink-0" />
+          <div className="h-[100px] md:h-[150px] w-full shrink-0" />
         </div>
       </section>
 
@@ -255,7 +255,7 @@ export const LandingStack = () => {
       <section 
         ref={card2Ref} 
         data-section-id="2"
-        className="sticky z-20 w-full flex justify-center pb-20 -mt-[150px] pointer-events-none will-change-[top,transform] transform-gpu contain-paint" 
+        className="sticky z-20 w-full flex justify-center pb-20 -mt-[330px] pointer-events-none will-change-[top,transform] transform-gpu contain-paint" 
         style={{ 
           top: `${stickyTop2}px`,
           minHeight: sectionHeights['2'] ? `${sectionHeights['2']}px` : 'auto'
@@ -349,7 +349,7 @@ export const LandingStack = () => {
                       className="w-full sm:w-auto min-w-[300px] md:min-w-[340px] h-[64px] md:h-[72px] !rounded-full flex items-center justify-between pl-10 pr-2 shadow-2xl transition-all group overflow-hidden"
                       onClick={openBookingModal}
                     >
-                      <span className="font-nunito font-black text-[15px] md:text-[17px] uppercase tracking-[0.2em]">
+                      <span className="font-nunito font-black text-[15px] md:text-[17px]">
                         Book a free demo
                       </span>
                       <div className="w-12 h-12 md:w-14 md:h-14 bg-black rounded-full flex items-center justify-center transition-transform duration-500 group-hover:rotate-45 shrink-0">
@@ -439,33 +439,127 @@ export const LandingStack = () => {
             <h2 className="font-georgia text-[36px] md:text-[48px] font-bold leading-tight text-black mb-8">Voices Finally Heard, <br /> <span className="text-[#0F9393]">Lives Transformed</span></h2>
             <div ref={lastRef3} className="w-full"><TestimonialCarousel testimonials={testimonialData} /></div>
           </div>
-          <div className="h-[200px] md:h-[250px] w-full shrink-0" />
+         
         </div>
       </section>
 
       {/* 
-        FOOTER BANNER: Unheard Truth
+        FOOTER BANNER: Integrated Expertise & Blog
       */}
-      <section className="-mt-[130px] relative z-40 w-[97vw] mx-auto bg-black rounded-t-[60px] md:rounded-t-[80px] pt-32 pb-40 flex flex-col items-center border-t border-white/5 overflow-hidden">
-        <div className="absolute top-0 right-0 w-[40vw] h-[40vw] bg-[#0F9393]/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
-        <div className="relative z-10 w-full max-w-[1440px] flex flex-col items-center px-6">
-          <div className="text-center mb-20 text-white">
-            <h2 className="font-georgia text-[40px] md:text-[64px] font-bold leading-tight flex flex-col items-center text-center">
-              <span className="text-[#0F9393]">Unheard Truth:</span>
-              <span>Discover, Reflect, and Grow</span>
+      <section className="-mt-[130px] relative z-40 w-[97vw] mx-auto bg-[#0a0a0a] rounded-t-[60px] md:rounded-t-[80px] pt-40 pb-40 flex flex-col items-center border-t border-white/5 overflow-hidden">
+        <div className="absolute top-0 right-0 w-[40vw] h-[40vw] bg-[#0F9393]/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
+        
+        <div className="relative z-10 w-full flex flex-col items-center">
+          
+          {/* 1. Wide Visual Wall (Responsive Grids) */}
+          <div className="w-full flex justify-center mb-24 overflow-visible pointer-events-auto px-4">
+            
+            {/* Large Desktop: 7 Columns (11 Cards: 2-2-1-1-1-2-2) */}
+            <div className="hidden lg:flex items-start gap-5 w-full max-w-[1400px] justify-center">
+              {[
+                { count: 2, offset: 'mt-32', indices: [0, 1] },
+                { count: 2, offset: 'mt-16', indices: [2, 3] },
+                { count: 1, offset: 'mt-24', indices: [4] },
+                { count: 1, offset: 'mt-0', indices: [5] }, // Center Apex
+                { count: 1, offset: 'mt-24', indices: [6] },
+                { count: 2, offset: 'mt-16', indices: [7, 8] },
+                { count: 2, offset: 'mt-32', indices: [9, 10] }
+              ].map((col, colIdx) => (
+                <div key={colIdx} className={`flex flex-col gap-5 flex-1 max-w-[190px] ${col.offset} transition-all duration-700`}>
+                  {col.indices.map((dataIdx) => (
+                    <div 
+                      key={dataIdx} 
+                      className="relative aspect-[3/4] rounded-[30px] overflow-hidden border border-white/10 shadow-2xl transition-all duration-700 group hover:-translate-y-2"
+                    >
+                      <Image
+                        src={specialtiesData[dataIdx].image}
+                        alt="Expertise"
+                        fill
+                        className="object-cover opacity-70 group-hover:opacity-100 transition-opacity duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent flex items-bottom p-6 h-full">
+                        <p className="text-white font-nunito text-[16px] font-bold leading-tight self-end">
+                          {specialtiesData[dataIdx].text}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+
+            {/* Mobile & Tablet: 3 Columns (8 Cards: 3-2-3) */}
+            <div className="flex lg:hidden items-start gap-3 sm:gap-6 w-full max-w-[800px] justify-center">
+              {[
+                { count: 3, offset: 'mt-12', indices: [0, 1, 2] },
+                { count: 2, offset: 'mt-0', indices: [3, 4] },
+                { count: 3, offset: 'mt-12', indices: [5, 6, 7] }
+              ].map((col, colIdx) => (
+                <div key={colIdx} className={`flex flex-col gap-3 sm:gap-5 flex-1 ${col.offset}`}>
+                  {col.indices.map((dataIdx) => (
+                    <div 
+                      key={dataIdx} 
+                      className="relative aspect-[3/4] rounded-2xl md:rounded-[40px] overflow-hidden border border-white/10 shadow-xl group"
+                    >
+                      <Image
+                        src={specialtiesData[dataIdx].image}
+                        alt="Expertise"
+                        fill
+                        className="object-cover opacity-80"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent flex items-end p-4 sm:p-8 h-full">
+                        <p className="text-white font-nunito text-[13px] sm:text-[18px] md:text-[22px] font-bold leading-tight">
+                          {specialtiesData[dataIdx].text}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 2. Centralized Expertise Text & Hero-Style CTA */}
+          <div className="text-center mb-32 px-6 max-w-[1000px]">
+            <p className="font-georgia italic text-[22px] md:text-[32px] text-[#0F9393] mb-6 tracking-tight">
+              Therapy for when your mind doesn’t switch off.
+            </p>
+            <h2 className="font-georgia text-[40px] md:text-[64px] font-bold leading-[1.05] text-white mb-10">
+              Comprehensive support for <br /> <span className="opacity-80">every mental landscape.</span>
             </h2>
-          </div>
-          <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-            {blogData.map((blog, idx) => <BlogCard key={idx} blog={blog} />)}
-          </div>
-          <div className="mt-20">
-            <button className="group flex items-center gap-4 bg-white p-1.5 pl-8 pr-2 rounded-full border-2 border-white hover:bg-gray-100 transition-all shadow-xl">
-              <span className="text-black font-nunito font-black text-[18px]">View all</span>
-              <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center transition-transform group-hover:translate-x-1">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-7-7 7 7-7 7" /></svg>
+            <p className="font-nunito text-[18px] md:text-[24px] text-white/40 mb-16 max-w-[800px] mx-auto leading-relaxed">
+              Professional care tailored to identify, understand, and restructure thought, emotion, and behavior.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 md:gap-8">
+              <Button 
+                variant="white" 
+                className="w-full sm:w-auto min-w-[280px] md:min-w-[340px] h-[64px] md:h-[76px] text-[18px] md:text-[20px] px-10 md:px-14 shadow-2xl transition-transform hover:scale-[1.02]" 
+                onClick={openBookingModal}
+              >
+                Begin with understanding.
+              </Button>
+              <div className="flex items-center gap-3">
+                <img src="/assets/Group 54.svg" alt="Try now!" className="h-[45px] md:h-[60px] w-auto -mt-2 opacity-90" />
               </div>
-            </button>
+            </div>
           </div>
+
+          <div className="w-full h-px bg-white/5 mb-40" />
+
+          {/* 3. Blog Section */}
+          <div className="w-full max-w-[1440px] px-6">
+            <div className="text-center mb-20 text-white">
+              <h2 className="font-georgia text-[40px] md:text-[64px] font-bold leading-tight flex flex-col items-center">
+                <span className="text-[#0F9393]">Unheard Truth:</span>
+                <span>Discover, Reflect, and Grow</span>
+              </h2>
+            </div>
+            <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+              {blogData.map((blog, idx) => <BlogCard key={idx} blog={blog} />)}
+            </div>
+          </div>
+
         </div>
       </section>
     </div>

@@ -75,3 +75,21 @@ export const understandingContent = [
     text: "This is where thought, emotion, and behavior are understood in relation, not isolation.\n\nYou do not have to simplify your experience to be understood."
   }
 ];
+
+export const specialtiesData = [
+  { id: 1, text: "Anxiety disorders, constant worry, panic episodes", image: "/assets/service/about/2.webp" },
+  { id: 2, text: "Overthinking and intrusive thoughts", image: "/assets/service/about/2.webp" },
+  { id: 3, text: "Depression, low mood, emotional numbness", image: "/assets/service/about/2.webp" },
+  { id: 4, text: "Stress, burnout, and work-related mental fatigue", image: "/assets/service/about/2.webp" },
+  { id: 5, text: "Relationship issues and couple conflicts", image: "/assets/service/about/2.webp" },
+  { id: 6, text: "Self-esteem, identity, and confidence concerns", image: "/assets/service/about/2.webp" },
+  { id: 7, text: "Trauma, past experiences, and emotional triggers", image: "/assets/service/about/2.webp" },
+  { id: 8, text: "Adolescent mental health and behavioural concerns", image: "/assets/service/about/2.webp" },
+  { id: 9, text: "Family conflict and interpersonal stress", image: "/assets/service/about/2.webp" },
+  { id: 10, text: "Life transitions, decision-making, and feeling stuck", image: "/assets/service/about/2.webp" },
+  { id: 11, text: "Obsessive-Compulsive Disorder (OCD) patterns", image: "/assets/service/about/2.webp" },
+  { id: 12, text: "ADHD, focus, and concentration challenges", image: "/assets/service/about/2.webp" },
+  { id: 13, text: "Grief, loss, and bereavement support", image: "/assets/service/about/2.webp" }
+];
+
+
