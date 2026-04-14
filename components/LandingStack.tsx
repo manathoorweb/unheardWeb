@@ -13,6 +13,7 @@ import { BlogCard } from '@/components/landing/BlogCard';
 
 export const LandingStack = () => {
   const { openBookingModal } = useBooking();
+  const [isAnxietyDetailsOpen, setIsAnxietyDetailsOpen] = useState(false);
   const card1Ref = React.useRef<HTMLElement>(null);
   const cta1Ref = React.useRef<HTMLDivElement>(null);
   const card2Ref = React.useRef<HTMLElement>(null);
@@ -26,8 +27,28 @@ export const LandingStack = () => {
   const [stickyTop1, setStickyTop1] = React.useState(0);
   const [stickyTop2, setStickyTop2] = React.useState(0);
   const [stickyTop3, setStickyTop3] = React.useState(0);
+  const [vh, setVh] = React.useState(0);
+  const [sectionHeights, setSectionHeights] = React.useState<Record<string, number>>({});
 
   React.useEffect(() => {
+    setVh(window.innerHeight);
+
+    // HEIGHT STABILIZATION
+    const observer = new ResizeObserver((entries) => {
+      setSectionHeights(prev => {
+        const next = { ...prev };
+        entries.forEach(entry => {
+          const id = entry.target.getAttribute('data-section-id');
+          if (id) next[id] = entry.contentRect.height;
+        });
+        return next;
+      });
+    });
+
+    [card1Ref, card2Ref, card3Ref].forEach(ref => {
+      if (ref.current) observer.observe(ref.current);
+    });
+
     const calculatePinOffset = () => {
       const getOffset = (card: HTMLElement | null, cta: HTMLElement | null) => {
         if (!card || !cta) return 0;
@@ -44,8 +65,8 @@ export const LandingStack = () => {
         const ctaOffsetInCard = ctaTop - cardTop;
         const ctaHeight = cta.offsetHeight;
 
-        // We want the CTA center to be at 50% of the viewport
-        const targetViewportY = window.innerHeight * 0.4;
+        // We want the CTA center to be at 40% of the viewport
+        const targetViewportY = (vh || window.innerHeight) * 0.4;
         const ctaCenterOffset = ctaOffsetInCard + (ctaHeight / 2);
 
         return Math.min(targetViewportY - ctaCenterOffset, 0);
@@ -82,6 +103,7 @@ export const LandingStack = () => {
       window.removeEventListener('popstate', calculatePinOffset);
       timers.forEach(clearTimeout);
       clearTimeout(resizeTimer);
+      observer.disconnect();
     };
   }, []);
 
@@ -90,10 +112,18 @@ export const LandingStack = () => {
       {/* 
         CARD 1: Hero + White Card 
       */}
-      <section ref={card1Ref} className="sticky z-10 w-full" style={{ top: `${stickyTop1}px` }}>
+      <section 
+        ref={card1Ref} 
+        data-section-id="1"
+        className="sticky z-10 w-full will-change-[top,transform] transform-gpu contain-paint" 
+        style={{ 
+          top: `${stickyTop1}px`,
+          minHeight: sectionHeights['1'] ? `${sectionHeights['1']}px` : 'auto'
+        }}
+      >
         <div className="w-full flex flex-col items-center">
           <div className="relative h-screen max-h-[1000px] w-full max-w-[2560px] flex items-center px-[5vw] lg:px-[10vw]">
-            <div className="absolute inset-0 z-0 text-white" style={{ position: 'absolute' }}>
+            <div className="absolute inset-0 z-0 text-white bg-[#0a0a0a]">
               <Image
                 src="/assets/landingimage.webp"
                 alt="Hero Background"
@@ -106,14 +136,14 @@ export const LandingStack = () => {
             </div>
             <div className="relative z-10 max-w-[800px] flex flex-col gap-8">
               <h1 className="text-[40px] md:text-[50px] font-bold leading-[1.1] tracking-[-0.02em] text-white font-georgia">
-                Clarity, where your inner world finally makes sense.
+                When your mind feels louder than your life, clarity is non-negotiable.
               </h1>
               <div className="flex flex-col gap-4 text-white">
                 <p className="text-[18px] md:text-[22px] font-bold leading-[1.4] tracking-[-0.02em] max-w-[733px] font-nunito bg-gradient-to-r from-white to-[#FFF7E9] bg-clip-text text-transparent">
-                  Professional psychological counseling that listens, understands context and responds with clarity.
+                  At unHeard., we don’t reduce people to symptoms or labels because not everything you feel needs ‘fixing’.
                 </p>
                 <p className="text-[18px] md:text-[22px] font-bold leading-[1.4] tracking-[-0.02em] font-nunito italic opacity-80">
-                  Not everything you experience is easy to articulate. That does not make it complicated, only unexplored.
+                  Unheard. is an online psychological counseling that identifies, understands and restructures thought, emotion and behavior in relation, and not in isolation.
                 </p>
               </div>
               <div className="flex flex-row items-center gap-4 md:gap-6 mt-4">
@@ -125,47 +155,112 @@ export const LandingStack = () => {
 
           <div className="w-full px-4 flex justify-center pb-20 -mt-[150px] md:-mt-[200px] relative z-10">
             <div className="w-[97vw] max-w-[2400px] bg-[#FEFEFC] rounded-[40px] pt-16 pb-[100px] md:pb-[150px] px-6 md:px-12 lg:px-16 flex flex-col items-center shadow-xl">
-              <div className="w-full space-y-8">
-                {understandingContent.map((row, idx) => (
-                  <div key={idx} className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 w-full items-center">
-                    <div className="col-span-1 lg:col-span-7 flex flex-row justify-center lg:justify-end gap-6 md:gap-8 w-full">
-                      {row.images.map((img, i) => (
-                        <div key={i} className="relative w-full max-w-[260px] lg:max-w-[340px] aspect-[14/13] rounded-[22px] overflow-hidden group border border-black/5">
-                          <img src={img.src} alt={img.label} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-3 md:p-4">
-                            <span className="text-white font-nunito text-[12px] md:text-[16px] font-bold opacity-90 leading-tight">{img.label}</span>
-                          </div>
-                        </div>
-                      ))}
+              {/* Centered Title */}
+              <div className="w-full flex flex-col items-center text-center mb-16">
+                <h2 className="font-georgia text-[36px] md:text-[52px] font-bold leading-tight text-black max-w-[900px]">
+                  There’s a reason it’s called Unheard.
+                </h2>
+              </div>
+
+              {/* 2x2 Grid + Single Big Card Layout */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+                
+                {/* 2x2 Cluster (Left 2 columns on LG) */}
+                <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Card 1a: Image */}
+                  <div className="relative rounded-[30px] overflow-hidden border border-black/10 aspect-square group">
+                    <img src="/assets/section_2_1.webp" alt="Philosophy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-black/20 flex items-end p-8">
+                      <span className="text-white font-nunito text-[14px] font-bold tracking-widest uppercase border border-white/20 px-4 py-2 rounded-full backdrop-blur-sm">Philosophy</span>
                     </div>
-                    <div className="col-span-1 lg:col-span-5 flex justify-center lg:justify-start w-full">
-                      <div className="w-full max-w-[500px]">
-                        <div className="font-nunito text-[16px] md:text-[18px] xl:text-[20px] font-bold leading-relaxed text-black/80 whitespace-pre-line text-justify">
-                          {row.text}
-                        </div> 
+                  </div>
+
+                  {/* Card 1b: Philosophy Text */}
+                  <div className="rounded-[30px] border border-black/10 p-8 md:p-10 flex flex-col justify-between bg-white hover:shadow-lg transition-all aspect-square">
+                    <span className="text-[20px] font-bold text-black/20 font-nunito">01</span>
+                    <p className="font-nunito text-[18px] xl:text-[20px] font-bold text-black/80 leading-relaxed">
+                      unHeard., isn’t built on quick fixes or motivational language.
+                    </p>
+                  </div>
+
+                  {/* Card 3: Listening Text */}
+                  <div className="rounded-[30px] border border-black/10 p-8 md:p-10 flex flex-col justify-between bg-[#F8F8F6] hover:shadow-lg transition-all aspect-square">
+                    <span className="text-[20px] font-bold text-black/20 font-nunito">02</span>
+                    <div className="space-y-4">
+                      <p className="font-nunito text-[18px] xl:text-[20px] font-bold text-black/80 leading-relaxed">
+                        It’s built on careful listening. On trained observation. On understanding before intervention.
+                      </p>
+                      <p className="font-nunito text-[15px] xl:text-[17px] font-semibold text-black/50 leading-relaxed">
+                        Because a lot of what people carry… never quite gets said properly.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Card 4: Observation Image */}
+                  <div className="relative rounded-[30px] overflow-hidden border border-black/10 aspect-square group">
+                    <img src="/assets/section_2_2.webp" alt="Observation" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-black/40 flex flex-col justify-end p-8">
+                      <p className="text-white font-nunito text-[16px] md:text-[18px] font-bold leading-relaxed">
+                        We pay attention to what’s said. And also to what’s avoided, repeated, or left unfinished.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card 2: Single Big Card (Right column on LG) */}
+                <div className="lg:col-span-1 rounded-[30px] border border-black/10 p-8 md:p-10 flex flex-col justify-between bg-white hover:shadow-xl transition-all h-full min-h-[500px]">
+                  <div>
+                    <span className="text-[24px] font-bold text-[#0F9393] font-nunito">03</span>
+                    <div className="mt-10 space-y-8">
+                      <p className="font-nunito text-[20px] xl:text-[22px] font-bold text-black/90 leading-tight">
+                        Our work is guided by qualified psychologists and trained therapists offering online mental health support that is confidential, ethical, structural, culturally aware, and grounded in evidence-based care.
+                      </p>
+                      <p className="font-nunito text-[18px] xl:text-[20px] font-bold text-[#0F9393] leading-relaxed italic border-l-4 border-[#0F9393]/30 pl-6">
+                        This is not advice. It’s not venting. It’s therapy that actually engages with how your mind works.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-12 pt-10 border-t border-black/5">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-full bg-[#0F9393]/10 flex items-center justify-center">
+                        <svg className="w-6 h-6 text-[#0F9393]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04kM12 20.944a11.955 11.955 0 01-8.618-3.04A12.02 12.02 0 013 9c0-3.314 2.686-6 6-6s6 2.686 6 6a6 6 0 01-3 5.196" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="font-nunito text-[16px] font-bold text-black/80">Psychological Care</p>
+                        <p className="font-nunito text-[14px] text-black/40">Evidence-based Support</p>
                       </div>
                     </div>
                   </div>
-                ))}
+                </div>
               </div>
-              <div className="mt-12 lg:mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 w-full items-center">
-                <div className="hidden lg:block lg:col-span-7"></div>
-                <div className="col-span-1 lg:col-span-5 flex justify-center lg:justify-start w-full">
-                  <div ref={cta1Ref} className="w-full max-w-[500px] flex flex-row items-center justify-center lg:justify-start gap-4 md:gap-6">
-                    <Button variant="black" className="w-[250px] sm:w-[260px] md:w-[300px] h-[54px] md:h-[67px] text-[16px] md:text-[18px] px-6 md:px-12 whitespace-nowrap" onClick={openBookingModal}>Begin with understanding.</Button>
-                    <img src="/assets/Group 54.svg" alt="Try now!" className="h-[35px] md:h-[50px] w-auto invert -mt-2" />
-                  </div>
+
+              {/* Centered CTA */}
+              <div className="mt-20 w-full flex flex-col items-center">
+                <div ref={cta1Ref} className="flex flex-row items-center justify-center gap-4 md:gap-6">
+                  <Button variant="black" className="w-[280px] md:w-[320px] h-[60px] md:h-[72px] text-[18px] md:text-[20px] px-8 md:px-12 whitespace-nowrap" onClick={openBookingModal}>Begin with understanding.</Button>
+                  <img src="/assets/Group 54.svg" alt="Try now!" className="h-[40px] md:h-[55px] w-auto invert -mt-3" />
                 </div>
               </div>
             </div>
           </div>
+          <div className="h-[200px] md:h-[250px] w-full shrink-0" />
         </div>
       </section>
 
       {/* 
         CARD 2: Features (Black Card)
       */}
-      <section ref={card2Ref} className="sticky z-20 w-full flex justify-center pb-20 -mt-[150px] pointer-events-none" style={{ top: `${stickyTop2}px` }}>
+      <section 
+        ref={card2Ref} 
+        data-section-id="2"
+        className="sticky z-20 w-full flex justify-center pb-20 -mt-[150px] pointer-events-none will-change-[top,transform] transform-gpu contain-paint" 
+        style={{ 
+          top: `${stickyTop2}px`,
+          minHeight: sectionHeights['2'] ? `${sectionHeights['2']}px` : 'auto'
+        }}
+      >
         <div className="w-[97vw] max-w-[2440px] bg-[#171612] rounded-t-[40px] rounded-b-[40px] pt-32 pb-24 px-6 md:px-12 lg:px-24 flex flex-col items-center shadow-2xl pointer-events-auto">
           <div className="text-center mb-20 max-w-[900px]">
             <h2 className="font-georgia text-[32px] md:text-[52px] font-bold leading-tight text-white mb-6">
@@ -199,26 +294,92 @@ export const LandingStack = () => {
             />
           </div>
 
-          <div className="mt-24 md:mt-40 w-full max-w-[1440px] flex flex-col items-center">
-            <div className="relative w-full rounded-[24px] overflow-hidden bg-[#131210]" style={{ position: 'relative' }}>
-              <picture className="w-full">
-                <source media="(min-width: 768px)" srcSet="/assets/freeDekstop.webp" />
-                <img src="/assets/freeMobile.webp" alt="Free Demo Banner Background" className="w-full h-auto object-cover" />
-              </picture>
-              <div className="hidden md:flex absolute inset-0 flex-col justify-center pl-12 lg:pl-[8%] w-[70%] lg:w-[60%] z-10">
-                <h3 className="font-georgia font-bold text-[28px] lg:text-[40px] xl:text-[46px] leading-[1.1] text-white tracking-[-0.02em]">
-                  Thinking of the<br />effectiveness<br />of online consultation
-                </h3>
-                <div className="mt-6 flex flex-row items-center">
-                  <button ref={cta2Ref} className="bg-[#E5E5E5] hover:bg-white text-black font-nunito font-bold text-[16px] lg:text-[18px] px-6 lg:px-8 py-2.5 lg:py-3 rounded-full transition-colors whitespace-nowrap" onClick={openBookingModal}>Book a free demo</button>
-                  <img src="/assets/Group 54.svg" alt="Arrow" className="h-[30px] lg:h-[40px] w-auto brightness-0 invert object-contain ml-2" />
+          <div className="mt-24 md:mt-40 w-full max-w-[1440px] px-4 md:px-0">
+            <div className="relative w-full rounded-[40px] overflow-hidden bg-[#111111] border border-white/5 shadow-2xl">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center p-8 md:p-12 lg:p-16">
+                {/* Left Content */}
+                <div className="flex flex-col items-start text-left z-10 max-w-[650px]">
+                  <h3 className="font-georgia font-bold text-[32px] md:text-[44px] lg:text-[52px] leading-[1.1] text-white tracking-[-0.02em] mb-6">
+                    Therapy for when your mind doesn’t switch off.
+                  </h3>
+                  <div className="space-y-4">
+                    <p className="font-nunito text-[18px] md:text-[20px] text-white/80 leading-relaxed">
+                      Anxiety doesn’t always look dramatic. It’s just constant. Racing thoughts. Restlessness. A sense that something is wrong.
+                    </p>
+                    <p className="font-nunito text-[18px] md:text-[20px] text-white/60 leading-relaxed italic">
+                      You don’t need to calm down. You need to understand what’s happening.
+                    </p>
+                  </div>
+
+                  {/* Read More Section */}
+                  <div className="mt-6 mb-10 w-full">
+                    <button 
+                      onClick={() => setIsAnxietyDetailsOpen(!isAnxietyDetailsOpen)}
+                      className="flex items-center gap-2 text-white/40 hover:text-white font-nunito font-bold text-[14px] uppercase tracking-widest transition-colors mb-6"
+                    >
+                      {isAnxietyDetailsOpen ? 'Show less' : 'Read more'}
+                      <svg className={`w-4 h-4 transition-transform duration-300 ${isAnxietyDetailsOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+
+                    {isAnxietyDetailsOpen && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3 py-6 border-t border-white/5 animate-in fade-in slide-in-from-top-4 duration-500">
+                        <p className="col-span-full text-white/60 font-nunito font-bold text-[14px] uppercase tracking-widest mb-2">We help with:</p>
+                        {[
+                          'Generalised anxiety',
+                          'Panic attacks',
+                          'Social anxiety',
+                          'Health anxiety',
+                          'Stress overload',
+                          'Sleep issues linked to anxiety'
+                        ].map((item, i) => (
+                          <div key={i} className="flex items-center gap-3">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#0F9393]" />
+                            <span className="text-white/80 font-nunito text-[16px] md:text-[18px]">{item}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-center gap-6 mt-4">
+                    <Button 
+                      variant="white" 
+                      className="w-full sm:w-auto min-w-[300px] md:min-w-[340px] h-[64px] md:h-[72px] !rounded-full flex items-center justify-between pl-10 pr-2 shadow-2xl transition-all group overflow-hidden"
+                      onClick={openBookingModal}
+                    >
+                      <span className="font-nunito font-black text-[15px] md:text-[17px] uppercase tracking-[0.2em]">
+                        Book a free demo
+                      </span>
+                      <div className="w-12 h-12 md:w-14 md:h-14 bg-black rounded-full flex items-center justify-center transition-transform duration-500 group-hover:rotate-45 shrink-0">
+                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="7" y1="17" x2="17" y2="7"></line>
+                            <polyline points="7 7 17 7 17 17"></polyline>
+                         </svg>
+                      </div>
+                    </Button>
+
+                    <Button 
+                      variant="white" 
+                      className="w-full sm:w-[250px] md:w-[320px] h-[64px] md:h-[72px] !rounded-full text-[15px] md:text-[17px] px-8 md:px-10 whitespace-nowrap shadow-xl"
+                      onClick={openBookingModal}
+                    >
+                      Start anxiety therapy
+                    </Button>
+                  </div>
                 </div>
-              </div>
-              <div className="md:hidden absolute inset-0 p-6 flex flex-col justify-center z-10 items-center bg-black/20">
-                <h3 className="font-georgia font-bold text-[22px] sm:text-[28px] leading-[1.2] text-white tracking-[-0.02em] text-center mb-4 drop-shadow-lg">Thinking of the effects of online consultation</h3>
-                <div className="flex flex-row items-center gap-4">
-                  <Button ref={cta2MobileRef} variant="black" className="w-[180px] h-[50px] text-[15px] px-4 font-bold rounded-[15px] shadow-2xl border border-white/20" onClick={openBookingModal}>Book a free demo</Button>
-                  <img src="/assets/Group 54.svg" alt="Arrow" className="h-[30px] md:h-[40px] w-auto brightness-0 invert rotate-[-10deg]" />
+
+                {/* Right Image */}
+                <div className="relative w-full aspect-[4/3] lg:aspect-auto lg:h-[500px] rounded-[30px] overflow-hidden shadow-2xl">
+                  <Image
+                    src="/assets/service/about/1.webp"
+                    alt="Anxiety Therapy"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 700px"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                 </div>
               </div>
             </div>
@@ -238,18 +399,26 @@ export const LandingStack = () => {
               <span className="font-nunito font-semibold text-[20px] md:text-[24px] text-white mt-1">Hours of Therapy</span>
             </div>
           </div>
-          <div className="h-[70px] md:h-[70px] w-full" />
+          <div className="h-[200px] md:h-[250px] w-full shrink-0" />
         </div>
       </section>
 
-      <section ref={card3Ref} className="sticky z-30 w-full flex justify-center -mt-[170px] pointer-events-none" style={{ top: `${stickyTop3}px` }}>
+      <section 
+        ref={card3Ref} 
+        data-section-id="3"
+        className="sticky z-30 w-full flex justify-center -mt-[170px] pointer-events-none will-change-[top,transform] transform-gpu contain-paint" 
+        style={{ 
+          top: `${stickyTop3}px`,
+          minHeight: sectionHeights['3'] ? `${sectionHeights['3']}px` : 'auto'
+        }}
+      >
         <div className="w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-t-[40px] rounded-b-[40px] pt-24 md:pt-32 pb-24 px-6 md:px-12 lg:px-24 flex flex-col items-center shadow-[0_-20px_50px_rgba(0,0,0,0.3)] pointer-events-auto">
           <div className="text-center mb-16 max-w-[900px]">
             <h2 className="font-georgia text-[36px] md:text-[48px] font-bold leading-tight text-black">Your Questions, Answered <br /> <span className="text-[#0F9393]">At Unheard.</span></h2>
           </div>
           <div className="flex flex-col lg:flex-row w-full max-w-[1200px] gap-12 lg:gap-20 items-stretch">
             <div className="w-full lg:w-1/2 flex justify-center lg:justify-end shrink-0">
-              <div className="relative w-full max-w-[450px] aspect-[4/5] rounded-[30px] overflow-hidden shadow-lg" style={{ position: 'relative' }}>
+              <div className="relative w-full max-w-[450px] aspect-[4/5] rounded-[30px] overflow-hidden shadow-lg bg-gray-200">
                 <Image
                   src="/assets/section_2_2.webp"
                   alt="FAQ Preview"
@@ -270,7 +439,7 @@ export const LandingStack = () => {
             <h2 className="font-georgia text-[36px] md:text-[48px] font-bold leading-tight text-black mb-8">Voices Finally Heard, <br /> <span className="text-[#0F9393]">Lives Transformed</span></h2>
             <div ref={lastRef3} className="w-full"><TestimonialCarousel testimonials={testimonialData} /></div>
           </div>
-          <div className="h-[100px] md:h-[150px] w-full" />
+          <div className="h-[200px] md:h-[250px] w-full shrink-0" />
         </div>
       </section>
 

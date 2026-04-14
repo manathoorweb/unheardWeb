@@ -24,9 +24,29 @@ export default function AboutPage() {
   const [stickyTop2, setStickyTop2] = useState(0);
   const [stickyTop3, setStickyTop3] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [vh, setVh] = useState(0);
+  const [sectionHeights, setSectionHeights] = useState<Record<string, number>>({});
 
   useEffect(() => {
     setMounted(true);
+    setVh(window.innerHeight);
+
+    // HEIGHT STABILIZATION
+    const observer = new ResizeObserver((entries) => {
+      setSectionHeights(prev => {
+        const next = { ...prev };
+        entries.forEach(entry => {
+          const id = entry.target.getAttribute('data-section-id');
+          if (id) next[id] = entry.contentRect.height;
+        });
+        return next;
+      });
+    });
+
+    [card1Ref, card2Ref, card3Ref].forEach(ref => {
+      if (ref.current) observer.observe(ref.current);
+    });
+
     const calculatePinOffset = () => {
       const getOffset = (card: HTMLElement | null, target: HTMLElement | null) => {
         if (!card || !target) return 0;
@@ -42,7 +62,7 @@ export default function AboutPage() {
         }
 
         // Pin when the target reaches ~45% of the viewport height for a modern look
-        const targetViewportY = window.innerHeight * 0.45;
+        const targetViewportY = (vh || window.innerHeight) * 0.45;
 
         // Allow the calculation to drive the pin offset naturally
         return targetViewportY - targetCenterOffset;
@@ -76,6 +96,7 @@ export default function AboutPage() {
       window.removeEventListener('popstate', calculatePinOffset);
       timers.forEach(clearTimeout);
       clearTimeout(resizeTimer);
+      observer.disconnect();
     };
   }, []);
 
@@ -89,12 +110,16 @@ export default function AboutPage() {
       */}
       <section 
         ref={card1Ref}
-        className="sticky top-0 z-10 w-full flex flex-col items-center"
-        style={{ top: `${stickyTop1}px` }}
+        data-section-id="1"
+        className="sticky top-0 z-10 w-full flex flex-col items-center will-change-[top,transform] transform-gpu contain-paint"
+        style={{ 
+          top: `${stickyTop1}px`,
+          minHeight: sectionHeights['1'] ? `${sectionHeights['1']}px` : 'auto'
+        }}
       >
         <div className="w-full flex flex-col items-center">
           <div className="relative h-screen max-h-[1000px] w-full max-w-[2560px] flex items-center px-[5vw] lg:px-[10vw]">
-            <div className="absolute inset-0 z-0">
+            <div className="absolute inset-0 z-0 bg-[#0a0a0a]">
               <Image
                 src="/assets/service/about/1.webp"
                 alt="About Background"
@@ -135,13 +160,13 @@ export default function AboutPage() {
                      unHeard. is a dedicated space for those who feel mentally overwhelmed or internally unclear but do not necessarily fit traditional clinical labels. We believe that true growth happens when you stop managing symptoms and start restructuring patterns.
                    </p>
                  </div>
-                  <div className="relative flex flex-col gap-8 p-10 md:p-14 rounded-[40px] overflow-hidden group items-center text-center">
-                    <div className="absolute inset-0 z-0">
+                  <div className="relative flex flex-col gap-8 p-10 md:p-14 rounded-[40px] overflow-hidden group items-center text-center shadow-xl">
+                    <div className="absolute inset-0 z-0 bg-[#0a0a0a]">
                       <Image 
                         src="/assets/service/about/2.webp" 
                         alt="Restructuring" 
                         fill 
-                        className="object-cover transition-transform duration-700 hover:scale-110 opacity-100" 
+                        className="object-cover transition-transform duration-700 hover:scale-110 opacity-70" 
                       />
                       <div className="absolute inset-0 bg-black/50 z-[1]"></div>
                       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10"></div>
@@ -164,7 +189,7 @@ export default function AboutPage() {
                  </div>
               </div>
             </div>
-            <div className="h-[120px] md:h-[180px] w-full shrink-0" />
+            <div className="h-[200px] md:h-[250px] w-full shrink-0" />
           </div>
         </div>
       </section>
@@ -174,8 +199,12 @@ export default function AboutPage() {
       */}
       <section 
         ref={card2Ref}
-        className="sticky top-0 z-20 w-full flex justify-center pb-20 -mt-[150px] pointer-events-auto"
-        style={{ top: `${stickyTop2}px` }}
+        data-section-id="2"
+        className="sticky top-0 z-20 w-full flex justify-center pb-20 -mt-[150px] pointer-events-auto will-change-[top,transform] transform-gpu contain-paint"
+        style={{ 
+          top: `${stickyTop2}px`,
+          minHeight: sectionHeights['2'] ? `${sectionHeights['2']}px` : 'auto'
+        }}
       >
         <div className="relative w-[97vw] max-w-[2440px] bg-[#171612] rounded-[40px] md:rounded-[60px] shadow-[0_40px_100px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col items-center pt-32 pb-40 px-6 md:px-12 lg:px-24 pointer-events-auto">
           
@@ -203,7 +232,7 @@ export default function AboutPage() {
                     { step: '04', title: 'Integration', desc: 'Executing these subtle shifts into the fabric of your reality.', img: '/assets/landingimage.webp' }
                   ].map((item, i) => (
                     <div key={i} className="relative p-10 rounded-[40px] overflow-hidden group shadow-xl transition-all h-full min-h-[500px] flex flex-col justify-end">
-                      <div className="absolute inset-0 z-0 text-white">
+                      <div className="absolute inset-0 z-0 bg-[#0a0a0a]">
                         <Image src={item.img} alt={item.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-40" />
                         <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent z-10"></div>
                       </div>
@@ -229,9 +258,9 @@ export default function AboutPage() {
                     <img src="/assets/Group 54.svg" alt="Arrow" className="h-[30px] md:h-[50px] w-auto brightness-0 invert -mt-1 md:-mt-2" />
                   </div>
                </div>
+            </div>
+            <div className="h-[200px] md:h-[250px] w-full shrink-0" />
           </div>
-          <div className="h-[100px] md:h-[150px] w-full shrink-0" />
-        </div>
       </section>
 
       {/* 
@@ -239,8 +268,12 @@ export default function AboutPage() {
       */}
       <section 
         ref={card3Ref}
-        className="sticky top-0 z-30 w-full flex justify-center pb-40 -mt-[150px] pointer-events-auto"
-        style={{ top: `${stickyTop3}px` }}
+        data-section-id="3"
+        className="sticky top-0 z-30 w-full flex justify-center pb-40 -mt-[150px] pointer-events-auto will-change-[top,transform] transform-gpu contain-paint"
+        style={{ 
+          top: `${stickyTop3}px`,
+          minHeight: sectionHeights['3'] ? `${sectionHeights['3']}px` : 'auto'
+        }}
       >
         <div className="relative w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-[40px] md:rounded-[60px] shadow-[0_[-40px]_100px_rgba(0,0,0,0.2)] overflow-hidden flex flex-col items-center pt-32 pb-40 px-6 md:px-12 lg:px-24 pointer-events-auto">
           
@@ -267,7 +300,7 @@ export default function AboutPage() {
                </div>
                
                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full mt-10 text-center items-center">
-                 <div className="p-12 rounded-[50px] bg-[#111111] text-white flex flex-col items-center gap-8 relative overflow-hidden group">
+                 <div className="p-12 rounded-[50px] bg-[#111111] text-white flex flex-col items-center gap-8 relative overflow-hidden group shadow-xl">
                    <div className="absolute -top-10 -right-10 w-48 h-48 bg-[#0F9393]/10 rounded-full blur-3xl group-hover:bg-[#0F9393]/20 transition-all"></div>
                    <h3 className="text-[28px] md:text-[32px] font-bold font-georgia text-[#0F9393]">Adaptive & Human</h3>
                    <p className="text-gray-400 font-bold text-[16px] md:text-[19px] leading-relaxed text-center lg:text-justify">Each engagement is structured yet adaptive, analytical yet human, reflective yet action-oriented. We prioritize the resonance of the experience over rigid metrics.</p>
@@ -299,7 +332,7 @@ export default function AboutPage() {
                </div>
             </div>
           </div>
-          <div className="h-[100px] md:h-[150px] w-full shrink-0" />
+          <div className="h-[200px] md:h-[250px] w-full shrink-0" />
         </div>
       </section>
 
