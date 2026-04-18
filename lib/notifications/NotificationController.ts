@@ -1,26 +1,18 @@
-import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { mailer } from '@/lib/mailer';
 
 export class NotificationController {
   /**
-   * Sends an email notification using Resend
+   * Sends an email notification using Nodemailer
    */
   static async sendEmail({ to, subject, html }: { to: string | string[], subject: string, html: string }) {
     try {
-      const { data, error } = await resend.emails.send({
-        from: 'unHeard <notifications@unheard.com>',
-        to: Array.isArray(to) ? to : [to],
+      const info = await mailer.sendMail({
+        from: '"unHeard" <notifications@unheard.care>',
+        to: Array.isArray(to) ? to.join(', ') : to,
         subject,
         html,
       });
-
-      if (error) {
-        console.error('Email Error:', error);
-        return { success: false, error };
-      }
-
-      return { success: true, data };
+      return { success: true, data: info };
     } catch (err) {
       console.error('Email Exception:', err);
       return { success: false, error: err };
@@ -72,5 +64,33 @@ export class NotificationController {
         </div>
       `,
     });
+  }
+
+  /**
+   * Triggers an urgent alert to the admin if the WhatsApp headless client disconnects
+   */
+  static async notifyAdminTokenExpired(reason: string) {
+    console.error('Dispatching Token Expiry Alert to Admin:', reason);
+    
+    // 1. Send Email Notification
+    await this.sendEmail({
+      to: 'admin@unheard.com', // Replace with dynamic admin email if needed
+      subject: '⚠️ URGENT: WhatsApp Bot Token Expired',
+      html: `
+        <div style="font-family: sans-serif; padding: 20px; color: #333;">
+          <h2 style="color: #D32F2F;">WhatsApp Web Token Expired / Disconnected</h2>
+          <p>The automated WhatsApp messaging service running via Puppeteer has lost its connection.</p>
+          <div style="background: #f4f4f4; padding: 15px; border-left: 4px solid #D32F2F; margin: 20px 0;">
+            <p><strong>Reason:</strong> ${reason}</p>
+          </div>
+          <p>Please log into your hosting terminal, restart the application, and scan the new QR code directly from the terminal to restore automation.</p>
+        </div>
+      `,
+    });
+
+    // 2. Push Notification Dispatch
+    // To trigger a push notification for the admin (since browsers are closed), 
+    // we would lookup the push_subscriptions for the admin user_id and fire a Web Push Event.
+    // Example: await processPushNotificationToAdmins({ title: "WhatsApp Disconnected", body: reason });
   }
 }

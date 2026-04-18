@@ -346,22 +346,6 @@ export const LandingStack = () => {
                   <div className="flex flex-col sm:flex-row items-center gap-6 mt-4">
                     <Button 
                       variant="white" 
-                      className="w-full sm:w-auto min-w-[300px] md:min-w-[340px] h-[64px] md:h-[72px] !rounded-full flex items-center justify-between pl-10 pr-2 shadow-2xl transition-all group overflow-hidden"
-                      onClick={openBookingModal}
-                    >
-                      <span className="font-nunito font-black text-[15px] md:text-[17px]">
-                        Book a free demo
-                      </span>
-                      <div className="w-12 h-12 md:w-14 md:h-14 bg-black rounded-full flex items-center justify-center transition-transform duration-500 group-hover:rotate-45 shrink-0">
-                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="7" y1="17" x2="17" y2="7"></line>
-                            <polyline points="7 7 17 7 17 17"></polyline>
-                         </svg>
-                      </div>
-                    </Button>
-
-                    <Button 
-                      variant="white" 
                       className="w-full sm:w-[250px] md:w-[320px] h-[64px] md:h-[72px] !rounded-full text-[15px] md:text-[17px] px-8 md:px-10 whitespace-nowrap shadow-xl"
                       onClick={openBookingModal}
                     >
@@ -531,17 +515,15 @@ export const LandingStack = () => {
               Professional care tailored to identify, understand, and restructure thought, emotion, and behavior.
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 md:gap-8">
+            <div className="flex flex-row items-center justify-center gap-4 md:gap-6 mt-4">
               <Button 
                 variant="white" 
-                className="w-full sm:w-auto min-w-[280px] md:min-w-[340px] h-[64px] md:h-[76px] text-[18px] md:text-[20px] px-10 md:px-14 shadow-2xl transition-transform hover:scale-[1.02]" 
+                className="w-full sm:w-auto min-w-[260px] md:min-w-[320px] h-[60px] md:h-[72px] text-[17px] md:text-[20px] px-8 md:px-12 whitespace-nowrap shadow-xl" 
                 onClick={openBookingModal}
               >
                 Begin with understanding.
               </Button>
-              <div className="flex items-center gap-3">
-                <img src="/assets/Group 54.svg" alt="Try now!" className="h-[45px] md:h-[60px] w-auto -mt-2 opacity-90" />
-              </div>
+              <img src="/assets/Group 54.svg" alt="Try now!" className="h-[40px] md:h-[55px] w-auto -mt-3" />
             </div>
           </div>
 

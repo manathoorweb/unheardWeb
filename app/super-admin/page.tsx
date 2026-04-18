@@ -17,23 +17,49 @@ export default function SuperAdminDashboard() {
   const [activeTab, setActiveTab] = useState('invite')
   const [blogs, setBlogs] = useState<any[]>([])
   const [editingBlog, setEditingBlog] = useState<any>(null)
+  const [whatsappStatus, setWhatsappStatus] = useState<any>({ status: 'disconnected', qrDataUrl: null })
 
   useEffect(() => {
-    fetchAdmins()
-    checkRole()
-  }, [])
-
-  const checkRole = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
-      const { data } = await supabase
-        .from('user_roles')
-        .select('is_therapist')
-        .eq('user_id', user.id)
-        .single()
-      if (data) setIsTherapist(data.is_therapist)
+    let interval: any;
+    if (activeTab === 'whatsapp') {
+      const fetchStatus = async () => {
+        try {
+          const res = await fetch('/api/whatsapp/status');
+          const data = await res.json();
+          if (data.success) {
+            setWhatsappStatus(data.data);
+          }
+        } catch (e) {}
+      };
+      // Fetch immediately, then poll
+      fetchStatus();
+      interval = setInterval(fetchStatus, 3000);
     }
-  }
+    return () => clearInterval(interval);
+  }, [activeTab]);
+
+  const handleWhatsappReconnect = async () => {
+    setWhatsappStatus({ status: 'initializing', qrDataUrl: null });
+    await fetch('/api/whatsapp/reconnect', { method: 'POST' });
+  };
+
+  useEffect(() => {
+    async function init() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        // Run dependent checks after we have the session
+        fetchAdmins();
+        
+        const { data } = await supabase
+          .from('user_roles')
+          .select('is_therapist')
+          .eq('user_id', session.user.id)
+          .single();
+        if (data) setIsTherapist(data.is_therapist);
+      }
+    }
+    init();
+  }, [supabase]);
 
   const fetchAdmins = async () => {
     // Fetch roles
@@ -154,6 +180,12 @@ export default function SuperAdminDashboard() {
                   className={`px-6 py-2 rounded-full font-bold text-[14px] transition-all ${activeTab === 'blogs' ? 'bg-white text-black shadow-sm' : 'text-gray-400'}`}
                >
                   Blog Library
+               </button>
+               <button 
+                  onClick={() => setActiveTab('whatsapp')}
+                  className={`px-6 py-2 rounded-full font-bold text-[14px] transition-all ${activeTab === 'whatsapp' ? 'bg-white text-black shadow-sm' : 'text-gray-400'}`}
+               >
+                  WhatsApp Bot
                </button>
             </nav>
 
@@ -298,6 +330,70 @@ export default function SuperAdminDashboard() {
                  ))}
                </div>
              )}
+          </div>
+        )}
+
+        {activeTab === 'whatsapp' && (
+          <div className="bg-white p-10 rounded-[32px] shadow-xl border border-gray-100 flex flex-col items-center text-center max-w-[600px] mx-auto text-black mt-8">
+            <h2 className="text-[28px] font-bold font-georgia text-gray-900 mb-2">WhatsApp Integration</h2>
+            <p className="text-gray-500 mb-8">Scan to connect the automated message dispatcher.</p>
+            
+            {whatsappStatus.status === 'authenticated' && (
+              <div className="flex flex-col items-center gap-4">
+                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-2 shadow-inner">
+                  <svg width="40" height="40" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <h3 className="text-[24px] font-bold text-green-600 tracking-tight">Connected & Automated</h3>
+                <p className="text-gray-500 mb-6 max-w-[300px]">The secure WebSocket session is actively running and ready to dispatch messages.</p>
+                <div className="flex gap-4">
+                  <Button variant="black" onClick={handleWhatsappReconnect} className="bg-red-600 hover:bg-red-700">Reset Login & Logout</Button>
+                </div>
+              </div>
+            )}
+
+            {whatsappStatus.status === 'error' && (
+              <div className="flex flex-col items-center gap-4">
+                <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center text-red-600 mb-2 shadow-inner">
+                  <svg width="40" height="40" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </div>
+                <h3 className="text-[24px] font-bold text-red-600 tracking-tight">Session Expired</h3>
+                <p className="text-gray-500 mb-6 max-w-[300px]">The WhatsApp connection was closed due to a protocol error. Manual re-authentication is required.</p>
+                <Button variant="black" className="bg-red-600 hover:bg-red-700" onClick={handleWhatsappReconnect}>Full Reset & Scan QR</Button>
+              </div>
+            )}
+
+            {whatsappStatus.status === 'pending_qr' && whatsappStatus.qrDataUrl && (
+              <div className="flex flex-col items-center gap-6">
+                 <div className="p-4 border border-gray-200 rounded-3xl bg-white shadow-xl shadow-black/5">
+                   <img src={whatsappStatus.qrDataUrl} alt="WhatsApp QR Code" className="w-[280px] h-[280px] rounded-xl" />
+                 </div>
+                 <div className="flex flex-col gap-2 bg-gray-50 p-6 rounded-2xl w-full">
+                   <p className="text-gray-700 font-bold text-[14px]">1. Open WhatsApp on your phone</p>
+                   <p className="text-gray-700 font-bold text-[14px]">2. Tap Menu or Settings and select Linked Devices</p>
+                   <p className="text-gray-700 font-bold text-[14px]">3. Point your phone to this screen</p>
+                 </div>
+                 <Button variant="black" onClick={handleWhatsappReconnect} className="w-full mt-2">Refresh QR Code</Button>
+              </div>
+            )}
+
+            {(whatsappStatus.status === 'disconnected' || whatsappStatus.status === 'initializing') && (
+               <div className="flex flex-col items-center gap-6 py-12">
+                 <div className="w-16 h-16 border-4 border-gray-100 border-t-[#0F9393] rounded-full animate-spin"></div>
+                 <div className="flex flex-col gap-1">
+                   <p className="text-black text-[18px] font-bold">
+                     {whatsappStatus.status === 'initializing' ? 'Booting Secure WebSocket Connection...' : 'Waiting for Engine Startup'}
+                   </p>
+                   <p className="text-gray-400 text-[14px]">
+                     Establishing link with Supabase session store
+                   </p>
+                 </div>
+                 {whatsappStatus.status === 'disconnected' && (
+                   <Button variant="black" onClick={handleWhatsappReconnect} className="mt-4">
+                     Start WhatsApp Engine
+                   </Button>
+                 )}
+               </div>
+            )}
           </div>
         )}
       </div>

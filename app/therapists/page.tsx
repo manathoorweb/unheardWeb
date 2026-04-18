@@ -10,7 +10,7 @@ import Button from '@/components/ui/Button';
 // ----------------------------------------------------------------------
 // THERAPIST CARD COMPONENT (PREMIUM CURATED DESIGN)
 // ----------------------------------------------------------------------
-const TherapistCard = ({ t, openBooking }: { t: any, openBooking: () => void }) => {
+const TherapistCard = ({ t, openBooking }: { t: any, openBooking: (id: string) => void }) => {
   return (
     <div className="group relative bg-white rounded-[40px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-black/5 hover:shadow-[0_30px_70px_rgba(0,0,0,0.12)] transition-all duration-700 hover:-translate-y-2 flex flex-col h-full">
       
@@ -78,7 +78,7 @@ const TherapistCard = ({ t, openBooking }: { t: any, openBooking: () => void }) 
               </button>
             </Link>
             <button 
-              onClick={openBooking}
+              onClick={() => openBooking(t.user_id)}
               className="w-full h-[64px] bg-black text-white rounded-full font-black text-[15px] hover:bg-[#1a1a1a] transition-all shadow-xl shadow-black/10 active:scale-95"
             >
               Book Session
@@ -211,7 +211,7 @@ export default function TherapistListing() {
             </div>
           ) : (
             filteredTherapists.map((t) => (
-              <TherapistCard key={t.id} t={t} openBooking={openBookingModal} />
+              <TherapistCard key={t.id} t={t} openBooking={(id) => openBookingModal({ therapist_id: id })} />
             ))
           )}
         </div>

@@ -195,7 +195,7 @@ export default function TherapistProfile({ params }: { params: Promise<{ id: str
               <div className="flex flex-col gap-6 mt-4">
                 <button 
                   ref={target1Ref}
-                  onClick={openBookingModal}
+                  onClick={() => openBookingModal({ therapist_id: t.user_id })}
                   className="w-full md:w-fit bg-black text-white px-8 md:px-12 py-4 md:py-6 rounded-full text-[16px] md:text-[20px] font-bold flex flex-row items-center justify-center gap-4 md:gap-5 hover:bg-gray-800 transition-all shadow-xl group active:scale-95"
                 >
                   Book Free Intro Session 
@@ -317,7 +317,7 @@ export default function TherapistProfile({ params }: { params: Promise<{ id: str
             <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10 mt-2 md:mt-6">
                <button 
                 ref={target3Ref}
-                onClick={openBookingModal}
+                onClick={() => openBookingModal({ therapist_id: t.user_id })}
                 className="w-full md:w-auto bg-white text-black px-10 md:px-16 py-5 md:py-7 rounded-full text-[16px] md:text-[20px] font-bold flex flex-row items-center justify-center gap-4 md:gap-6 hover:bg-gray-100 transition-all shadow-2xl group"
               >
                 Start Transformation 
