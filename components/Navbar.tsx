@@ -138,7 +138,7 @@ const Navbar = () => {
           <Button
             variant={isDark || !isScrolled || isMobile ? "gray" : "black"}
             onClick={openBookingModal}
-            className="w-[100px] md:w-[130px] lg:w-[160px] h-[40px] md:h-[48px] lg:h-[56px] text-xs md:text-base font-black shadow-lg rounded-[15px] md:rounded-[18px] transition-all hover:scale-105 active:scale-95"
+            className="w-[90px] md:w-[115px] lg:w-[140px] h-[36px] md:h-[42px] lg:h-[50px] text-xs md:text-sm font-black shadow-lg rounded-[15px] md:rounded-[18px] transition-all hover:scale-105 active:scale-95 shrink-0"
           >
             Book Now
           </Button>

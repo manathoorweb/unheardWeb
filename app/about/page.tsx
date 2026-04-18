@@ -132,7 +132,7 @@ export default function AboutPage() {
               <div className="absolute inset-0 bg-black/50 z-[1]"></div>
             </div>
             <div className="relative z-10 max-w-[800px] flex flex-col gap-8 mt-28 md:-mt-[100px]">
-              <h1 className="text-[40px] md:text-[50px] font-bold leading-[1.1] tracking-[-0.02em] text-white font-georgia">
+              <h1 className="text-[40px] font-bold leading-[1.1] tracking-[-0.02em] text-white font-georgia">
                  Because patterns are not random.  They are structural.
               </h1>
               <p className="text-[18px] md:text-[22px] leading-relaxed text-white/90 font-nunito max-w-[600px]">
@@ -148,7 +148,7 @@ export default function AboutPage() {
             <div className="relative z-10 w-full flex flex-col items-center text-center gap-12 lg:gap-20">
               <div className="flex flex-col gap-6 max-w-[1000px]">
                 <span className="text-[#0F9393] font-bold uppercase tracking-[0.2em] text-[14px] md:text-[16px]">Who We Are</span>
-                <h2 className="text-[36px] md:text-[60px] lg:text-[80px] font-bold font-georgia text-black leading-[1.05] tracking-[-0.03em]">
+                <h2 className="text-[36px] font-bold font-georgia text-black leading-[1.05] tracking-[-0.03em]">
                   Decoding silence into <br />
                   <span className="text-[#0F9393]">Structural Clarity.</span>
                 </h2>
@@ -183,9 +183,9 @@ export default function AboutPage() {
               </div>
 
               <div ref={cta1Ref} className="mt-10 flex flex-col items-center gap-8">
-                 <div className="flex flex-row items-center gap-4 md:gap-6">
+                 <div className="flex flex-row flex-wrap items-center gap-4 md:gap-6">
                     <Button variant="black" className="w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full text-[16px] md:text-[20px] font-bold shadow-2xl transition-transform hover:-translate-y-1" onClick={openBookingModal}>Begin with Clarity</Button>
-                    <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 -mt-2" />
+                    <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 shrink-0" />
                  </div>
               </div>
             </div>
@@ -213,7 +213,7 @@ export default function AboutPage() {
           <div className="relative z-10 w-full flex flex-col gap-16 md:gap-24">
             <div className="flex flex-col gap-6 items-center">
               <span className="text-[#0F9393] font-bold uppercase tracking-[0.25em] text-[14px]">OUR APPROACH</span>
-              <h2 className="text-[36px] md:text-[60px] lg:text-[80px] font-bold font-georgia text-white leading-tight tracking-tight text-center">
+              <h2 className="text-[36px] font-bold font-georgia text-white leading-tight tracking-tight text-center">
                 Grounded in psychological science, <br />
                 <span className="text-[#0F9393]">expanded through applied insight.</span>
               </h2>
@@ -253,9 +253,9 @@ export default function AboutPage() {
                      <h3 className="text-[24px] md:text-[38px] lg:text-[44px] font-bold text-white font-georgia leading-tight tracking-tight">The focus remains: <br /><span className="text-[#0F9393]">Awareness, Understanding, Restructuring & Integration.</span></h3>
                      <p className="text-gray-400 font-bold text-[18px] md:text-[22px] leading-relaxed font-nunito max-w-[600px] text-center lg:text-justify">Each engagement is structured yet adaptive, analytical yet human, reflective yet action-oriented.</p>
                   </div>
-                  <div className="flex flex-row items-center justify-center gap-4 md:gap-6 z-10 px-2 lg:px-0">
+                  <div className="flex flex-row flex-wrap items-center justify-center gap-4 md:gap-6 z-10 px-2 lg:px-0">
                     <Button variant="black" className="bg-white text-black hover:bg-gray-100 rounded-full w-[240px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center font-bold text-[16px] md:text-[20px] shrink-0 shadow-2xl transition-transform hover:-translate-y-1" onClick={openBookingModal}>Practice Methodology</Button>
-                    <img src="/assets/Group 54.svg" alt="Arrow" className="h-[30px] md:h-[50px] w-auto brightness-0 invert -mt-1 md:-mt-2" />
+                    <img src="/assets/Group 54.svg" alt="Arrow" className="h-[30px] md:h-[50px] w-auto brightness-0 invert shrink-0" />
                   </div>
                </div>
             </div>
@@ -282,7 +282,7 @@ export default function AboutPage() {
           <div className="relative z-10 w-full max-w-[1300px] flex flex-col items-center text-center gap-16 md:gap-24">
             <div className="flex flex-col gap-6 items-center">
               <span className="text-[#0F9393] font-bold uppercase tracking-[0.25em] text-[14px]">OUR PHILOSOPHY</span>
-              <h2 className="text-[36px] md:text-[60px] lg:text-[80px] font-bold font-georgia text-black leading-[1.1] tracking-tight">
+              <h2 className="text-[36px] font-bold font-georgia text-black leading-[1.1] tracking-tight">
                 Clarity is not comfort. <br className="hidden md:block" />
                 It is alignment. <br className="hidden md:block" />
                 <span className="text-[#0F9393]">And alignment creates sustainable <br className="hidden lg:block" /> mental well-being.</span>
@@ -314,11 +314,11 @@ export default function AboutPage() {
 
             <div className="mt-10 flex flex-col items-center gap-12">
                <div ref={target3Ref} className="flex flex-col items-center gap-6">
-                  <h3 className="text-[36px] md:text-[64px] font-bold font-georgia text-black tracking-tight">Ready to Align?</h3>
+                  <h3 className="text-[36px] font-bold font-georgia text-black tracking-tight">Ready to Align?</h3>
                   <p className="text-gray-500 font-bold text-[18px] md:text-[24px] font-nunito italic text-center">Let your inner world finally make sense.</p>
                </div>
                
-               <div className="flex flex-col md:flex-row items-center gap-8">
+               <div className="flex flex-col md:flex-row flex-wrap items-center justify-center gap-8">
                   <Button variant="black" className="w-[280px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full text-[16px] md:text-[20px] font-extrabold shadow-2xl transition-transform hover:-translate-y-1" onClick={openBookingModal}>Start Your Transformation</Button>
                  <Link href="/therapists">
                    <button className="w-280px md:w-[300px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full border-[3px] border-black text-black font-black text-[16px] md:text-[20px] hover:bg-black hover:text-white transition-all text-center">Explore Counselors</button>
@@ -343,7 +343,7 @@ export default function AboutPage() {
         <div className="absolute top-0 right-0 w-[40vw] h-[40vw] bg-[#0F9393]/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
         <div className="relative z-10 w-full max-w-[1440px] flex flex-col items-center px-6">
           <div className="text-center mb-20 text-white">
-            <h2 className="font-georgia text-[40px] md:text-[64px] font-bold leading-tight flex flex-col items-center text-center">
+            <h2 className="font-georgia text-[36px] font-bold leading-tight flex flex-col items-center text-center">
               <span className="text-[#0F9393]">Unheard Truth:</span>
               <span>Discover, Reflect, and Grow</span>
             </h2>

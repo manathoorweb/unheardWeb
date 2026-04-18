@@ -152,7 +152,7 @@ export default function TherapistListing() {
         <div className="relative z-10 w-full max-w-[2440px] px-[5vw] flex flex-col items-center text-center gap-8 -mt-10">
           <div className="flex flex-col items-center gap-4">
              <span className="text-[#0F9393] font-black uppercase tracking-[0.4em] text-[14px]">Discover Excellence</span>
-             <h1 className="text-[52px] md:text-[90px] lg:text-[110px] font-bold font-georgia text-white leading-[1] tracking-[-0.04em]">
+             <h1 className="text-[40px] font-bold font-georgia text-white leading-[1] tracking-[-0.04em]">
               The minds behind <br /> the <span className="text-[#0F9393] italic">restructuring.</span>
             </h1>
           </div>
@@ -217,14 +217,14 @@ export default function TherapistListing() {
         </div>
 
         {/* MATCHING CTA (Premium Large Card) */}
-        <div className="relative w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-[50px] md:rounded-[80px] p-16 md:p-32 flex flex-col lg:flex-row items-center justify-between gap-16 shadow-[0_60px_120px_rgba(0,0,0,0.4)] overflow-hidden">
+        <div className="relative w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-[50px] md:rounded-[80px] p-16 md:p-32 flex flex-col lg:flex-row flex-wrap items-center justify-center lg:justify-between gap-16 shadow-[0_60px_120px_rgba(0,0,0,0.4)] overflow-hidden">
           <div className="absolute top-0 right-0 w-[50vw] h-[50vw] bg-[#0F9393]/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-[120px]"></div>
           <div className="absolute bottom-0 left-0 w-[30vw] h-[30vw] bg-[#0F9393]/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-[100px]"></div>
           
           <div className="flex-grow max-w-[900px] text-center lg:text-left z-10 flex flex-col gap-10">
              <div className="flex flex-col gap-4">
                <span className="text-[#0F9393] font-black uppercase tracking-[0.4em] text-[14px]">The Concierge Service</span>
-               <h2 className="text-[40px] md:text-[72px] lg:text-[84px] font-bold font-georgia text-black leading-[1] tracking-[-0.03em]">
+               <h2 className="text-[36px] font-bold font-georgia text-black leading-[1] tracking-[-0.03em]">
                  Find your <br /><span className="text-[#0F9393] italic">Symmetry.</span>
                </h2>
              </div>

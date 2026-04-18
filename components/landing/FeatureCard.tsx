@@ -22,7 +22,7 @@ export const FeatureCard = ({ title, description }: FeatureCardProps) => {
   };
 
   return (
-    <div className="relative w-full max-w-[367px] h-auto min-h-[400px] rounded-[15px] overflow-hidden group mx-auto flex flex-col items-stretch">
+    <div className="relative w-full max-w-[410px] h-auto min-h-[400px] rounded-[15px] overflow-hidden group mx-auto flex flex-col items-stretch">
       
       {/* LAYER 0: Bottom Background Elements (Behind the glass) */}
       <div className="absolute inset-0 z-0 flex flex-col justify-end pointer-events-none">

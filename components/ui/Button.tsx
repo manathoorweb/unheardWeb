@@ -20,8 +20,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button 
         ref={ref}
         className={cn(
-          "w-[161px] h-[56px] rounded-[22px]",
-          "text-[20px] font-bold font-nunito tracking-[-0.02em]",
+          "w-[140px] h-[48px] rounded-[22px]",
+          "text-[18px] font-bold font-nunito tracking-[-0.02em]",
           "transition-all duration-200 flex items-center justify-center",
           variants[variant],
           className

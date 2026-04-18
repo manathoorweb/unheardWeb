@@ -144,7 +144,7 @@ export default function ServicesPage() {
               />
             </div>
             <div className="relative z-10 max-w-[800px] flex flex-col gap-8 -mt-[100px]">
-              <h1 className="text-[40px] md:text-[50px] font-bold leading-[1.1] tracking-[-0.02em] text-white font-georgia">
+              <h1 className="text-[40px] font-bold leading-[1.1] tracking-[-0.02em] text-white font-georgia">
                 Transformational frameworks for the modern mind.
               </h1>
               <p className="text-[18px] md:text-[22px] leading-relaxed text-white/90 font-nunito max-w-[600px]">
@@ -159,7 +159,7 @@ export default function ServicesPage() {
             <div className="relative z-10 w-full flex flex-col items-center text-center gap-12 lg:gap-20">
               <div className="flex flex-col gap-6 items-center">
                 <span className="text-[#0F9393] font-bold uppercase tracking-[0.2em] text-[14px] md:text-[16px]">PILLAR 01</span>
-                <h1 className="text-[36px] md:text-[60px] lg:text-[80px] font-bold font-georgia text-black leading-[1.05] tracking-tight max-w-[1000px]">
+                <h1 className="text-[36px] font-bold font-georgia text-black leading-[1.05] tracking-tight max-w-[1000px]">
                   Individual <br />
                   <span className="text-[#0F9393]">Psychological Work.</span>
                 </h1>
@@ -209,9 +209,9 @@ export default function ServicesPage() {
                 ))}
               </div>
 
-              <div ref={target1Ref} className="mt-12 flex flex-row items-center gap-4 md:gap-6">
+              <div ref={target1Ref} className="mt-12 flex flex-row flex-wrap items-center justify-center gap-4 md:gap-6">
                 <Button variant="black" className="w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full text-[16px] md:text-[20px] font-bold transition-transform hover:-translate-y-1" onClick={openBookingModal}>Consult for Individuals</Button>
-                <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 -mt-2" />
+                <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 shrink-0" />
               </div>
             </div>
             <div className="h-[200px] md:h-[250px] w-full shrink-0" />
@@ -237,7 +237,7 @@ export default function ServicesPage() {
           <div className="relative z-10 w-full flex flex-col items-center text-center gap-16 md:gap-24">
             <div className="flex flex-col gap-6 items-center">
               <span className="text-[#0F9393] font-bold uppercase tracking-[0.25em] text-[14px]">PILLAR 02</span>
-              <h2 className="text-[36px] md:text-[60px] lg:text-[72px] font-bold font-georgia text-white leading-tight tracking-tight">
+              <h2 className="text-[36px] font-bold font-georgia text-white leading-tight tracking-tight">
                 Relationship & <br />
                 <span className="text-[#0F9393]">Couple Dynamics.</span>
               </h2>
@@ -298,9 +298,9 @@ export default function ServicesPage() {
                 <h4 className="text-white font-bold text-[24px] md:text-[32px] font-georgia">Beyond Conversation.</h4>
                 <p className="text-gray-300 font-bold font-nunito text-[16px] md:text-[19px] max-w-[500px]">Our approach to relationships is analytical and solution-focused, designed for long-term psychological sync.</p>
               </div>
-              <div className="relative z-10 flex flex-row items-center gap-4 md:gap-6">
+              <div className="relative z-10 flex flex-row flex-wrap items-center justify-center gap-4 md:gap-6">
                   <Button ref={target2Ref} variant="black" className="bg-white text-black hover:bg-gray-100 rounded-full w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center font-bold text-[16px] md:text-[20px] shrink-0 transition-transform hover:-translate-y-1" onClick={openBookingModal}>Optimize Relationship</Button>
-                  <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 invert -mt-2" />
+                  <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 invert shrink-0" />
                 </div>
               </div>
               <div className="h-[200px] md:h-[250px] w-full shrink-0" />
@@ -327,7 +327,7 @@ export default function ServicesPage() {
           <div className="relative z-10 w-full flex flex-col items-center text-center gap-16 md:gap-24">
             <div className="flex flex-col gap-6 items-center">
               <span className="text-[#0F9393] font-bold uppercase tracking-[0.25em] text-[14px]">PILLAR 03</span>
-              <h2 className="text-[36px] md:text-[60px] lg:text-[72px] font-bold font-georgia text-black leading-tight tracking-tight">
+              <h2 className="text-[36px] font-bold font-georgia text-black leading-tight tracking-tight">
                 Adolescent <br className="hidden md:block" />
                 <span className="text-[#0F9393]">Development Support.</span>
               </h2>
@@ -396,9 +396,9 @@ export default function ServicesPage() {
               <p className="text-[20px] md:text-[28px] font-extrabold text-[#0F9393] leading-relaxed italic max-w-[900px]">
                 "Support that respects the adolescent's evolving agency while providing the tools for structural well-being."
               </p>
-              <div className="flex flex-row items-center gap-4 md:gap-6">
+              <div className="flex flex-row flex-wrap items-center justify-center gap-4 md:gap-6">
                 <Button ref={target3Ref} variant="black" className="w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full text-[16px] md:text-[20px] font-bold transition-transform hover:-translate-y-1" onClick={openBookingModal}>Support Your Child</Button>
-                <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 -mt-2" />
+                <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 shrink-0" />
               </div>
             </div>
             <div className="h-[200px] md:h-[250px] w-full shrink-0" />
@@ -425,7 +425,7 @@ export default function ServicesPage() {
           <div className="relative z-10 w-full flex flex-col items-center text-center gap-16 md:gap-24">
             <div className="flex flex-col gap-6 items-center">
               <span className="text-[#0F9393] font-bold uppercase tracking-[0.25em] text-[14px]">PILLAR 04</span>
-              <h2 className="text-[36px] md:text-[60px] lg:text-[72px] font-bold font-georgia text-white leading-tight tracking-tight">
+              <h2 className="text-[36px] font-bold font-georgia text-white leading-tight tracking-tight">
                 Institutional <br className="hidden md:block" />
                 <span className="text-[#0F9393]">Programs.</span>
               </h2>
@@ -470,9 +470,9 @@ export default function ServicesPage() {
             </div>
 
             <div className="mt-2 flex flex-col items-center gap-8">
-              <div className="flex flex-row items-center gap-4 md:gap-6">
+              <div className="flex flex-row flex-wrap items-center justify-center gap-4 md:gap-6">
                 <Button ref={target4Ref} variant="black" className="bg-white text-black hover:bg-gray-100 rounded-full w-[260px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center font-bold text-[16px] md:text-[20px] transition-transform hover:-translate-y-1" onClick={openBookingModal}>Partner with unHeard.</Button>
-                <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 invert -mt-2" />
+                <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 invert shrink-0" />
               </div>
             </div>
             <div className="h-[200px] md:h-[250px] w-full shrink-0" />
@@ -500,7 +500,7 @@ export default function ServicesPage() {
           <div className="relative z-10 w-full flex flex-col items-center text-center gap-16 md:gap-24">
             <div className="flex flex-col gap-6 items-center">
               <span className="text-[#0F9393] font-bold uppercase tracking-[0.25em] text-[14px]">PILLAR 05</span>
-              <h2 className="text-[36px] md:text-[60px] lg:text-[76px] font-bold font-georgia text-black leading-tight tracking-tight">
+              <h2 className="text-[36px] font-bold font-georgia text-black leading-tight tracking-tight">
                 Corporate Mental <br className="hidden md:block" />
                 <span className="text-[#0F9393]">Performance.</span>
               </h2>
@@ -547,16 +547,14 @@ export default function ServicesPage() {
 
               <div className="flex flex-col items-center gap-12 mt-10">
                 <div className="flex flex-col items-center gap-6">
-                  <h3 className="text-[32px] md:text-[56px] font-bold font-georgia text-black tracking-tight">Operational Clarity.</h3>
+                  <h3 className="text-[36px] font-bold font-georgia text-black tracking-tight">Operational Clarity.</h3>
                   <p className="text-gray-500 font-bold text-[18px] md:text-[24px] font-nunito italic text-center">Unleash the cognitive potential of your organization.</p>
                 </div>
 
-                <div ref={target5Ref} className="flex flex-col items-center gap-6 md:flex-row md:gap-12">
-                  <div className="relative flex flex-row items-center gap-4 md:gap-6">
+                <div ref={target5Ref} className="flex flex-col items-center gap-6 md:flex-row md:flex-wrap md:justify-center md:gap-12">
+                  <div className="relative flex flex-row flex-wrap items-center justify-center gap-4 md:gap-6">
                     <Button variant="black" className="w-[280px] md:w-[350px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full text-[16px] md:text-[20px] font-extrabold transition-transform hover:-translate-y-1" onClick={openBookingModal}>Book for Organization</Button>
-                    <div className="absolute left-full ml-4 md:relative md:ml-0">
-                      <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 invert -mt-1" />
-                    </div>
+                    <img src="/assets/Group 54.svg" alt="Arrow" className="h-[35px] md:h-[50px] w-auto brightness-0 invert shrink-0" />
                   </div>
                   <Link href="/contact">
                     <Button variant="white" className="w-[280px] md:w-[320px] h-[54px] md:h-[72px] flex items-center justify-center rounded-full border-[3px] border-black text-black font-black text-[16px] md:text-[20px] hover:bg-black hover:text-white transition-all">Contact Sales</Button>

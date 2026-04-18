@@ -36,7 +36,7 @@ export default function ContactPage() {
         {/* Left Side: Info */}
         <div className="flex flex-col gap-10">
           <div>
-            <h1 className="text-[48px] font-georgia font-bold leading-tight mb-6">Let's start a <span className="text-[#0F9393]">conversation.</span></h1>
+            <h1 className="text-[40px] font-georgia font-bold leading-tight mb-6">Let's start a <span className="text-[#0F9393]">conversation.</span></h1>
             <p className="text-gray-400 text-lg max-w-md">Whether you have a question about our therapy sessions, pricing, or anything else, our team is ready to answer all your questions.</p>
           </div>
 

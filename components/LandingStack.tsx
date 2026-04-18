@@ -33,22 +33,6 @@ export const LandingStack = () => {
   React.useEffect(() => {
     setVh(window.innerHeight);
 
-    // HEIGHT STABILIZATION
-    const observer = new ResizeObserver((entries) => {
-      setSectionHeights(prev => {
-        const next = { ...prev };
-        entries.forEach(entry => {
-          const id = entry.target.getAttribute('data-section-id');
-          if (id) next[id] = entry.contentRect.height;
-        });
-        return next;
-      });
-    });
-
-    [card1Ref, card2Ref, card3Ref].forEach(ref => {
-      if (ref.current) observer.observe(ref.current);
-    });
-
     const calculatePinOffset = () => {
       const getOffset = (card: HTMLElement | null, cta: HTMLElement | null) => {
         if (!card || !cta) return 0;
@@ -83,6 +67,24 @@ export const LandingStack = () => {
       resizeTimer = setTimeout(calculatePinOffset, 150);
     };
 
+    // HEIGHT STABILIZATION
+    const observer = new ResizeObserver((entries) => {
+      setSectionHeights(prev => {
+        const next = { ...prev };
+        entries.forEach(entry => {
+          const id = entry.target.getAttribute('data-section-id');
+          if (id) next[id] = entry.contentRect.height;
+        });
+        return next;
+      });
+      // Recalculate pinning offsets when any section height changes
+      debouncedCalculate();
+    });
+
+    [card1Ref, card2Ref, card3Ref].forEach(ref => {
+      if (ref.current) observer.observe(ref.current);
+    });
+
     // Initial calculation
     calculatePinOffset();
 
@@ -105,7 +107,7 @@ export const LandingStack = () => {
       clearTimeout(resizeTimer);
       observer.disconnect();
     };
-  }, []);
+  }, [vh]);
 
   return (
     <div className="relative w-full bg-[#111111]">
@@ -135,7 +137,7 @@ export const LandingStack = () => {
               />
             </div>
             <div className="relative z-10 max-w-[800px] flex flex-col gap-8">
-              <h1 className="text-[40px] md:text-[50px] font-bold leading-[1.1] tracking-[-0.02em] text-white font-georgia">
+              <h1 className="text-[40px] font-bold leading-[1.1] tracking-[-0.02em] text-white font-georgia">
                 When your mind feels louder than your life, clarity is non-negotiable.
               </h1>
               <div className="flex flex-col gap-4 text-white">
@@ -147,7 +149,7 @@ export const LandingStack = () => {
                 </p>
               </div>
               <div className="flex flex-row items-center gap-4 md:gap-6 mt-4">
-                <Button variant="gray" className="w-[250px] sm:w-[260px] md:w-[300px] h-[54px] md:h-[67px] text-[16px] md:text-[18px] px-6 md:px-12 whitespace-nowrap" onClick={openBookingModal}>Begin with understanding.</Button>
+                <Button variant="gray" className="w-[220px] sm:w-[230px] md:w-[260px] h-[50px] md:h-[58px] text-[16px] md:text-[17px] px-6 md:px-8 whitespace-nowrap" onClick={openBookingModal}>Begin with understanding.</Button>
                 <img src="/assets/Group 54.svg" alt="Try now!" className="h-[40px] md:h-[60px] w-auto -mt-4" />
               </div>
             </div>
@@ -157,7 +159,7 @@ export const LandingStack = () => {
             <div className="w-[97vw] max-w-[2400px] bg-[#FEFEFC] rounded-[40px] pt-16 pb-[100px] md:pb-[150px] px-6 md:px-12 lg:px-16 flex flex-col items-center shadow-xl">
               {/* Centered Title */}
               <div className="w-full flex flex-col items-center text-center mb-16">
-                <h2 className="font-georgia text-[36px] md:text-[52px] font-bold leading-tight text-black max-w-[900px]">
+                <h2 className="font-georgia text-[36px] font-bold leading-tight text-black max-w-[900px]">
                   There’s a reason it’s called Unheard.
                 </h2>
               </div>
@@ -239,7 +241,7 @@ export const LandingStack = () => {
               {/* Centered CTA */}
               <div className="mt-20 w-full flex flex-col items-center">
                 <div ref={cta1Ref} className="flex flex-row items-center justify-center gap-4 md:gap-6">
-                  <Button variant="black" className="w-[280px] md:w-[320px] h-[60px] md:h-[72px] text-[18px] md:text-[20px] px-8 md:px-12 whitespace-nowrap" onClick={openBookingModal}>Begin with understanding.</Button>
+                  <Button variant="black" className="w-[240px] md:w-[280px] h-[58px] md:h-[64px] text-[17px] md:text-[19px] px-6 md:px-8 whitespace-nowrap" onClick={openBookingModal}>Begin with understanding.</Button>
                   <img src="/assets/Group 54.svg" alt="Try now!" className="h-[40px] md:h-[55px] w-auto invert -mt-3" />
                 </div>
               </div>
@@ -263,11 +265,11 @@ export const LandingStack = () => {
       >
         <div className="w-[97vw] max-w-[2440px] bg-[#171612] rounded-t-[40px] rounded-b-[40px] pt-32 pb-24 px-6 md:px-12 lg:px-24 flex flex-col items-center shadow-2xl pointer-events-auto">
           <div className="text-center mb-20 max-w-[900px]">
-            <h2 className="font-georgia text-[32px] md:text-[52px] font-bold leading-tight text-white mb-6">
+            <h2 className="font-georgia text-[36px] font-bold leading-tight text-white mb-6">
               Why Unheard?
             </h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-[1400px] items-stretch">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-[1000px] items-stretch">
             <FeatureCard
               title="Insight-driven, not scripted"
               description="Our therapeutic approach moves beyond surface-level techniques, diving deep into the complexities of your unique experience for genuine mental transformation."
@@ -276,10 +278,97 @@ export const LandingStack = () => {
               title="Grounded in Psychology"
               description="Academic rigor meets deep human empathy. Every session is rooted in proven psychological frameworks delivered through a lens of profound personal understanding."
             />
-            <FeatureCard
-              title="Focus on Clarity"
-              description="We prioritize sustainable mental clarity over temporary, band-aid relief, equipping you with the internal tools for lifelong emotional resilience."
-            />
+            <div className="hidden lg:block">
+              <FeatureCard
+                title="Focus on Clarity"
+                description="We prioritize sustainable mental clarity over temporary, band-aid relief, equipping you with the internal tools for lifelong emotional resilience."
+              />
+            </div>
+          </div>
+
+          {/* Anxiety Section - Wide Flow */}
+          <div className="w-[90vw] max-w-[1600px] my-12">
+            <div className="relative w-full rounded-[40px] overflow-hidden bg-white border border-black/5 shadow-2xl">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center p-10 md:p-6 lg:p-8">
+                {/* Left Content */}
+                <div className="flex flex-col items-start text-left z-10 max-w-[650px]">
+                  <h3 className="font-georgia font-bold text-[36px] leading-[1.1] text-black tracking-[-0.02em] mb-4">
+                    Therapy for when your mind doesn’t switch off.
+                  </h3>
+                  <div className="space-y-4">
+                    <p className="font-nunito text-[18px] md:text-[20px] text-black/80 leading-relaxed">
+                      Anxiety doesn’t always look dramatic. It’s just constant. Racing thoughts. Restlessness. A sense that something is wrong.
+           <br/>
+                   
+                      You don’t need to calm down. You need to understand what’s happening.
+                    </p>
+                  </div>
+
+                  {/* Read More Section */}
+                  <div className="mt-4 mb-8 w-full">
+                    <button 
+                      onClick={() => setIsAnxietyDetailsOpen(!isAnxietyDetailsOpen)}
+                      className="flex items-center gap-2 text-black/40 hover:text-black font-nunito font-bold text-[14px] uppercase tracking-widest transition-colors mb-4"
+                    >
+                      {isAnxietyDetailsOpen ? 'Show less' : 'Read more'}
+                      <svg className={`w-4 h-4 transition-transform duration-300 ${isAnxietyDetailsOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+
+                    {isAnxietyDetailsOpen && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3 py-6 border-t border-black/5 animate-in fade-in slide-in-from-top-4 duration-500">
+                        <p className="col-span-full text-black/60 font-nunito font-bold text-[14px] uppercase tracking-widest mb-2">We help with:</p>
+                        {[
+                          'Generalised anxiety',
+                          'Panic attacks',
+                          'Social anxiety',
+                          'Health anxiety',
+                          'Stress overload',
+                          'Sleep issues linked to anxiety'
+                        ].map((item, i) => (
+                          <div key={i} className="flex items-center gap-3">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#0F9393]" />
+                            <span className="text-black/80 font-nunito text-[16px] md:text-[18px]">{item}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-center gap-6">
+                    <Button 
+                      variant="black" 
+                      className="w-[220px] md:w-[280px] h-[58px] md:h-[64px] !rounded-full text-[15px] md:text-[17px] px-6 md:px-8 whitespace-nowrap shadow-xl"
+                      onClick={openBookingModal}
+                    >
+                      Begin with understanding.
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Right Image */}
+                <div className="relative w-full aspect-[4/3] lg:aspect-auto lg:h-[420px] rounded-[30px] overflow-hidden shadow-2xl">
+                  <Image
+                    src="/assets/service/about/1.webp"
+                    alt="Anxiety Therapy"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 700px"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-[1000px] items-stretch">
+            <div className="lg:hidden block">
+              <FeatureCard
+                title="Focus on Clarity"
+                description="We prioritize sustainable mental clarity over temporary, band-aid relief, equipping you with the internal tools for lifelong emotional resilience."
+              />
+            </div>
             <FeatureCard
               title="Structured, not repetitive"
               description="Experience a methodical, progress-oriented journey that adapts to your growth, ensuring every conversation moves you forward rather than looping back."
@@ -292,81 +381,6 @@ export const LandingStack = () => {
               title="Confidential & Secure"
               description="Access world-class therapy from the privacy of your own space, supported by top-tier encryption and a total commitment to your personal discretion."
             />
-          </div>
-
-          <div className="mt-24 md:mt-40 w-full max-w-[1440px] px-4 md:px-0">
-            <div className="relative w-full rounded-[40px] overflow-hidden bg-[#111111] border border-white/5 shadow-2xl">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center p-8 md:p-12 lg:p-16">
-                {/* Left Content */}
-                <div className="flex flex-col items-start text-left z-10 max-w-[650px]">
-                  <h3 className="font-georgia font-bold text-[32px] md:text-[44px] lg:text-[52px] leading-[1.1] text-white tracking-[-0.02em] mb-6">
-                    Therapy for when your mind doesn’t switch off.
-                  </h3>
-                  <div className="space-y-4">
-                    <p className="font-nunito text-[18px] md:text-[20px] text-white/80 leading-relaxed">
-                      Anxiety doesn’t always look dramatic. It’s just constant. Racing thoughts. Restlessness. A sense that something is wrong.
-                    </p>
-                    <p className="font-nunito text-[18px] md:text-[20px] text-white/60 leading-relaxed italic">
-                      You don’t need to calm down. You need to understand what’s happening.
-                    </p>
-                  </div>
-
-                  {/* Read More Section */}
-                  <div className="mt-6 mb-10 w-full">
-                    <button 
-                      onClick={() => setIsAnxietyDetailsOpen(!isAnxietyDetailsOpen)}
-                      className="flex items-center gap-2 text-white/40 hover:text-white font-nunito font-bold text-[14px] uppercase tracking-widest transition-colors mb-6"
-                    >
-                      {isAnxietyDetailsOpen ? 'Show less' : 'Read more'}
-                      <svg className={`w-4 h-4 transition-transform duration-300 ${isAnxietyDetailsOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </button>
-
-                    {isAnxietyDetailsOpen && (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3 py-6 border-t border-white/5 animate-in fade-in slide-in-from-top-4 duration-500">
-                        <p className="col-span-full text-white/60 font-nunito font-bold text-[14px] uppercase tracking-widest mb-2">We help with:</p>
-                        {[
-                          'Generalised anxiety',
-                          'Panic attacks',
-                          'Social anxiety',
-                          'Health anxiety',
-                          'Stress overload',
-                          'Sleep issues linked to anxiety'
-                        ].map((item, i) => (
-                          <div key={i} className="flex items-center gap-3">
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#0F9393]" />
-                            <span className="text-white/80 font-nunito text-[16px] md:text-[18px]">{item}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row items-center gap-6 mt-4">
-                    <Button 
-                      variant="white" 
-                      className="w-full sm:w-[250px] md:w-[320px] h-[64px] md:h-[72px] !rounded-full text-[15px] md:text-[17px] px-8 md:px-10 whitespace-nowrap shadow-xl"
-                      onClick={openBookingModal}
-                    >
-                      Start anxiety therapy
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Right Image */}
-                <div className="relative w-full aspect-[4/3] lg:aspect-auto lg:h-[500px] rounded-[30px] overflow-hidden shadow-2xl">
-                  <Image
-                    src="/assets/service/about/1.webp"
-                    alt="Anxiety Therapy"
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 1024px) 100vw, 700px"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                </div>
-              </div>
-            </div>
           </div>
 
           <div ref={lastRef2} className="mt-20 md:mt-28 w-full max-w-[1000px] flex flex-col md:flex-row items-center justify-between gap-12 md:gap-6 px-10">
@@ -398,7 +412,7 @@ export const LandingStack = () => {
       >
         <div className="w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-t-[40px] rounded-b-[40px] pt-24 md:pt-32 pb-24 px-6 md:px-12 lg:px-24 flex flex-col items-center shadow-[0_-20px_50px_rgba(0,0,0,0.3)] pointer-events-auto">
           <div className="text-center mb-16 max-w-[900px]">
-            <h2 className="font-georgia text-[36px] md:text-[48px] font-bold leading-tight text-black">Your Questions, Answered <br /> <span className="text-[#0F9393]">At Unheard.</span></h2>
+            <h2 className="font-georgia text-[36px] font-bold leading-tight text-black">Your Questions, Answered <br /> <span className="text-[#0F9393]">At Unheard.</span></h2>
           </div>
           <div className="flex flex-col lg:flex-row w-full max-w-[1200px] gap-12 lg:gap-20 items-stretch">
             <div className="w-full lg:w-1/2 flex justify-center lg:justify-end shrink-0">
@@ -414,15 +428,15 @@ export const LandingStack = () => {
             </div>
             <div className="w-full lg:w-1/2 flex flex-col justify-center">
               <FAQAccordion data={faqData} />
-              <div className="mt-12 w-full flex justify-center">
+              <div ref={lastRef3} className="mt-12 w-full flex justify-center">
                 <button ref={cta3Ref} className="bg-black hover:bg-gray-800 text-white font-nunito font-bold text-[16px] md:text-[18px] w-[200px] md:w-[300px] h-[54px] md:h-[64px] flex items-center justify-center rounded-full transition-colors whitespace-nowrap">Contact Us</button>
               </div>
             </div>
           </div>
-          <div className="mt-32 w-full max-w-[900px] flex flex-col items-center text-center">
-            <h2 className="font-georgia text-[36px] md:text-[48px] font-bold leading-tight text-black mb-8">Voices Finally Heard, <br /> <span className="text-[#0F9393]">Lives Transformed</span></h2>
+          {/* <div className="mt-32 w-full max-w-[900px] flex flex-col items-center text-center">
+            <h2 className="font-georgia text-[36px] font-bold leading-tight text-black mb-8">Voices Finally Heard, <br /> <span className="text-[#0F9393]">Lives Transformed</span></h2>
             <div ref={lastRef3} className="w-full"><TestimonialCarousel testimonials={testimonialData} /></div>
-          </div>
+          </div> */}
          
         </div>
       </section>
@@ -430,7 +444,7 @@ export const LandingStack = () => {
       {/* 
         FOOTER BANNER: Integrated Expertise & Blog
       */}
-      <section className="-mt-[130px] relative z-40 w-[97vw] mx-auto bg-[#0a0a0a] rounded-t-[60px] md:rounded-t-[80px] pt-40 pb-40 flex flex-col items-center border-t border-white/5 overflow-hidden">
+      <section className="-mt-[90px] relative z-40 w-[97vw] mx-auto bg-[#0a0a0a] rounded-t-[60px] md:rounded-t-[80px] pt-40 pb-40 flex flex-col items-center border-t border-white/5 overflow-hidden">
         <div className="absolute top-0 right-0 w-[40vw] h-[40vw] bg-[#0F9393]/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
         
         <div className="relative z-10 w-full flex flex-col items-center">
@@ -508,7 +522,7 @@ export const LandingStack = () => {
             <p className="font-georgia italic text-[22px] md:text-[32px] text-[#0F9393] mb-6 tracking-tight">
               Therapy for when your mind doesn’t switch off.
             </p>
-            <h2 className="font-georgia text-[40px] md:text-[64px] font-bold leading-[1.05] text-white mb-10">
+            <h2 className="font-georgia text-[36px] font-bold leading-[1.05] text-white mb-10">
               Comprehensive support for <br /> <span className="opacity-80">every mental landscape.</span>
             </h2>
             <p className="font-nunito text-[18px] md:text-[24px] text-white/40 mb-16 max-w-[800px] mx-auto leading-relaxed">
@@ -518,7 +532,7 @@ export const LandingStack = () => {
             <div className="flex flex-row items-center justify-center gap-4 md:gap-6 mt-4">
               <Button 
                 variant="white" 
-                className="w-full sm:w-auto min-w-[260px] md:min-w-[320px] h-[60px] md:h-[72px] text-[17px] md:text-[20px] px-8 md:px-12 whitespace-nowrap shadow-xl" 
+                className="w-full sm:w-auto min-w-[220px] md:min-w-[280px] h-[58px] md:h-[64px] text-[17px] md:text-[19px] px-6 md:px-8 whitespace-nowrap shadow-xl" 
                 onClick={openBookingModal}
               >
                 Begin with understanding.
@@ -532,7 +546,7 @@ export const LandingStack = () => {
           {/* 3. Blog Section */}
           <div className="w-full max-w-[1440px] px-6">
             <div className="text-center mb-20 text-white">
-              <h2 className="font-georgia text-[40px] md:text-[64px] font-bold leading-tight flex flex-col items-center">
+              <h2 className="font-georgia text-[36px] font-bold leading-tight flex flex-col items-center">
                 <span className="text-[#0F9393]">Unheard Truth:</span>
                 <span>Discover, Reflect, and Grow</span>
               </h2>
