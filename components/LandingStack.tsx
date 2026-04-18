@@ -17,16 +17,19 @@ export const LandingStack = () => {
   const card1Ref = React.useRef<HTMLElement>(null);
   const cta1Ref = React.useRef<HTMLDivElement>(null);
   const card2Ref = React.useRef<HTMLElement>(null);
-  const cta2Ref = React.useRef<HTMLButtonElement>(null);
-  const cta2MobileRef = React.useRef<HTMLButtonElement>(null);
   const lastRef2 = React.useRef<HTMLDivElement>(null);
   const card3Ref = React.useRef<HTMLElement>(null);
-  const cta3Ref = React.useRef<HTMLButtonElement>(null);
   const lastRef3 = React.useRef<HTMLDivElement>(null);
+  const card4Ref = React.useRef<HTMLElement>(null);
+  const lastRef4 = React.useRef<HTMLDivElement>(null);
+  const card5Ref = React.useRef<HTMLElement>(null);
+  const lastRef5 = React.useRef<HTMLDivElement>(null);
 
   const [stickyTop1, setStickyTop1] = React.useState(0);
   const [stickyTop2, setStickyTop2] = React.useState(0);
   const [stickyTop3, setStickyTop3] = React.useState(0);
+  const [stickyTop4, setStickyTop4] = React.useState(0);
+  const [stickyTop5, setStickyTop5] = React.useState(0);
   const [vh, setVh] = React.useState(0);
   const [sectionHeights, setSectionHeights] = React.useState<Record<string, number>>({});
 
@@ -59,6 +62,8 @@ export const LandingStack = () => {
       setStickyTop1(getOffset(card1Ref.current, cta1Ref.current));
       setStickyTop2(getOffset(card2Ref.current, lastRef2.current));
       setStickyTop3(getOffset(card3Ref.current, lastRef3.current));
+      setStickyTop4(getOffset(card4Ref.current, lastRef4.current));
+      setStickyTop5(getOffset(card5Ref.current, lastRef5.current));
     };
 
     let resizeTimer: NodeJS.Timeout;
@@ -81,7 +86,7 @@ export const LandingStack = () => {
       debouncedCalculate();
     });
 
-    [card1Ref, card2Ref, card3Ref].forEach(ref => {
+    [card1Ref, card2Ref, card3Ref, card4Ref, card5Ref].forEach(ref => {
       if (ref.current) observer.observe(ref.current);
     });
 
@@ -114,11 +119,11 @@ export const LandingStack = () => {
       {/* 
         CARD 1: Hero + White Card 
       */}
-      <section 
-        ref={card1Ref} 
+      <section
+        ref={card1Ref}
         data-section-id="1"
-        className="sticky z-10 w-full will-change-[top,transform] transform-gpu contain-paint" 
-        style={{ 
+        className="sticky z-10 w-full will-change-[top,transform] transform-gpu contain-paint"
+        style={{
           top: `${stickyTop1}px`,
           minHeight: sectionHeights['1'] ? `${sectionHeights['1']}px` : 'auto'
         }}
@@ -136,7 +141,7 @@ export const LandingStack = () => {
                 quality={90}
               />
             </div>
-            <div className="relative z-10 max-w-[800px] flex flex-col gap-8">
+            <div className="relative z-10 max-w-[800px] flex flex-col gap-4">
               <h1 className="text-[40px] font-bold leading-[1.1] tracking-[-0.02em] text-white font-georgia">
                 When your mind feels louder than your life, clarity is non-negotiable.
               </h1>
@@ -149,7 +154,7 @@ export const LandingStack = () => {
                 </p>
               </div>
               <div className="flex flex-row items-center gap-4 md:gap-6 mt-4">
-                <Button variant="gray" className="w-[220px] sm:w-[230px] md:w-[260px] h-[50px] md:h-[58px] text-[16px] md:text-[17px] px-6 md:px-8 whitespace-nowrap" onClick={openBookingModal}>Begin with understanding.</Button>
+                <Button variant="gray" className="w-[180px] sm:w-[200px] md:w-[240px] h-[48px] md:h-[56px] text-[13px] sm:text-[14px] md:text-[17px] px-4 sm:px-6 md:px-8 whitespace-nowrap" onClick={openBookingModal}>Begin with understanding.</Button>
                 <img src="/assets/Group 54.svg" alt="Try now!" className="h-[40px] md:h-[60px] w-auto -mt-4" />
               </div>
             </div>
@@ -166,9 +171,9 @@ export const LandingStack = () => {
 
               {/* 2x2 Grid + Single Big Card Layout */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
-                
-                {/* 2x2 Cluster (Left 2 columns on LG) */}
-                <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                {/* 2x2 Cluster (Left 2 columns on LG, Full width on MD) */}
+                <div className="lg:col-span-2 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Card 1a: Image */}
                   <div className="relative rounded-[30px] overflow-hidden border border-black/10 aspect-square group">
                     <img src="/assets/section_2_1.webp" alt="Philosophy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
@@ -209,8 +214,8 @@ export const LandingStack = () => {
                   </div>
                 </div>
 
-                {/* Card 2: Single Big Card (Right column on LG) */}
-                <div className="lg:col-span-1 rounded-[30px] border border-black/10 p-8 md:p-10 flex flex-col justify-between bg-white hover:shadow-xl transition-all h-full min-h-[500px]">
+                {/* Card 2: Single Big Card (Right column on LG, Full width on MD) */}
+                <div className="lg:col-span-1 md:col-span-2 rounded-[30px] border border-black/10 p-8 md:p-10 flex flex-col justify-between bg-white hover:shadow-xl transition-all h-full md:h-auto lg:h-full min-h-[400px] md:min-h-0 lg:min-h-[500px]">
                   <div>
                     <span className="text-[24px] font-bold text-[#0F9393] font-nunito">03</span>
                     <div className="mt-10 space-y-8">
@@ -241,7 +246,7 @@ export const LandingStack = () => {
               {/* Centered CTA */}
               <div className="mt-20 w-full flex flex-col items-center">
                 <div ref={cta1Ref} className="flex flex-row items-center justify-center gap-4 md:gap-6">
-                  <Button variant="black" className="w-[240px] md:w-[280px] h-[58px] md:h-[64px] text-[17px] md:text-[19px] px-6 md:px-8 whitespace-nowrap" onClick={openBookingModal}>Begin with understanding.</Button>
+                  <Button variant="black" className="w-[200px] md:w-[240px] h-[52px] md:h-[58px] text-[14px] md:text-[18px] px-4 md:px-8 whitespace-nowrap" onClick={openBookingModal}>Begin with understanding.</Button>
                   <img src="/assets/Group 54.svg" alt="Try now!" className="h-[40px] md:h-[55px] w-auto invert -mt-3" />
                 </div>
               </div>
@@ -254,17 +259,17 @@ export const LandingStack = () => {
       {/* 
         CARD 2: Features (Black Card)
       */}
-      <section 
-        ref={card2Ref} 
+      <section
+        ref={card2Ref}
         data-section-id="2"
-        className="sticky z-20 w-full flex justify-center pb-20 -mt-[330px] pointer-events-none will-change-[top,transform] transform-gpu contain-paint" 
-        style={{ 
+        className="sticky z-20 w-full flex justify-center pb-20 -mt-[330px] pointer-events-none will-change-[top,transform] transform-gpu contain-paint"
+        style={{
           top: `${stickyTop2}px`,
           minHeight: sectionHeights['2'] ? `${sectionHeights['2']}px` : 'auto'
         }}
       >
-        <div className="w-[97vw] max-w-[2440px] bg-[#171612] rounded-t-[40px] rounded-b-[40px] pt-32 pb-24 px-6 md:px-12 lg:px-24 flex flex-col items-center shadow-2xl pointer-events-auto">
-          <div className="text-center mb-20 max-w-[900px]">
+        <div className="w-[97vw] max-w-[2440px] bg-[#171612] rounded-t-[40px] rounded-b-[40px] pt-18 pb-24 px-6 md:px-12 lg:px-24 flex flex-col items-center shadow-2xl pointer-events-auto">
+          <div className="text-center mb-10 max-w-[900px]">
             <h2 className="font-georgia text-[36px] font-bold leading-tight text-white mb-6">
               Why Unheard?
             </h2>
@@ -298,15 +303,15 @@ export const LandingStack = () => {
                   <div className="space-y-4">
                     <p className="font-nunito text-[18px] md:text-[20px] text-black/80 leading-relaxed">
                       Anxiety doesn’t always look dramatic. It’s just constant. Racing thoughts. Restlessness. A sense that something is wrong.
-           <br/>
-                   
+                      <br />
+
                       You don’t need to calm down. You need to understand what’s happening.
                     </p>
                   </div>
 
                   {/* Read More Section */}
                   <div className="mt-4 mb-8 w-full">
-                    <button 
+                    <button
                       onClick={() => setIsAnxietyDetailsOpen(!isAnxietyDetailsOpen)}
                       className="flex items-center gap-2 text-black/40 hover:text-black font-nunito font-bold text-[14px] uppercase tracking-widest transition-colors mb-4"
                     >
@@ -337,9 +342,9 @@ export const LandingStack = () => {
                   </div>
 
                   <div className="flex flex-col sm:flex-row items-center gap-6">
-                    <Button 
-                      variant="black" 
-                      className="w-[220px] md:w-[280px] h-[58px] md:h-[64px] !rounded-full text-[15px] md:text-[17px] px-6 md:px-8 whitespace-nowrap shadow-xl"
+                    <Button
+                      variant="black"
+                      className="w-[200px] md:w-[240px] h-[52px] md:h-[58px] !rounded-full text-[14px] md:text-[16px] px-4 md:px-8 whitespace-nowrap shadow-xl"
                       onClick={openBookingModal}
                     >
                       Begin with understanding.
@@ -385,178 +390,181 @@ export const LandingStack = () => {
 
           <div ref={lastRef2} className="mt-20 md:mt-28 w-full max-w-[1000px] flex flex-col md:flex-row items-center justify-between gap-12 md:gap-6 px-10">
             <div className="flex flex-col items-center text-center">
-              <span className="font-georgia font-bold text-[56px] md:text-[72px] text-white leading-none"><AnimatedCounter end={1500} suffix="+" /></span>
-              <span className="font-nunito font-semibold text-[20px] md:text-[24px] text-white mt-1">Happy Patients</span>
+              <span className="font-georgia font-bold text-[56px] md:text-[60px] lg:text-[72px] text-white leading-none"><AnimatedCounter end={1500} suffix="+" /></span>
+              <span className="font-nunito font-semibold text-[18px] md:text-[20px] lg:text-[24px] text-white mt-1">Happy Patients</span>
             </div>
             <div className="flex flex-col items-center text-center">
-              <span className="font-georgia font-bold text-[56px] md:text-[72px] text-white leading-none"><AnimatedCounter end={80} suffix="+" /></span>
-              <span className="font-nunito font-semibold text-[20px] md:text-[24px] text-white mt-1">Licensed Therapists</span>
+              <span className="font-georgia font-bold text-[56px] md:text-[60px] lg:text-[72px] text-white leading-none"><AnimatedCounter end={80} suffix="+" /></span>
+              <span className="font-nunito font-semibold text-[18px] md:text-[20px] lg:text-[24px] text-white mt-1">Licensed Therapists</span>
             </div>
             <div className="flex flex-col items-center text-center">
-              <span className="font-georgia font-bold text-[56px] md:text-[72px] text-white leading-none"><AnimatedCounter end={2000} suffix="+" /></span>
-              <span className="font-nunito font-semibold text-[20px] md:text-[24px] text-white mt-1">Hours of Therapy</span>
+              <span className="font-georgia font-bold text-[56px] md:text-[60px] lg:text-[72px] text-white leading-none"><AnimatedCounter end={2000} suffix="+" /></span>
+              <span className="font-nunito font-semibold text-[18px] md:text-[20px] lg:text-[24px] text-white mt-1">Hours of Therapy</span>
             </div>
           </div>
           <div className="h-[200px] md:h-[250px] w-full shrink-0" />
         </div>
       </section>
 
-      <section 
-        ref={card3Ref} 
+      {/* 
+        CARD 3: FAQ (White Card)
+      */}
+      <section
+        ref={card3Ref}
         data-section-id="3"
-        className="sticky z-30 w-full flex justify-center -mt-[170px] pointer-events-none will-change-[top,transform] transform-gpu contain-paint" 
-        style={{ 
+        className="sticky z-30 w-full flex justify-center pb-20 -mt-[330px] pointer-events-none will-change-[top,transform] transform-gpu contain-paint"
+        style={{
           top: `${stickyTop3}px`,
           minHeight: sectionHeights['3'] ? `${sectionHeights['3']}px` : 'auto'
         }}
       >
-        <div className="w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-t-[40px] rounded-b-[40px] pt-24 md:pt-32 pb-24 px-6 md:px-12 lg:px-24 flex flex-col items-center shadow-[0_-20px_50px_rgba(0,0,0,0.3)] pointer-events-auto">
+        <div className="w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-t-[40px] rounded-b-[40px] pt-40 pb-40 px-6 md:px-12 lg:px-24 flex flex-col items-center shadow-[0_-20px_50px_rgba(0,0,0,0.3)] pointer-events-auto">
           <div className="text-center mb-16 max-w-[900px]">
-            <h2 className="font-georgia text-[36px] font-bold leading-tight text-black">Your Questions, Answered <br /> <span className="text-[#0F9393]">At Unheard.</span></h2>
+            <h2 className="font-georgia text-[36px] md:text-[48px] font-bold leading-tight text-black">Your Questions, Answered <br /> <span className="text-[#0F9393]">At Unheard.</span></h2>
           </div>
           <div className="flex flex-col lg:flex-row w-full max-w-[1200px] gap-12 lg:gap-20 items-stretch">
             <div className="w-full lg:w-1/2 flex justify-center lg:justify-end shrink-0">
               <div className="relative w-full max-w-[450px] aspect-[4/5] rounded-[30px] overflow-hidden shadow-lg bg-gray-200">
-                <Image
-                  src="/assets/section_2_2.webp"
-                  alt="FAQ Preview"
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 450px"
-                  className="object-cover"
-                />
+                <Image src="/assets/section_2_2.webp" alt="FAQ Preview" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 450px" className="object-cover" />
               </div>
             </div>
             <div className="w-full lg:w-1/2 flex flex-col justify-center">
               <FAQAccordion data={faqData} />
               <div ref={lastRef3} className="mt-12 w-full flex justify-center">
-                <button ref={cta3Ref} className="bg-black hover:bg-gray-800 text-white font-nunito font-bold text-[16px] md:text-[18px] w-[200px] md:w-[300px] h-[54px] md:h-[64px] flex items-center justify-center rounded-full transition-colors whitespace-nowrap">Contact Us</button>
+                <button className="bg-black hover:bg-gray-800 text-white font-nunito font-bold text-[14px] md:text-[18px] w-[200px] md:w-[300px] h-[54px] md:h-[64px] flex items-center justify-center rounded-full transition-colors whitespace-nowrap" onClick={() => window.location.href = '#contact'}>Contact Us</button>
               </div>
             </div>
           </div>
-          {/* <div className="mt-32 w-full max-w-[900px] flex flex-col items-center text-center">
-            <h2 className="font-georgia text-[36px] font-bold leading-tight text-black mb-8">Voices Finally Heard, <br /> <span className="text-[#0F9393]">Lives Transformed</span></h2>
-            <div ref={lastRef3} className="w-full"><TestimonialCarousel testimonials={testimonialData} /></div>
-          </div> */}
-         
+          <div className="h-[250px] md:h-[350px] w-full shrink-0 pointer-events-none" />
         </div>
       </section>
 
       {/* 
-        FOOTER BANNER: Integrated Expertise & Blog
+        CARD 4: Specialties Wall (Black Card)
       */}
-      <section className="-mt-[90px] relative z-40 w-[97vw] mx-auto bg-[#0a0a0a] rounded-t-[60px] md:rounded-t-[80px] pt-40 pb-40 flex flex-col items-center border-t border-white/5 overflow-hidden">
-        <div className="absolute top-0 right-0 w-[40vw] h-[40vw] bg-[#0F9393]/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
-        
-        <div className="relative z-10 w-full flex flex-col items-center">
+      <section
+        ref={card4Ref}
+        data-section-id="4"
+        className="sticky z-40 w-full flex justify-center pb-20 -mt-[330px] pointer-events-none will-change-[top,transform] transform-gpu contain-paint"
+        style={{
+          top: `${stickyTop4}px`,
+          minHeight: sectionHeights['4'] ? `${sectionHeights['4']}px` : 'auto'
+        }}
+      >
+        <div className="w-[97vw] max-w-[2440px] bg-[#171612] rounded-t-[40px] rounded-b-[40px] pt-40 pb-40 flex flex-col items-center shadow-2xl pointer-events-auto border-t border-white/5 overflow-hidden">
+          <div className="absolute top-0 right-0 w-[40vw] h-[40vw] bg-[#0F9393]/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
           
-          {/* 1. Wide Visual Wall (Responsive Grids) */}
-          <div className="w-full flex justify-center mb-24 overflow-visible pointer-events-auto px-4">
-            
-            {/* Large Desktop: 7 Columns (11 Cards: 2-2-1-1-1-2-2) */}
-            <div className="hidden lg:flex items-start gap-5 w-full max-w-[1400px] justify-center">
-              {[
-                { count: 2, offset: 'mt-32', indices: [0, 1] },
-                { count: 2, offset: 'mt-16', indices: [2, 3] },
-                { count: 1, offset: 'mt-24', indices: [4] },
-                { count: 1, offset: 'mt-0', indices: [5] }, // Center Apex
-                { count: 1, offset: 'mt-24', indices: [6] },
-                { count: 2, offset: 'mt-16', indices: [7, 8] },
-                { count: 2, offset: 'mt-32', indices: [9, 10] }
-              ].map((col, colIdx) => (
-                <div key={colIdx} className={`flex flex-col gap-5 flex-1 max-w-[190px] ${col.offset} transition-all duration-700`}>
-                  {col.indices.map((dataIdx) => (
-                    <div 
-                      key={dataIdx} 
-                      className="relative aspect-[3/4] rounded-[30px] overflow-hidden border border-white/10 shadow-2xl transition-all duration-700 group hover:-translate-y-2"
-                    >
-                      <Image
-                        src={specialtiesData[dataIdx].image}
-                        alt="Expertise"
-                        fill
-                        className="object-cover opacity-70 group-hover:opacity-100 transition-opacity duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent flex items-bottom p-6 h-full">
-                        <p className="text-white font-nunito text-[16px] font-bold leading-tight self-end">
-                          {specialtiesData[dataIdx].text}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-
-            {/* Mobile & Tablet: 3 Columns (8 Cards: 3-2-3) */}
-            <div className="flex lg:hidden items-start gap-3 sm:gap-6 w-full max-w-[800px] justify-center">
-              {[
-                { count: 3, offset: 'mt-12', indices: [0, 1, 2] },
-                { count: 2, offset: 'mt-0', indices: [3, 4] },
-                { count: 3, offset: 'mt-12', indices: [5, 6, 7] }
-              ].map((col, colIdx) => (
-                <div key={colIdx} className={`flex flex-col gap-3 sm:gap-5 flex-1 ${col.offset}`}>
-                  {col.indices.map((dataIdx) => (
-                    <div 
-                      key={dataIdx} 
-                      className="relative aspect-[3/4] rounded-2xl md:rounded-[40px] overflow-hidden border border-white/10 shadow-xl group"
-                    >
-                      <Image
-                        src={specialtiesData[dataIdx].image}
-                        alt="Expertise"
-                        fill
-                        className="object-cover opacity-80"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent flex items-end p-4 sm:p-8 h-full">
-                        <p className="text-white font-nunito text-[13px] sm:text-[18px] md:text-[22px] font-bold leading-tight">
-                          {specialtiesData[dataIdx].text}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* 2. Centralized Expertise Text & Hero-Style CTA */}
-          <div className="text-center mb-32 px-6 max-w-[1000px]">
-            <p className="font-georgia italic text-[22px] md:text-[32px] text-[#0F9393] mb-6 tracking-tight">
-              Therapy for when your mind doesn’t switch off.
-            </p>
-            <h2 className="font-georgia text-[36px] font-bold leading-[1.05] text-white mb-10">
-              Comprehensive support for <br /> <span className="opacity-80">every mental landscape.</span>
-            </h2>
-            <p className="font-nunito text-[18px] md:text-[24px] text-white/40 mb-16 max-w-[800px] mx-auto leading-relaxed">
-              Professional care tailored to identify, understand, and restructure thought, emotion, and behavior.
-            </p>
-            
-            <div className="flex flex-row items-center justify-center gap-4 md:gap-6 mt-4">
-              <Button 
-                variant="white" 
-                className="w-full sm:w-auto min-w-[220px] md:min-w-[280px] h-[58px] md:h-[64px] text-[17px] md:text-[19px] px-6 md:px-8 whitespace-nowrap shadow-xl" 
-                onClick={openBookingModal}
-              >
-                Begin with understanding.
-              </Button>
-              <img src="/assets/Group 54.svg" alt="Try now!" className="h-[40px] md:h-[55px] w-auto -mt-3" />
-            </div>
-          </div>
-
-          <div className="w-full h-px bg-white/5 mb-40" />
-
-          {/* 3. Blog Section */}
-          <div className="w-full max-w-[1440px] px-6">
-            <div className="text-center mb-20 text-white">
-              <h2 className="font-georgia text-[36px] font-bold leading-tight flex flex-col items-center">
-                <span className="text-[#0F9393]">Unheard Truth:</span>
-                <span>Discover, Reflect, and Grow</span>
+          <div className="relative z-10 w-full flex flex-col items-center">
+            {/* Header Title */}
+            <div className="text-center mb-16 px-6 max-w-[1200px]">
+              <h2 className="font-georgia text-[36px] md:text-[42px] lg:text-[48px] font-bold leading-[1.05] text-white">
+                Comprehensive support for <br /> <span className="opacity-80">every mental landscape.</span>
               </h2>
             </div>
-            <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-              {blogData.map((blog, idx) => <BlogCard key={idx} blog={blog} />)}
+
+            {/* Specialties Wall Grid */}
+            <div className="w-full flex justify-center mb-24 overflow-visible px-4">
+              <div className="hidden lg:flex items-start gap-5 w-full max-w-[1400px] justify-center">
+                {[
+                  { count: 2, offset: 'mt-32', indices: [0, 1] },
+                  { count: 2, offset: 'mt-16', indices: [2, 3] },
+                  { count: 1, offset: 'mt-24', indices: [4] },
+                  { count: 1, offset: 'mt-0', indices: [5] },
+                  { count: 1, offset: 'mt-24', indices: [6] },
+                  { count: 2, offset: 'mt-16', indices: [7, 8] },
+                  { count: 2, offset: 'mt-32', indices: [9, 10] }
+                ].map((col, colIdx) => (
+                  <div key={colIdx} className={`flex flex-col gap-5 flex-1 max-w-[190px] ${col.offset}`}>
+                    {col.indices.map((dataIdx) => (
+                      <div key={dataIdx} className="relative aspect-[3/4] rounded-[30px] overflow-hidden border border-white/10 shadow-2xl transition-all duration-700 group hover:-translate-y-2">
+                        <Image src={specialtiesData[dataIdx].image} alt="Expertise" fill className="object-cover opacity-70 group-hover:opacity-100 transition-opacity duration-500" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent flex items-bottom p-6 h-full">
+                          <p className="text-white font-nunito text-[16px] font-bold leading-tight self-end">{specialtiesData[dataIdx].text}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+              
+              {/* Mobile Mobile/Tablet Grid */}
+              <div className="flex lg:hidden items-start gap-3 sm:gap-6 w-full max-w-[800px] justify-center">
+                {[
+                  { count: 3, offset: 'mt-12', indices: [0, 1, 2] },
+                  { count: 2, offset: 'mt-0', indices: [3, 4] },
+                  { count: 3, offset: 'mt-12', indices: [5, 6, 7] }
+                ].map((col, colIdx) => (
+                  <div key={colIdx} className={`flex flex-col gap-3 sm:gap-5 flex-1 ${col.offset}`}>
+                    {col.indices.map((dataIdx) => (
+                      <div key={dataIdx} className="relative aspect-[3/4] rounded-2xl md:rounded-[40px] overflow-hidden border border-white/10 shadow-xl group">
+                        <Image src={specialtiesData[dataIdx].image} alt="Expertise" fill className="object-cover opacity-80" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent flex items-end p-4 sm:p-8 h-full">
+                          <p className="text-white font-nunito text-[13px] sm:text-[18px] md:text-[22px] font-bold leading-tight">{specialtiesData[dataIdx].text}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* CTA Content */}
+            <div ref={lastRef4} className="text-center mb-32 px-6 max-w-[600px] lg:max-w-[520px] lg:-mt-[340px] relative z-20">
+              <p className="font-georgia italic text-[22px] md:text-[32px] text-[#0F9393] mb-6 tracking-tight">Therapy for when your mind doesn’t switch off.</p>
+              <p className="font-nunito text-[18px] md:text-[24px] text-white/40 mb-12 mx-auto leading-relaxed">Professional care tailored to identify, understand, and restructure thought, emotion, and behavior.</p>
+              <div className="flex flex-row items-center justify-center gap-4 md:gap-6 mt-4">
+                <Button variant="white" className="w-[180px] md:w-[240px] h-[52px] md:h-[58px] text-[14px] md:text-[17px] px-4 md:px-8 whitespace-nowrap shadow-xl" onClick={openBookingModal}>Begin with understanding.</Button>
+                <img src="/assets/Group 54.svg" alt="Try now!" className="h-[40px] md:h-[55px] w-auto -mt-3" />
+              </div>
             </div>
           </div>
-
+          <div className="h-[250px] md:h-[350px] w-full shrink-0 pointer-events-none" />
         </div>
+      </section>
+
+      {/* 
+        CARD 5: Blog Section (White Card)
+      */}
+      <section
+        ref={card5Ref}
+        data-section-id="5"
+        className="sticky z-50 w-full flex justify-center pb-20 -mt-[330px] pointer-events-none will-change-[top,transform] transform-gpu contain-paint"
+        style={{
+          top: `${stickyTop5}px`,
+          minHeight: sectionHeights['5'] ? `${sectionHeights['5']}px` : 'auto'
+        }}
+      >
+        <div className="w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-t-[40px] rounded-b-[40px] pt-40 pb-40 px-6 md:px-12 lg:px-24 flex flex-col items-center shadow-[0_-20px_50px_rgba(0,0,0,0.3)] pointer-events-auto">
+          <div className="w-full max-w-[1440px] flex flex-col items-center">
+            <div className="text-center mb-24 max-w-[900px]">
+              <h2 className="font-georgia text-[36px] md:text-[48px] font-bold leading-tight text-black flex flex-col items-center">
+                <span className="text-[#0F9393] mb-4">Unheard Truth:</span>
+                <span className="opacity-40 text-[24px] md:text-[32px] font-medium italic leading-relaxed text-center">Discover, Reflect, and Grow</span>
+              </h2>
+              <div className="mt-8 w-24 h-1 bg-[#0F9393]/20 mx-auto rounded-full" />
+            </div>
+
+            <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+              {blogData.map((blog, idx) => (
+                <BlogCard key={idx} blog={blog} variant="light" />
+              ))}
+            </div>
+            
+            <div ref={lastRef5} className="mt-24 flex justify-center">
+              <button onClick={() => window.location.href = '/blog'} className="group flex items-center gap-4 bg-black p-1.5 pl-8 pr-2 rounded-full border-2 border-black hover:bg-gray-800 transition-all shadow-xl">
+                <span className="text-white font-nunito font-bold text-[14px] md:text-[18px]">View all articles</span>
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center transition-transform group-hover:translate-x-1">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-7-7 7 7-7 7" /></svg>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Final Footer Spacer */}
+      <section className="relative z-[60] w-full bg-[#111111] pt-40 pb-20">
+        <div className="w-full h-px bg-white/5 mb-20" />
       </section>
     </div>
   );
