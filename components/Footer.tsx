@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export function Footer() {
   return (
@@ -6,9 +7,11 @@ export function Footer() {
       <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
         <div className="flex flex-col">
           <Link href="/">
-            <img 
+            <Image 
               src="/assets/logo unherd white.svg" 
               alt="unHeard Logo" 
+              width={140}
+              height={35}
               className="h-[35px] w-auto mb-4 hover:opacity-80 transition-opacity"
             />
           </Link>

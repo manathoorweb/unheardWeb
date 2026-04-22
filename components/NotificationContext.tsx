@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, X, CheckCircle } from 'lucide-react';
@@ -28,20 +28,20 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const supabase = createClient();
 
-  const addNotification = (notif: Omit<Notification, 'id' | 'createdAt'>) => {
+  const removeNotification = useCallback((id: string) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  }, []);
+
+  const addNotification = useCallback((notif: Omit<Notification, 'id' | 'createdAt'>) => {
     const id = Math.random().toString(36).substring(2, 9);
     const newNotif = { ...notif, id, createdAt: new Date() };
     setNotifications((prev) => [newNotif, ...prev]);
 
     // Auto-remove after 5 seconds
     setTimeout(() => removeNotification(id), 5000);
-  };
+  }, [removeNotification]);
 
-  const removeNotification = (id: string) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
-  };
-
-  const clearNotifications = () => setNotifications([]);
+  const clearNotifications = useCallback(() => setNotifications([]), []);
 
   useEffect(() => {
     // 1. Listen for new Therapist Registrations (for Admins)

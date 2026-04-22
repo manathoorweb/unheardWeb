@@ -165,7 +165,7 @@ export default function BlogEditor({ onSave, initialData }: BlogEditorProps) {
                    <div className="w-full md:w-[35%] flex flex-col gap-2">
                       <div className="aspect-[4/3] bg-gray-50 rounded-[20px] border border-dashed border-gray-200 flex items-center justify-center overflow-hidden relative group/img">
                         {block.images[0] ? (
-                          <img src={block.images[0]} alt="" className="w-full h-full object-cover" />
+                          <Image src={block.images[0]} alt="" width={400} height={300} className="w-full h-full object-cover" unoptimized />
                         ) : (
                           <ImageIcon size={32} className="text-gray-200" />
                         )}
@@ -188,7 +188,7 @@ export default function BlogEditor({ onSave, initialData }: BlogEditorProps) {
                       {block.images.map((img, i) => (
                         <div key={i} className="aspect-square bg-gray-50 rounded-[20px] border border-dashed border-gray-200 flex items-center justify-center overflow-hidden relative group/img">
                           {img ? (
-                            <img src={img} alt="" className="w-full h-full object-cover" />
+                            <Image src={img} alt="" width={400} height={400} className="w-full h-full object-cover" unoptimized />
                           ) : (
                             <ImageIcon size={24} className="text-gray-200" />
                           )}

@@ -7,50 +7,50 @@ import Button from '@/components/ui/Button';
 import { useBooking } from '@/components/BookingContext';
 
 const INDIVIDUAL_CARDS = [
-  { id: 1, title: 'Anxiety and constant worry', image: '/assets/service/bento_anxiety.png', size: 'lg' },
-  { id: 2, title: 'Overthinking and intrusive thoughts', image: '/assets/service/bento_overthinking.png', size: 'md' },
-  { id: 3, title: 'Depression and low mood', image: '/assets/service/bento_depression.png', size: 'md' },
-  { id: 4, title: 'Emotional burnout and fatigue', image: '/assets/service/bento_burnout.png', size: 'lg' },
-  { id: 5, title: 'Self-doubt and low confidence', image: '/assets/service/bento_self_doubt.png', size: 'md' },
-  { id: 6, title: 'Stress related to work, studies or life decisions', image: '/assets/service/bento_stress.png', size: 'md' },
-  { id: 7, title: 'Feeling stuck, disconnected, or overwhelmed', image: '/assets/service/bento_stuck.png', size: 'lg' },
-  { id: 8, title: 'Personal Growth & Emotional Clarity', image: '/assets/service/bento_growth.png', size: 'md' }
+  { id: 1, title: 'Anxiety and constant worry', image: '/assets/service/bento_anxiety.webp', size: 'lg' },
+  { id: 2, title: 'Overthinking and intrusive thoughts', image: '/assets/service/bento_overthinking.webp', size: 'md' },
+  { id: 3, title: 'Depression and low mood', image: '/assets/service/bento_depression.webp', size: 'md' },
+  { id: 4, title: 'Emotional burnout and fatigue', image: '/assets/service/bento_burnout.webp', size: 'lg' },
+  { id: 5, title: 'Self-doubt and low confidence', image: '/assets/service/bento_self_doubt.webp', size: 'md' },
+  { id: 6, title: 'Stress related to work, studies or life decisions', image: '/assets/service/bento_stress.webp', size: 'md' },
+  { id: 7, title: 'Feeling stuck, disconnected, or overwhelmed', image: '/assets/service/bento_stuck.webp', size: 'lg' },
+  { id: 8, title: 'Personal Growth & Emotional Clarity', image: '/assets/service/bento_growth.webp', size: 'md' }
 ];
 
 const RELATIONSHIP_CARDS = [
-  { id: 1, title: 'Communication breakdowns', image: '/assets/service/bento_stuck.png', size: 'lg' },
-  { id: 2, title: 'Frequent arguments', image: '/assets/service/bento_stress.png', size: 'md' },
-  { id: 3, title: 'Trust issues and emotional distance', image: '/assets/service/bento_anxiety.png', size: 'md' },
-  { id: 4, title: 'Pre-marital and marital concerns', image: '/assets/service/bento_growth.png', size: 'lg' },
-  { id: 5, title: 'Compatibility gaps', image: '/assets/service/bento_overthinking.png', size: 'md' },
-  { id: 6, title: 'Infidelity and rebuilding trust', image: '/assets/service/bento_burnout.png', size: 'md' }
+  { id: 1, title: 'Communication breakdowns', image: '/assets/service/bento_stuck.webp', size: 'lg' },
+  { id: 2, title: 'Frequent arguments', image: '/assets/service/bento_stress.webp', size: 'md' },
+  { id: 3, title: 'Trust issues and emotional distance', image: '/assets/service/bento_anxiety.webp', size: 'md' },
+  { id: 4, title: 'Pre-marital and marital concerns', image: '/assets/service/bento_growth.webp', size: 'lg' },
+  { id: 5, title: 'Compatibility gaps', image: '/assets/service/bento_overthinking.webp', size: 'md' },
+  { id: 6, title: 'Infidelity and rebuilding trust', image: '/assets/service/bento_burnout.webp', size: 'md' }
 ];
 
 const ADOLESCENT_CARDS = [
-  { id: 1, title: 'Academic stress & Pressure', image: '/assets/service/bento_stress.png', size: 'lg' },
-  { id: 2, title: 'Career confusion', image: '/assets/service/bento_overthinking.png', size: 'md' },
-  { id: 3, title: 'Social anxiety', image: '/assets/service/bento_anxiety.png', size: 'md' },
-  { id: 4, title: 'Identity & Confidence', image: '/assets/service/bento_growth.png', size: 'lg' },
-  { id: 5, title: 'Emotional sensitivity', image: '/assets/service/bento_stuck.png', size: 'md' },
-  { id: 6, title: 'Peer Dynamics & Comparison', image: '/assets/service/bento_self_doubt.png', size: 'md' }
+  { id: 1, title: 'Academic stress & Pressure', image: '/assets/service/bento_stress.webp', size: 'lg' },
+  { id: 2, title: 'Career confusion', image: '/assets/service/bento_overthinking.webp', size: 'md' },
+  { id: 3, title: 'Social anxiety', image: '/assets/service/bento_anxiety.webp', size: 'md' },
+  { id: 4, title: 'Identity & Confidence', image: '/assets/service/bento_growth.webp', size: 'lg' },
+  { id: 5, title: 'Emotional sensitivity', image: '/assets/service/bento_stuck.webp', size: 'md' },
+  { id: 6, title: 'Peer Dynamics & Comparison', image: '/assets/service/bento_self_doubt.webp', size: 'md' }
 ];
 
 const FAMILY_CARDS = [
-  { id: 1, title: 'Parent-child conflict', image: '/assets/service/bento_burnout.png', size: 'lg' },
-  { id: 2, title: 'Communication gaps', image: '/assets/service/bento_stuck.png', size: 'md' },
-  { id: 3, title: 'Emotional distance', image: '/assets/service/bento_anxiety.png', size: 'md' },
-  { id: 4, title: 'Generational differences', image: '/assets/service/bento_growth.png', size: 'lg' },
-  { id: 5, title: 'Unspoken Family Dynamics', image: '/assets/service/bento_overthinking.png', size: 'md' },
-  { id: 6, title: 'Pattern Recognition', image: '/assets/service/bento_self_doubt.png', size: 'md' }
+  { id: 1, title: 'Parent-child conflict', image: '/assets/service/bento_burnout.webp', size: 'lg' },
+  { id: 2, title: 'Communication gaps', image: '/assets/service/bento_stuck.webp', size: 'md' },
+  { id: 3, title: 'Emotional distance', image: '/assets/service/bento_anxiety.webp', size: 'md' },
+  { id: 4, title: 'Generational differences', image: '/assets/service/bento_growth.webp', size: 'lg' },
+  { id: 5, title: 'Unspoken Family Dynamics', image: '/assets/service/bento_overthinking.webp', size: 'md' },
+  { id: 6, title: 'Pattern Recognition', image: '/assets/service/bento_self_doubt.webp', size: 'md' }
 ];
 
 const ANXIETY_CARDS = [
-  { id: 1, title: 'Generalised anxiety and constant worry', image: '/assets/service/bento_anxiety.png', size: 'lg' },
-  { id: 2, title: 'Panic attacks and physical sensations', image: '/assets/service/bento_overthinking.png', size: 'md' },
-  { id: 3, title: 'Social anxiety and performance pressure', image: '/assets/service/bento_stress.png', size: 'md' },
-  { id: 4, title: 'Health anxiety and hyper-vigilance', image: '/assets/service/bento_growth.png', size: 'lg' },
-  { id: 5, title: 'Stress overload and emotional fatigue', image: '/assets/service/bento_burnout.png', size: 'md' },
-  { id: 6, title: 'Sleep issues linked to racing thoughts', image: '/assets/service/bento_stuck.png', size: 'md' }
+  { id: 1, title: 'Generalised anxiety and constant worry', image: '/assets/service/bento_anxiety.webp', size: 'lg' },
+  { id: 2, title: 'Panic attacks and physical sensations', image: '/assets/service/bento_overthinking.webp', size: 'md' },
+  { id: 3, title: 'Social anxiety and performance pressure', image: '/assets/service/bento_stress.webp', size: 'md' },
+  { id: 4, title: 'Health anxiety and hyper-vigilance', image: '/assets/service/bento_growth.webp', size: 'lg' },
+  { id: 5, title: 'Stress overload and emotional fatigue', image: '/assets/service/bento_burnout.webp', size: 'md' },
+  { id: 6, title: 'Sleep issues linked to racing thoughts', image: '/assets/service/bento_stuck.webp', size: 'md' }
 ];
 
 export default function ServicesPage() {
@@ -230,7 +230,7 @@ export default function ServicesPage() {
           minHeight: sectionHeights['2'] ? `${sectionHeights['2']}px` : 'auto'
         }}
       >
-        <div className="relative w-[95vw] md:w-[97vw] max-w-[2440px] bg-[#171612] rounded-[50px] md:rounded-[100px] border border-white/5 overflow-hidden flex flex-col items-center pt-24 md:pt-40 pb-40 px-6 md:px-12 lg:px-24 pointer-events-auto shadow-2xl -mt-16 md:-mt-32 z-20">
+        <div className="relative w-[95vw] md:w-[97vw] max-w-[2440px] bg-[#171612] rounded-[50px] md:rounded-[100px] border border-white/5 overflow-hidden flex flex-col items-center pt-24 md:pt-40 pb-40 px-6 md:px-12 lg:px-24 pointer-events-auto shadow-2xl  z-20">
           <div className="relative z-10 w-full flex flex-col items-center gap-16 lg:gap-24">
             <div className="flex flex-col gap-6 items-center text-center">
               <span className="text-[#0F9393] font-bold uppercase tracking-[0.2em] text-[14px]">PILLAR 02</span>
@@ -266,11 +266,13 @@ export default function ServicesPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 w-full auto-rows-[320px] mt-20 md:mt-32">
               {RELATIONSHIP_CARDS.map((card) => (
-                <div key={card.id} className={`relative rounded-[40px] md:rounded-[60px] overflow-hidden group border border-white/5 ${card.size === 'lg' ? 'md:col-span-2' : 'md:col-span-1'}`}>
-                  <Image src={card.image} alt={card.title} fill className="object-cover transition-transform duration-1000 group-hover:scale-105" />
-                  <div className="absolute bottom-6 left-6 z-20">
-                    <div className="px-6 py-4 pt-8 rounded-[24px] backdrop-blur-xl bg-black/60 border border-white/5">
-                      <h3 className="text-[17px] md:text-[20px] font-bold font-georgia text-white leading-tight">{card.title}</h3>
+                <div key={card.id} className={`relative p-3 md:p-5 bg-white/5 rounded-[40px] md:rounded-[60px] group border border-white/5 ${card.size === 'lg' ? 'md:col-span-2' : 'md:col-span-1'}`}>
+                  <div className="relative h-full w-full rounded-[32px] md:rounded-[45px] overflow-hidden">
+                    <Image src={card.image} alt={card.title} fill className="object-cover transition-transform duration-1000 group-hover:scale-105" />
+                    <div className="absolute bottom-6 left-6 z-20">
+                      <div className="px-6 py-4 pt-8 rounded-[24px] backdrop-blur-xl bg-black/60 border border-white/5">
+                        <h3 className="text-[17px] md:text-[20px] font-bold font-georgia text-white leading-tight">{card.title}</h3>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -296,7 +298,7 @@ export default function ServicesPage() {
           minHeight: sectionHeights['3'] ? `${sectionHeights['3']}px` : 'auto'
         }}
       >
-        <div className="relative w-[95vw] md:w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-[50px] md:rounded-[100px] border border-black/5 overflow-hidden flex flex-col items-center pt-24 md:pt-40 pb-40 px-6 md:px-12 lg:px-24 pointer-events-auto shadow-2xl -mt-16 md:-mt-32 z-20">
+        <div className="relative w-[95vw] md:w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-[50px] md:rounded-[100px] border border-black/5 overflow-hidden flex flex-col items-center pt-24 md:pt-40 pb-40 px-6 md:px-12 lg:px-24 pointer-events-auto shadow-2xl z-20">
           <div className="relative z-10 w-full flex flex-col items-center gap-16 lg:gap-24">
             <div className="flex flex-col gap-6 items-center text-center">
               <span className="text-[#0F9393] font-bold uppercase tracking-[0.2em] text-[14px]">PILLAR 03</span>
@@ -361,7 +363,7 @@ export default function ServicesPage() {
           minHeight: sectionHeights['4'] ? `${sectionHeights['4']}px` : 'auto'
         }}
       >
-        <div className="relative w-[95vw] md:w-[97vw] max-w-[2440px] bg-[#171612] rounded-[50px] md:rounded-[100px] border border-white/5 overflow-hidden flex flex-col items-center pt-24 md:pt-40 pb-40 px-6 md:px-12 lg:px-24 pointer-events-auto shadow-2xl -mt-16 md:-mt-32 z-20">
+        <div className="relative w-[95vw] md:w-[97vw] max-w-[2440px] bg-[#171612] rounded-[50px] md:rounded-[100px] border border-white/5 overflow-hidden flex flex-col items-center pt-24 md:pt-40 pb-40 px-6 md:px-12 lg:px-24 pointer-events-auto shadow-2xl  z-20">
           <div className="relative z-10 w-full flex flex-col items-center gap-16 lg:gap-24">
             <div className="flex flex-col gap-6 items-center text-center">
               <span className="text-[#0F9393] font-bold uppercase tracking-[0.2em] text-[14px]">PILLAR 04</span>
@@ -424,7 +426,7 @@ export default function ServicesPage() {
           minHeight: sectionHeights['5'] ? `${sectionHeights['5']}px` : 'auto'
         }}
       >
-        <div className="relative w-[95vw] md:w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-[50px] md:rounded-[100px] border border-black/5 overflow-hidden flex flex-col items-center pt-24 md:pt-40 pb-40 px-6 md:px-12 lg:px-24 pointer-events-auto shadow-2xl -mt-16 md:-mt-32 z-20">
+        <div className="relative w-[95vw] md:w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-[50px] md:rounded-[100px] border border-black/5 overflow-hidden flex flex-col items-center pt-24 md:pt-40 pb-40 px-6 md:px-12 lg:px-24 pointer-events-auto shadow-2xl z-20">
           <div className="relative z-10 w-full flex flex-col items-center gap-16 lg:gap-24">
             <div className="flex flex-col gap-6 items-center text-center">
               <span className="text-[#0F9393] font-bold uppercase tracking-[0.2em] text-[14px]">PILLAR 05</span>

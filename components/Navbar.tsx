@@ -8,6 +8,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import Button from './ui/Button';
 import { useBooking } from './BookingContext';
+import Image from 'next/image';
 
 const navLinks = [
   { name: 'Home', href: '/' },
@@ -109,9 +110,11 @@ const Navbar = () => {
 
         {/* LEFT: Logo */}
         <Link href="/" className="flex-shrink-0 z-10 hover:opacity-80 transition-opacity">
-          <img
+          <Image
             src="/assets/logo unherd white.svg"
             alt="unHeard Logo"
+            width={160}
+            height={40}
             className={cn("h-[30px] md:h-[35px] lg:h-[40px] w-auto transition-all", (!isDark && isScrolled && !isMobile) && "brightness-0")}
           />
         </Link>
