@@ -457,7 +457,7 @@ export default function ServicesPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 w-full auto-rows-[320px] mt-20 md:mt-32">
-              {FAMILY_CARDS.map((card, idx) => (
+              {FAMILY_CARDS.map((card) => (
                 <div key={card.id} className={`relative rounded-[40px] md:rounded-[60px] overflow-hidden group border border-black/5 ${card.size === 'lg' ? 'md:col-span-2' : 'md:col-span-1'}`}>
                   <Image src={card.image} alt={card.title} fill className="object-cover transition-transform duration-1000 group-hover:scale-105" />
                   <div className="absolute bottom-6 left-6 z-20">

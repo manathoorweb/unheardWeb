@@ -1,14 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Button from './ui/Button';
 import { useBooking } from '@/components/BookingContext';
 import AnimatedCounter from './ui/AnimatedCounter';
-import { faqData, testimonialData, blogData, understandingContent, specialtiesData } from '@/lib/data/landing';
+import { faqData, blogData, specialtiesData } from '@/lib/data/landing';
 import { FeatureCard } from '@/components/landing/FeatureCard';
 import { FAQAccordion } from '@/components/landing/FAQAccordion';
-import { TestimonialCarousel } from '@/components/landing/TestimonialCarousel';
 import { BlogCard } from '@/components/landing/BlogCard';
 
 export const LandingStack = () => {

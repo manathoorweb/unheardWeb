@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, X, CheckCircle, Info, AlertTriangle } from 'lucide-react';
+import { Bell, X, CheckCircle } from 'lucide-react';
 
 type NotificationType = 'info' | 'success' | 'warning' | 'error';
 
@@ -80,7 +80,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
       supabase.removeChannel(therapistSubscription);
       supabase.removeChannel(appointmentSubscription);
     };
-  }, []);
+  }, [addNotification, supabase]);
 
   return (
     <NotificationContext.Provider value={{ notifications, addNotification, removeNotification, clearNotifications }}>

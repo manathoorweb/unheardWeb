@@ -102,7 +102,7 @@ export default function TherapistListing() {
 
   useEffect(() => {
     async function getTherapists() {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('therapist_profiles')
         .select('*')
         .order('created_at', { ascending: false });

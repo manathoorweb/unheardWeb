@@ -53,7 +53,7 @@ export default function SuperAdminDashboard() {
       if (data.success) {
         setWhatsappStatus(data.data);
       }
-    } catch (e) {}
+    } catch {}
   }, []);
 
   useEffect(() => {
@@ -182,10 +182,10 @@ export default function SuperAdminDashboard() {
         setEmail('')
         setName('')
       } else {
-        setMessage(data.error || 'Failed to send invitation')
+        setMessage('Failed to send invite')
       }
-    } catch (err) {
-      setMessage('Error sending invitation')
+    } catch {
+      setMessage('Failed to send invite')
     } finally {
       setLoading(false)
     }

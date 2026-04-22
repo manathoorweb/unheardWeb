@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "node .next/standalone/server.js",
     "lint": "next lint",
     "whatsapp-reauth": "curl -X GET http://localhost:3001/api/whatsapp/keep-alive"
   },

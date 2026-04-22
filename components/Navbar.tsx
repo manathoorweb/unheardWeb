@@ -20,7 +20,6 @@ const navLinks = [
 
 const Navbar = () => {
   const pathname = usePathname();
-  const isLandingPage = pathname === '/';
 
   // Safe check for admin pages
   const isAdminPage = pathname?.startsWith('/admin') || pathname?.startsWith('/super-admin') || pathname === '/login';
@@ -79,7 +78,7 @@ const Navbar = () => {
       window.removeEventListener('scroll', handleScroll);
       clearTimeout(timer);
     };
-  }, [pathname]); // Consolidated to only use pathname
+  }, [pathname, isAdminPage]); // Consolidated to only use pathname
 
   // Prevent hydration mismatch: only render on client
   if (!mounted || isAdminPage) {

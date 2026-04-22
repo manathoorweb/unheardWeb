@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
-import { Plus, Trash2, Image as ImageIcon, AlignLeft, AlignRight, Layout, Save, Eye, Send, RotateCcw, HelpCircle } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { Trash2, Image as ImageIcon, Layout, Save, HelpCircle, AlignLeft } from 'lucide-react'
 import Button from './ui/Button'
 import Image from 'next/image'
 
@@ -133,7 +133,7 @@ export default function BlogEditor({ onSave, initialData }: BlogEditorProps) {
 
         {/* Blocks List */}
         <div className="flex flex-col gap-10">
-          {blocks.map((block, index) => (
+          {blocks.map((block) => (
             <div key={block.id} className="group/block relative flex flex-col gap-4">
                {/* Block Controls */}
                <div className="absolute -left-12 top-0 flex flex-col gap-2 opacity-0 group-hover/block:opacity-100 transition-opacity">

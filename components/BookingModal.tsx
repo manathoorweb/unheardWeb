@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { requestSession } from '@/lib/actions';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronRight, ChevronLeft, Search, Calendar, Clock } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, Calendar, Clock } from 'lucide-react';
 import Image from 'next/image';
 import { createClient } from '@/utils/supabase/client';
 

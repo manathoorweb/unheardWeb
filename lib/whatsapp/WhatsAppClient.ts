@@ -35,7 +35,7 @@ export class WhatsAppManager {
         globalForWhatsApp.socket.ev.removeAllListeners('connection.update');
         globalForWhatsApp.socket.ev.removeAllListeners('creds.update');
         globalForWhatsApp.socket.end(undefined); 
-      } catch (e) {}
+      } catch {}
       globalForWhatsApp.socket = null;
     }
 
