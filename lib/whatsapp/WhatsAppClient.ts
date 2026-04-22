@@ -55,22 +55,42 @@ export class WhatsAppManager {
     if (globalForWhatsApp.socket && globalForWhatsApp.status === 'authenticated') {
       return globalForWhatsApp.socket;
     }
-    return await this.connectToWhatsApp();
+    await this.connectToWhatsApp();
+    return globalForWhatsApp.socket;
   }
 
-  static async connectToWhatsApp() {
-    // 1. Singleton Guard: Only proceed if disconnected or error.
-    if (globalForWhatsApp.status === 'initializing' || 
+  static async softReconnect() {
+    console.log('🔄 Performing a Force Soft Reconnect (re-initializing socket without purging DB)...');
+    
+    if (globalForWhatsApp.socket) {
+      try {
+        globalForWhatsApp.socket.ev.removeAllListeners('connection.update');
+        globalForWhatsApp.socket.ev.removeAllListeners('creds.update');
+        globalForWhatsApp.socket.end(undefined);
+      } catch {}
+      globalForWhatsApp.socket = null;
+    }
+
+    globalForWhatsApp.status = 'disconnected';
+    globalForWhatsApp.qrDataUrl = null;
+
+    return await this.connectToWhatsApp(true);
+  }
+
+  static async connectToWhatsApp(force = false) {
+    // 1. Singleton Guard: Only proceed if disconnected or error, UNLESS forced.
+    if (!force && (
+        globalForWhatsApp.status === 'initializing' || 
         globalForWhatsApp.status === 'pending_qr' || 
-        (globalForWhatsApp.status === 'authenticated' && globalForWhatsApp.socket)) {
-      console.log(`⏳ WhatsApp is in state ${globalForWhatsApp.status}... skipping duplicate connection.`);
+        (globalForWhatsApp.status === 'authenticated' && globalForWhatsApp.socket)
+    )) {
       return globalForWhatsApp.socket;
     }
 
-    console.log('Booting Baileys WebSockets Connection over Supabase Cloud DB...');
+    console.log('🔄 Initializing WhatsApp connection...');
     globalForWhatsApp.status = 'initializing';
     
-    // 2. Cleanup existing socket if any (safety measure)
+    // 2. Cleanup existing socket if any
     if (globalForWhatsApp.socket) {
       try {
         globalForWhatsApp.socket.ev.removeAllListeners('connection.update');
@@ -79,10 +99,8 @@ export class WhatsAppManager {
       globalForWhatsApp.socket = null;
     }
 
-    const { state, saveCreds } = await getSupabaseAuthState();
-
     try {
-      // Fetch latest version to avoid protocol mismatches (Status 405)
+      const { state, saveCreds } = await getSupabaseAuthState();
       const { version, isLatest } = await fetchLatestBaileysVersion();
       console.log(`Using WhatsApp v${version.join('.')} (latest: ${isLatest})`);
 
@@ -102,14 +120,11 @@ export class WhatsAppManager {
         const { connection, lastDisconnect, qr } = update;
 
         if (qr) {
-          console.log('Baileys QR Code Generated (waiting for Super Admin UI to fetch it)...');
           globalForWhatsApp.status = 'pending_qr';
           try {
             const dataUrl = await QRCode.toDataURL(qr, { margin: 2, scale: 6 });
             globalForWhatsApp.qrDataUrl = dataUrl;
-          } catch (err) {
-            console.error('Failed to generate QR data URL:', err);
-          }
+          } catch (err) { }
         }
 
         if (connection === 'close') {
@@ -119,23 +134,20 @@ export class WhatsAppManager {
           const isFatal = statusCode === DisconnectReason.loggedOut || statusCode === 405;
           const shouldReconnect = !isFatal;
           
-          console.error(`⚠️ Baileys WhatsApp Connection Closed. Status: ${statusCode}. Reconnecting: ${shouldReconnect}`);
+          console.error(`⚠️ WhatsApp Connection Closed (Status ${statusCode}). Reconnecting: ${shouldReconnect}`);
           
           globalForWhatsApp.socket = null; 
           globalForWhatsApp.qrDataUrl = null;
 
           if (shouldReconnect) {
             globalForWhatsApp.status = 'disconnected';
-            console.log('Brief pause, then reconnecting Baileys securely...');
-            setTimeout(() => {
-               this.connectToWhatsApp(); 
-            }, 5000); 
+            setTimeout(() => this.connectToWhatsApp(), 5000); 
           } else {
             globalForWhatsApp.status = 'error';
-            await NotificationController.notifyAdminTokenExpired(`WhatsApp Session Expired (Status ${statusCode}). Manual scan required from dashboard.`);
+            await NotificationController.notifyAdminTokenExpired(`WhatsApp Session Expired (Status ${statusCode}). Manual scan required.`);
           }
         } else if (connection === 'open') {
-          console.log('✅ Baileys WebSockets authenticated and connected!');
+          console.log('✅ WhatsApp authenticated and connected!');
           globalForWhatsApp.status = 'authenticated';
           globalForWhatsApp.qrDataUrl = null; 
         }
@@ -150,28 +162,36 @@ export class WhatsAppManager {
     }
   }
 
-  static async sendMessage(phoneNumber: string, message: string) {
+  static async sendMessage(phoneNumber: string, message: string, retryOnDisconnect = true) {
     if (globalForWhatsApp.status !== 'authenticated' || !globalForWhatsApp.socket) {
-      return { success: false, error: 'Client is not connected' };
+      if (retryOnDisconnect) {
+        console.log('⏳ WhatsApp not connected. Attempting resilient wait...');
+        let authResult = await this.waitForAuthenticated(8000);
+        
+        if (authResult.status !== 'authenticated') {
+           console.log('🔄 Standard wait timed out. Performing Force Soft Reconnect...');
+           await this.softReconnect();
+           authResult = await this.waitForAuthenticated(10000);
+        }
+
+        if (authResult.status !== 'authenticated' || !globalForWhatsApp.socket) {
+          return { success: false, error: `Connection failed after soft reset. State: ${authResult.status}` };
+        }
+      } else {
+        return { success: false, error: 'Client is not connected' };
+      }
     }
 
     let formattedNumber = phoneNumber.replace(/\D/g, ''); 
-    
-    // Auto-prepend 91 if it looks like a 10-digit Indian number 
-    if (formattedNumber.length === 10) {
-      formattedNumber = '91' + formattedNumber;
-    }
-
-    if (!formattedNumber.endsWith('@s.whatsapp.net')) {
-      formattedNumber = `${formattedNumber}@s.whatsapp.net`;
-    }
+    if (formattedNumber.length === 10) formattedNumber = '91' + formattedNumber;
+    if (!formattedNumber.endsWith('@s.whatsapp.net')) formattedNumber = `${formattedNumber}@s.whatsapp.net`;
 
     try {
       await globalForWhatsApp.socket.sendMessage(formattedNumber, { text: message });
       console.log(`WhatsApp message sent to ${formattedNumber}`);
       return { success: true };
     } catch (error) {
-      console.error('Failed to send WhatsApp message via Baileys:', error);
+      console.error('Failed to send WhatsApp message:', error);
       return { success: false, error };
     }
   }
