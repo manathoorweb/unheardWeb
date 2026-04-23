@@ -163,7 +163,7 @@ export const LandingStack = () => {
             <div className="w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-t-[40px] rounded-b-[40px] pt-18 pb-24 px-6 md:px-12 lg:px-24 flex flex-col items-center shadow-2xl pointer-events-auto">
               {/* Centered Title */}
               <div className="w-full flex flex-col items-center text-center mb-16">
-                <h2 className="font-georgia text-[36px] md:text-[52px] lg:text-[64px] font-bold leading-[1.1] tracking-tight text-black max-w-[1200px] text-balance">
+                <h2 className="font-georgia text-[36px] font-bold leading-tight text-black max-w-[900px]">
                   There’s a reason it’s called Unheard.
                 </h2>
               </div>
@@ -269,7 +269,7 @@ export const LandingStack = () => {
       >
         <div className="w-[97vw] max-w-[2440px] bg-[#171612] rounded-t-[40px] rounded-b-[40px] pt-18 pb-24 px-6 md:px-12 lg:px-24 flex flex-col items-center shadow-2xl pointer-events-auto">
           <div className="text-center mb-16 max-w-[900px]">
-            <h2 className="font-georgia text-[36px] md:text-[52px] lg:text-[64px] font-bold leading-[1.1] tracking-tight text-white mb-6">
+            <h2 className="font-georgia text-[36px] font-bold leading-tight text-white mb-6">
               Why Unheard?
             </h2>
           </div>
@@ -419,7 +419,7 @@ export const LandingStack = () => {
       >
         <div className="w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-t-[40px] rounded-b-[40px] pt-18 pb-24 px-6 md:px-12 lg:px-24 flex flex-col items-center shadow-2xl pointer-events-auto">
           <div className="text-center mb-16 max-w-[1200px]">
-            <h2 className="font-georgia text-[36px] md:text-[52px] lg:text-[64px] font-bold leading-[1.1] tracking-tight text-black">
+            <h2 className="font-georgia text-[36px] md:text-[48px] font-bold leading-tight text-black">
               Your Questions, Answered <br /> <span className="text-[#0F9393]">At Unheard.</span>
             </h2>
           </div>
@@ -458,7 +458,7 @@ export const LandingStack = () => {
           <div className="relative z-10 w-full flex flex-col items-center">
             {/* Header Title */}
             <div className="text-center mb-16 px-6 max-w-[1400px]">
-              <h2 className="font-georgia text-[36px] md:text-[52px] lg:text-[64px] font-bold leading-[1.1] tracking-tight text-white">
+              <h2 className="font-georgia text-[36px] md:text-[42px] lg:text-[48px] font-bold leading-[1.05] text-white">
                 Comprehensive support for <br /> <span className="opacity-80">every mental landscape.</span>
               </h2>
             </div>
@@ -537,10 +537,10 @@ export const LandingStack = () => {
       >
         <div className="w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-t-[40px] rounded-b-[40px] pt-18 pb-24 px-6 md:px-12 lg:px-24 flex flex-col items-center shadow-2xl pointer-events-auto">
           <div className="w-full max-w-[1440px] flex flex-col items-center">
-            <div className="text-center mb-24 max-w-[1200px]">
-              <h2 className="font-georgia text-[36px] md:text-[52px] lg:text-[64px] font-bold leading-[1.1] tracking-tight text-black flex flex-col items-center">
+            <div className="text-center mb-24 max-w-[900px]">
+              <h2 className="font-georgia text-[36px] md:text-[48px] font-bold leading-tight text-black flex flex-col items-center">
                 <span className="text-[#0F9393] mb-4">Unheard Truth:</span>
-                <span className="opacity-40 text-[24px] md:text-[32px] lg:text-[40px] font-medium italic leading-[1.1] text-center">Discover, Reflect, and Grow</span>
+                <span className="opacity-40 text-[24px] md:text-[32px] font-medium italic leading-relaxed text-center">Discover, Reflect, and Grow</span>
               </h2>
               <div className="mt-8 w-24 h-1 bg-[#0F9393]/20 mx-auto rounded-full" />
             </div>
