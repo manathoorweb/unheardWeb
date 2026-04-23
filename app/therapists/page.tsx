@@ -8,78 +8,82 @@ import { useBooking } from '@/components/BookingContext';
 import Button from '@/components/ui/Button';
 
 // ----------------------------------------------------------------------
-// THERAPIST CARD COMPONENT (PREMIUM CURATED DESIGN)
+// THERAPIST CARD COMPONENT (INDUSTRIAL PREMIUM DESIGN)
 // ----------------------------------------------------------------------
 const TherapistCard = ({ t, openBooking }: { t: any, openBooking: (id: string) => void }) => {
   return (
-    <div className="group relative bg-white rounded-[40px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-black/5 hover:shadow-[0_30px_70px_rgba(0,0,0,0.12)] transition-all duration-700 hover:-translate-y-2 flex flex-col h-full">
+    <div className="group relative bg-[#171612] rounded-[40px] overflow-hidden border border-white/5 hover:border-[#0F9393]/30 transition-all duration-700 hover:shadow-[0_40px_100px_rgba(0,0,0,0.6)] flex flex-col h-full">
       
-      <div className="relative w-full aspect-[16/10] overflow-hidden bg-gray-100">
+      {/* Visual Anchor: Image with Organic Shape or Mask */}
+      <div className="relative w-full aspect-[4/3] overflow-hidden">
         <Image 
           src={t.avatar_url || '/assets/section_2_3.webp'} 
           alt={t.full_name} 
           fill 
-          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 800px"
-          className="object-cover transition-transform duration-1000 group-hover:scale-105" 
+          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 33vw, 600px"
+          className="object-cover transition-transform duration-1000 group-hover:scale-110 opacity-80 group-hover:opacity-100" 
         />
         
-        {/* Sophisticated Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
-        
-        {/* Name Overlay - Positioned for Impact */}
-        <div className="absolute bottom-8 left-8 right-8 z-10 transition-transform duration-500">
-          <h3 className="font-georgia font-bold text-[32px] md:text-[40px] text-white leading-tight tracking-tight mb-2">
+        {/* Architectural Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#171612] via-transparent to-transparent" />
+        <div className="absolute top-6 right-6 flex flex-col items-end gap-2">
+           <div className="bg-[#0F9393] text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">
+              Verified Expert
+           </div>
+        </div>
+
+        {/* Name & Title Overlay */}
+        <div className="absolute bottom-6 left-8 right-8 z-10 transition-transform duration-500">
+          <h3 className="font-georgia font-bold text-[28px] md:text-[32px] text-white leading-tight tracking-tight mb-1">
             {t.full_name}
           </h3>
-          <div className="flex items-center gap-3">
-            <div className="h-[2px] w-8 bg-[#0F9393]"></div>
-            <span className="text-[13px] md:text-[14px] font-bold text-white/90 uppercase tracking-[0.2em] font-nunito">
-              {t.qualification || 'Licensed Therapist'}
-            </span>
-          </div>
+          <span className="text-[12px] font-black text-[#0F9393] uppercase tracking-[0.25em] font-nunito">
+            {t.qualification || 'Therapist'}
+          </span>
         </div>
       </div>
 
-      {/* Modern Info Section */}
-      <div className="p-10 flex flex-col flex-grow justify-between gap-10">
+      {/* Content Section */}
+      <div className="p-8 md:p-10 flex flex-col flex-grow gap-8">
         
-        <div className="flex flex-col gap-6">
-          {/* Keywords / Tags (Minimalist Badges) */}
-          <div className="flex flex-wrap gap-2.5">
-            {(t.specialties || ['Anxiety', 'Growth', 'Stress', 'Self-Awareness']).slice(0, 4).map((kw: string, i: number) => (
-              <span key={i} className="bg-[#f0f9f9] text-[#0F9393] text-[11px] px-5 py-2 rounded-full font-black uppercase tracking-widest border border-[#0F9393]/5">
+        <div className="flex flex-col gap-5">
+          {/* Minimalist Expertise Badges */}
+          <div className="flex flex-wrap gap-2">
+            {(t.specialties || ['Anxiety', 'Growth', 'Stress']).slice(0, 3).map((kw: string, i: number) => (
+              <span key={i} className="bg-white/5 text-white/60 text-[10px] px-4 py-1.5 rounded-full font-bold uppercase tracking-wider border border-white/5">
                 {kw}
               </span>
             ))}
           </div>
 
-          <p className="text-gray-500 font-nunito text-[16px] leading-relaxed line-clamp-3">
-            {t.bio || "Dedicated to helping individuals restructure their behavioral patterns and find mental clarity through evidence-based psychological frameworks."}
+          <p className="text-gray-400 font-nunito text-[15px] leading-relaxed line-clamp-3 opacity-80 group-hover:opacity-100 transition-opacity">
+            {t.bio || "Specializing in the identification and restructuring of repetitive mental patterns to achieve sustainable clarity."}
           </p>
         </div>
 
-        <div className="flex flex-col gap-8">
-          <div className="flex justify-between items-center border-t border-black/5 pt-8">
+        {/* Stats & Actions */}
+        <div className="mt-auto flex flex-col gap-8">
+          <div className="flex justify-between items-center border-t border-white/5 pt-8">
             <div className="flex flex-col gap-1">
-              <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest leading-none">Perspective</span>
-              <span className="text-[18px] font-bold text-black font-georgia italic">{t.perspective || 'Insight-Driven'}</span>
+              <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] leading-none">Perspective</span>
+              <span className="text-[16px] font-bold text-white font-georgia italic">{t.perspective || 'Insight-Driven'}</span>
             </div>
             <div className="text-right flex flex-col gap-1">
-              <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest leading-none">Impact</span>
-              <span className="text-[20px] font-bold text-[#0F9393] font-georgia leading-none">{t.display_hours || '500+'} <span className="text-[14px] font-bold text-gray-400">Hrs</span></span>
+              <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] leading-none">Impact</span>
+              <span className="text-[18px] font-bold text-[#0F9393] font-georgia leading-none">{t.display_hours || '500+'} <span className="text-[12px] font-bold text-white/30">Hrs</span></span>
             </div>
           </div>
 
-          {/* Booking & Profile Action Grid */}
-          <div className="grid grid-cols-2 gap-4">
-            <Link href={`/therapists/${t.user_id}`} className="w-full">
-              <button className="w-full h-[64px] border-[2.5px] border-black text-black rounded-full font-black text-[15px] hover:bg-black hover:text-white transition-all active:scale-95">
+          {/* Buttons: Sleek Industrial Design */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link href={`/therapists/${t.user_id}`} className="flex-1">
+              <button className="w-full h-[56px] border border-white/20 text-white rounded-full font-bold text-[14px] hover:bg-white hover:text-black transition-all active:scale-95">
                 View Profile
               </button>
             </Link>
             <button 
               onClick={() => openBooking(t.user_id)}
-              className="w-full h-[64px] bg-black text-white rounded-full font-black text-[15px] hover:bg-[#1a1a1a] transition-all shadow-xl shadow-black/10 active:scale-95"
+              className="flex-1 h-[56px] bg-[#0F9393] text-white rounded-full font-bold text-[14px] hover:bg-[#0F9393]/80 transition-all shadow-xl shadow-[#0F9393]/10 active:scale-95"
             >
               Book Session
             </button>
@@ -152,7 +156,7 @@ export default function TherapistListing() {
         <div className="relative z-10 w-full max-w-[2440px] px-[5vw] flex flex-col items-center text-center gap-8 -mt-10">
           <div className="flex flex-col items-center gap-4">
              <span className="text-[#0F9393] font-black uppercase tracking-[0.4em] text-[14px]">Discover Excellence</span>
-             <h1 className="text-[40px] font-bold font-georgia text-white leading-[1] tracking-[-0.04em]">
+             <h1 className="text-[56px] md:text-[80px] font-bold font-georgia text-white leading-[1] tracking-[-0.04em]">
               The minds behind <br /> the <span className="text-[#0F9393] italic">restructuring.</span>
             </h1>
           </div>
@@ -200,7 +204,7 @@ export default function TherapistListing() {
         </div>
 
         {/* THERAPIST GRID */}
-        <div className="w-[97vw] max-w-[2440px] grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 min-h-[400px]">
+        <div className="w-[97vw] max-w-[2440px] grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 lg:gap-16 min-h-[400px]">
           {filteredTherapists.length === 0 ? (
             <div className="col-span-full flex flex-col items-center justify-center py-40 text-gray-500 gap-8 bg-white/5 rounded-[60px] border border-white/5">
                <span className="text-[80px] opacity-20">📭</span>
@@ -214,33 +218,6 @@ export default function TherapistListing() {
               <TherapistCard key={t.id} t={t} openBooking={(id) => openBookingModal({ therapist_id: id })} />
             ))
           )}
-        </div>
-
-        {/* MATCHING CTA (Premium Large Card) */}
-        <div className="relative w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-[50px] md:rounded-[80px] p-16 md:p-32 flex flex-col lg:flex-row flex-wrap items-center justify-center lg:justify-between gap-16 shadow-[0_60px_120px_rgba(0,0,0,0.4)] overflow-hidden">
-          <div className="absolute top-0 right-0 w-[50vw] h-[50vw] bg-[#0F9393]/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-[120px]"></div>
-          <div className="absolute bottom-0 left-0 w-[30vw] h-[30vw] bg-[#0F9393]/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-[100px]"></div>
-          
-          <div className="flex-grow max-w-[900px] text-center lg:text-left z-10 flex flex-col gap-10">
-             <div className="flex flex-col gap-4">
-               <span className="text-[#0F9393] font-black uppercase tracking-[0.4em] text-[14px]">The Concierge Service</span>
-               <h2 className="text-[36px] font-bold font-georgia text-black leading-[1] tracking-[-0.03em]">
-                 Find your <br /><span className="text-[#0F9393] italic">Symmetry.</span>
-               </h2>
-             </div>
-             <p className="text-gray-500 font-bold text-[20px] md:text-[26px] leading-relaxed font-nunito max-w-[700px]">
-               Not sure where to start? Our internal matching algorithm pairs you with the counselor best suited for your specific psychological profile.
-             </p>
-          </div>
-          <div className="z-10 shrink-0">
-            <Button 
-              variant="black" 
-              className="w-[300px] md:w-[400px] h-[72px] md:h-[90px] text-[18px] md:text-[24px] font-black shadow-3xl transition-transform hover:-translate-y-2 rounded-full" 
-              onClick={openBookingModal}
-            >
-              Match Me Automatically
-            </Button>
-          </div>
         </div>
 
       </div>
