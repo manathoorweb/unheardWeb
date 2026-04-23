@@ -60,7 +60,7 @@ export default function ServicesPage() {
   const [showFullAdolescent, setShowFullAdolescent] = useState(false);
   const [showFullFamily, setShowFullFamily] = useState(false);
   const [showFullAnxiety, setShowFullAnxiety] = useState(false);
-  
+
   // STICKY PINNING LOGIC
   const card1Ref = useRef<HTMLElement>(null);
   const target1Ref = useRef<HTMLDivElement>(null);
@@ -115,7 +115,7 @@ export default function ServicesPage() {
     [card1Ref, card2Ref, card3Ref, card4Ref, card5Ref].forEach(ref => {
       if (ref.current) observer.observe(ref.current);
     });
-    
+
     calculatePinOffset();
     window.addEventListener('resize', calculatePinOffset);
     window.addEventListener('scroll', calculatePinOffset);
@@ -129,94 +129,116 @@ export default function ServicesPage() {
 
   return (
     <div className="relative w-full bg-[#111111] overflow-x-clip">
-      
-      {/* HERO SECTION */}
-      <div className="relative h-[80vh] max-h-[1000px] w-full flex items-center px-[5vw] lg:px-[10vw]">
-        <div className="absolute inset-0 z-0">
-          <Image src="/assets/servicesland.webp" alt="Services Hero" fill className="object-cover" priority />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-[#111111]" />
-        </div>
-        <div className="relative z-10 max-w-[800px] -mt-[100px]">
-          <h1 className="text-[40px] md:text-[56px] font-bold leading-[1.1] text-white font-georgia mb-6 text-balance">
-            Transformational frameworks for the modern mind.
-          </h1>
-          <p className="text-[18px] md:text-[22px] text-white/80 font-nunito max-w-[600px]">
-            Strategic psychological counseling designed to build clarity, resilience, and alignment.
-          </p>
-        </div>
-      </div>
 
-      {/* PILLAR 01: INDIVIDUAL COUNSELING (White Card) */}
+
+      {/* PILLAR 01: INDIVIDUAL COUNSELING (Black Card) */}
       <section
         ref={card1Ref}
         data-section-id="1"
         className="sticky z-10 w-full flex flex-col items-center will-change-[top,transform] transform-gpu contain-paint"
-        style={{ 
+        style={{
           top: `${stickyTop1}px`,
           minHeight: sectionHeights['1'] ? `${sectionHeights['1']}px` : 'auto'
         }}
       >
-        <div className="relative w-[95vw] md:w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-[50px] md:rounded-[100px] border border-black/5 shadow-2xl overflow-hidden flex flex-col items-center pt-24 md:pt-40 pb-24 px-6 md:px-12 lg:px-24 z-20 mt-10 md:mt-20">
-          <div className="relative z-10 w-full flex flex-col items-center gap-12 lg:gap-20">
-            <div className="flex flex-col gap-6 items-center text-center">
-              <span className="text-[#0F9393] font-bold uppercase tracking-[0.2em] text-[14px]">PILLAR 01</span>
-              <h2 className="text-[36px] md:text-[52px] font-bold font-georgia text-black leading-[1.1] tracking-tight max-w-[1000px] text-balance">
-                Individual <span className="text-[#0F9393]">Psychological Work.</span>
-              </h2>
-              <div className="max-w-[850px]">
-                <p className="font-nunito font-bold text-[20px] md:text-[28px] text-gray-500/80 mb-6 leading-relaxed text-balance">
-                  Therapy for when your mind won&apos;t slow down. You might not call it a problem yet but it&apos;s there.
-                </p>
-                <button onClick={() => setShowFullIndividual(!showFullIndividual)} className="text-[#0F9393] font-bold flex items-center gap-2 hover:underline transition-all mx-auto text-[16px] md:text-[18px]">
-                  {showFullIndividual ? 'Read Less' : 'Read more about this pillar'}
-                  <span className={`transition-transform duration-300 ${showFullIndividual ? 'rotate-180' : ''}`}>↓</span>
-                </button>
-                <AnimatePresence>
-                  {showFullIndividual && (
-                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                      <div className="pt-8 flex flex-col gap-8 text-[16px] md:text-[19px] text-gray-600 leading-relaxed font-nunito border-t border-black/5 mt-8 text-center px-4">
-                        <p>Anxiety, overthinking, low mood, burnout, emotional instability, self-doubt—these don’t always look serious from the outside.</p>
-                        <p>The constant overthinking. The anxiety that sits in the background. The feeling of being mentally exhausted without a clear reason.</p>
-                        <p>At unHeard., individual therapy is not about fixing you. It’s about understanding what’s happening beneath the surface, so things won’t keep repeating in the same way.</p>
-                        <div className="space-y-6">
-                          <h4 className="text-black font-extrabold text-[20px] md:text-[24px]">How therapy works:</h4>
+        <div className="relative w-full bg-[#111111] md:rounded-[100px] border-b border-white/5 shadow-2xl overflow-hidden flex flex-col items-center pt-20 md:pt-32 pb-20 px-6 md:px-12 lg:px-24 z-20">
+          <div className="relative z-10 w-full max-w-[1400px]">
+            {/* Header Content: 2-Column Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-20 items-start mb-16 md:mb-24">
+              {/* Left Column: Heading & Primary Subtext */}
+              <div className="flex flex-col gap-6 text-left">
+                <span className="text-[#0F9393] font-bold uppercase tracking-[0.2em] text-[12px] md:text-[14px]">PILLAR 01</span>
+                <h2 className="text-[36px] md:text-[64px] font-bold font-georgia text-white leading-[1] tracking-tight text-balance">
+                  Individual<br />Psychological Work.
+                </h2>
+                <div className="max-w-[450px]">
+                  <p className="font-nunito font-bold text-[18px] md:text-[22px] text-white/60 mb-8 leading-tight">
+                    Therapy for when your mind won&apos;t slow down. You might not call it a problem yet but it&apos;s there.
+                  </p>
+                  <Button variant="black" className="bg-[#0F9393] text-white hover:bg-[#0D7A7A] w-full md:w-[280px] h-[60px] rounded-full text-[16px] md:text-[18px]" onClick={openBookingModal}>
+                    Consult for Individuals
+                  </Button>
+                </div>
+              </div>
+
+              {/* Right Column: Descriptions &Philosophy */}
+              <div className="flex flex-col gap-6 text-left text-[16px] md:text-[19px] text-white/70 leading-snug font-nunito pt-10 lg:pt-20">
+                <p>Anxiety, overthinking, low mood, burnout, emotional instability, self-doubt—these don’t always look serious from the outside.</p>
+                <p>The constant overthinking. The anxiety that sits in the background. The feeling of being mentally exhausted without a clear reason.</p>
+                <p>At unHeard., individual therapy is not about fixing you. It’s about understanding what’s happening beneath the surface, so things won’t keep repeating in the same way.</p>
+
+                <div className="mt-4">
+                  <button onClick={() => setShowFullIndividual(!showFullIndividual)} className="text-[#0F9393] font-bold flex items-center gap-2 hover:underline transition-all text-[16px]">
+                    {showFullIndividual ? 'Read Less' : 'Read more'}
+                    <span className={`transition-transform duration-300 ${showFullIndividual ? 'rotate-180' : ''}`}>↓</span>
+                  </button>
+
+                  <AnimatePresence>
+                    {showFullIndividual && (
+                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                        <div className="pt-6 flex flex-col gap-5 border-t border-white/10 mt-4">
+                          <h4 className="text-white font-extrabold text-[18px] md:text-[20px]">How therapy works:</h4>
                           <p>We offer one-on-one online therapy focused on emotional clarity, self-awareness, and sustainable change.</p>
                           <p className="font-bold text-[#0F9393]">This is where you start making sense of yourself without having to simplify it.</p>
+                          <p className="p-6 bg-white/5 rounded-[24px] border border-white/5 italic font-medium text-white/50 text-[15px] md:text-[17px]">
+                            Structured psychological counselling with trained mental health professionals. Online sessions. Confidential. At your pace.
+                          </p>
                         </div>
-                        <p className="p-8 bg-[#F8F8F6] rounded-[30px] border border-black/5 italic font-medium text-black/70 max-w-[750px] mx-auto">Structured psychological counselling with trained mental health professionals. Online sessions. Confidential. At your pace.</p>
-                        <Button variant="black" className="bg-[#0F9393] text-white hover:bg-[#0D7A7A] w-[280px] md:w-[350px] h-[64px] rounded-full mx-auto" onClick={openBookingModal}>Start Individual Therapy</Button>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-10 w-full auto-rows-[300px] mt-20 md:mt-32">
-              {INDIVIDUAL_CARDS.map((card) => (
-                <div key={card.id} className={`relative rounded-[40px] md:rounded-[60px] overflow-hidden group border border-black/5 ${card.size === 'lg' ? 'md:col-span-2' : 'md:col-span-1'}`}>
-                  <Image src={card.image} alt={card.title} fill className="object-cover transition-transform duration-1000 group-hover:scale-105" />
-                  <div className="absolute top-6 right-6 z-20 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/20 transition-all group-hover:bg-[#0F9393]">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="rotate-[-45deg] group-hover:rotate-0 transition-transform">
-                      <line x1="5" y1="12" x2="19" y2="12"></line>
-                      <polyline points="12 5 19 12 12 19"></polyline>
-                    </svg>
-                  </div>
-                  <div className="absolute bottom-6 left-6 z-20">
-                    <div className="px-6 py-4 pt-8 rounded-[24px] backdrop-blur-xl bg-black/40 border border-white/10">
-                      <h3 className="text-[17px] md:text-[20px] font-bold font-georgia text-white leading-tight">{card.title}</h3>
+            {/* Moving Cards Marquee */}
+            <div className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden mt-10 md:mt-20 py-10">
+              <motion.div
+                className="flex gap-6 px-6"
+                animate={{ x: [0, -1200] }}
+                transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+              >
+                {[...INDIVIDUAL_CARDS, ...INDIVIDUAL_CARDS].map((card, idx) => (
+                  <div key={`${card.id}-${idx}`} className="flex-shrink-0 w-[280px] md:w-[350px] bg-[#1A1A1A] border border-white/30 rounded-[40px] p-6 flex flex-col gap-4 shadow-sm group">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] md:text-[13px] font-bold bg-white/5 px-3 py-1 rounded-full text-white/40 border border-white/5">
+                        {idx % 4 === 0 ? '18-65 | Private' : idx % 4 === 1 ? '13-25 | Teens' : idx % 4 === 2 ? 'Person | Group' : '18-65 | Family'}
+                      </span>
+                      <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#0F9393]/50" />
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2 min-h-[100px]">
+                      <h3 className="text-[20px] md:text-[24px] font-bold font-georgia leading-tight text-white">
+                        {card.title.split(' and ')[0]}
+                      </h3>
+                      <p className="text-[13px] md:text-[14px] text-white/40 font-nunito leading-tight">
+                        {card.title.includes('and') ? card.title.split(' and ')[1] : 'Personalized support and guidance.'}
+                      </p>
+                    </div>
+
+                    <div className="relative h-[180px] md:h-[220px] w-full rounded-[30px] overflow-hidden mt-2">
+                      <Image src={card.image} alt={card.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
+                      <div className="absolute bottom-4 left-4">
+                        <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 cursor-pointer hover:bg-white/20 transition-all shadow-lg">
+                          <span className="text-[11px] md:text-[13px] font-bold text-white uppercase tracking-wider">Read More</span>
+                          <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <line x1="5" y1="12" x2="19" y2="12"></line>
+                              <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-
-            <div ref={target1Ref} className="mt-12 flex flex-row items-center justify-center gap-4 md:gap-10">
-              <Button variant="black" className="w-[200px] md:w-[380px] h-[58px] md:h-[76px] flex items-center justify-center rounded-full text-[14px] md:text-[20px] font-bold shadow-xl transition-all hover:scale-105 active:scale-95 px-4" onClick={openBookingModal}>Consult for Individuals</Button>
-              <Image src="/assets/Group 54.svg" alt="Arrow" width={55} height={55} className="h-[40px] md:h-[60px] w-auto brightness-0 shrink-0" />
+                ))}
+              </motion.div>
+              <div ref={target1Ref} className="mt-16 md:mt-24">
+              </div>
             </div>
           </div>
-          <div className="h-[150px] w-full" />
         </div>
       </section>
 
@@ -225,7 +247,7 @@ export default function ServicesPage() {
         ref={card2Ref}
         data-section-id="2"
         className="sticky z-20 w-full flex flex-col items-center pointer-events-none will-change-[top,transform] transform-gpu contain-paint"
-        style={{ 
+        style={{
           top: `${stickyTop2}px`,
           minHeight: sectionHeights['2'] ? `${sectionHeights['2']}px` : 'auto'
         }}
@@ -293,7 +315,7 @@ export default function ServicesPage() {
         ref={card3Ref}
         data-section-id="3"
         className="sticky z-30 w-full flex flex-col items-center pointer-events-none will-change-[top,transform] transform-gpu contain-paint"
-        style={{ 
+        style={{
           top: `${stickyTop3}px`,
           minHeight: sectionHeights['3'] ? `${sectionHeights['3']}px` : 'auto'
         }}
@@ -358,7 +380,7 @@ export default function ServicesPage() {
         ref={card4Ref}
         data-section-id="4"
         className="sticky z-40 w-full flex flex-col items-center pointer-events-none will-change-[top,transform] transform-gpu contain-paint"
-        style={{ 
+        style={{
           top: `${stickyTop4}px`,
           minHeight: sectionHeights['4'] ? `${sectionHeights['4']}px` : 'auto'
         }}
@@ -421,7 +443,7 @@ export default function ServicesPage() {
         ref={card5Ref}
         data-section-id="5"
         className="sticky z-50 w-full flex flex-col items-center pointer-events-none will-change-[top,transform] transform-gpu contain-paint"
-        style={{ 
+        style={{
           top: `${stickyTop5}px`,
           minHeight: sectionHeights['5'] ? `${sectionHeights['5']}px` : 'auto'
         }}
