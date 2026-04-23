@@ -141,10 +141,10 @@ export default function ServicesPage() {
           minHeight: sectionHeights['1'] ? `${sectionHeights['1']}px` : 'auto'
         }}
       >
-        <div className="relative w-[97vw] max-w-[2300px] bg-[#1A1A1A] rounded-[40px] md:rounded-[80px] border border-white/10 shadow-2xl overflow-hidden flex flex-col items-center pt-28 md:pt-44 pb-20 px-6 md:px-12 lg:px-24 z-20">
+        <div className="relative w-[97vw] max-w-[2440px] bg-[#1A1A1A] rounded-t-[40px] rounded-b-[40px] border border-white/10 shadow-2xl overflow-hidden flex flex-col items-center pt-36 md:pt-52 pb-24 px-6 md:px-12 lg:px-24 z-20">
           <div className="relative z-10 w-full">
             {/* Intro Header: 2-Column Grid (No nested card background) */}
-            <div className="w-full flex flex-col items-center mb-8">
+            <div className="w-full flex flex-col items-center mb-16">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-20 items-start w-full max-w-[1400px]">
                 {/* Left Column: Heading & Primary Subtext */}
                 <div className="flex flex-col gap-6 text-left">
@@ -152,7 +152,7 @@ export default function ServicesPage() {
                     Individual<br />Psychological Work.
                   </h2>
                   <div className="max-w-[450px]">
-                    <p className="font-nunito font-bold text-[18px] md:text-[22px] text-white/60 mb-8 leading-tight">
+                    <p className="font-nunito font-semibold text-[18px] md:text-[22px] text-white/60 mb-8 leading-tight">
                       Therapy for when your mind won&apos;t slow down. You might not call it a problem yet but it&apos;s there.
                     </p>
                     <Button variant="black" className="bg-[#0F9393] text-white hover:bg-[#0D7A7A] w-full md:w-[280px] h-[60px] rounded-full text-[16px] md:text-[18px]" onClick={openBookingModal}>
@@ -162,7 +162,7 @@ export default function ServicesPage() {
                 </div>
 
                 {/* Right Column: Descriptions &Philosophy */}
-                <div className="flex flex-col gap-4 text-left text-[16px] md:text-[19px] text-white/70 leading-snug font-nunito pt-2 lg:pt-10">
+                <div className="flex flex-col gap-4 text-left text-[16px] md:text-[19px] text-white/70 leading-snug font-nunito font-medium pt-2 lg:pt-10">
                   <p>Anxiety, overthinking, low mood, burnout, emotional instability, self-doubt—these don’t always look serious from the outside.</p>
                   <p>The constant overthinking. The anxiety that sits in the background. The feeling of being mentally exhausted without a clear reason.</p>
                   <p>At unHeard., individual therapy is not about fixing you. It’s about understanding what’s happening beneath the surface, so things won’t keep repeating in the same way.</p>
@@ -246,30 +246,30 @@ export default function ServicesPage() {
           minHeight: sectionHeights['2'] ? `${sectionHeights['2']}px` : 'auto'
         }}
       >
-        <div className="relative w-[97vw] max-w-[2300px] bg-[#171612] rounded-[40px] md:rounded-[80px] border border-white/10 shadow-2xl overflow-hidden flex flex-col items-center pt-28 md:pt-44 pb-20 px-6 md:px-12 lg:px-24 pointer-events-auto z-20">
+        <div className="relative w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-t-[40px] rounded-b-[40px] border border-black/5 shadow-2xl overflow-hidden flex flex-col items-center pt-18 pb-24 px-6 md:px-12 lg:px-24 pointer-events-auto z-20">
           <div className="relative z-10 w-full">
             {/* Intro Header: 2-Column Grid (No nested card background) */}
-            <div className="w-full flex flex-col items-center mb-12">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-20 items-start w-full max-w-[1400px]">
+            <div className="w-full flex flex-col items-center mb-16">
+             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-20 items-start w-full max-w-[1400px]">
                 {/* Left Column: Heading & Primary Subtext */}
                 <div className="flex flex-col gap-6 text-left">
                   <span className="text-[#0F9393] font-bold uppercase tracking-[0.2em] text-[14px]">PILLAR 02</span>
-                  <h2 className="text-[36px] md:text-[64px] font-bold font-georgia text-white leading-[1] tracking-tight text-balance">
+                  <h2 className="text-[36px] md:text-[64px] font-bold font-georgia text-black leading-[1] tracking-tight text-balance">
                     Relationship & <br />
                     <span className="text-[#0F9393]">Couple Counseling.</span>
                   </h2>
                   <div className="max-w-[450px]">
-                    <p className="font-nunito font-bold text-[18px] md:text-[22px] text-white/60 mb-8 leading-tight">
+                    <p className="font-nunito font-semibold text-[18px] md:text-[22px] text-black/50 mb-8 leading-tight">
                       When conversations turn into conflicts, or silence.
                     </p>
-                    <Button variant="white" className="bg-white text-black hover:bg-gray-200 w-full md:w-[280px] h-[60px] rounded-full text-[16px] md:text-[18px]" onClick={openBookingModal}>
+                    <Button variant="black" className="bg-black text-white hover:bg-gray-800 w-full md:w-[280px] h-[60px] rounded-full text-[16px] md:text-[18px]" onClick={openBookingModal}>
                       Begin Relationship Support
                     </Button>
                   </div>
                 </div>
 
                 {/* Right Column: Descriptions &Philosophy */}
-                <div className="flex flex-col gap-4 text-left text-[16px] md:text-[19px] text-white/70 leading-snug font-nunito pt-2 lg:pt-14">
+                <div className="flex flex-col gap-4 text-left text-[16px] md:text-[19px] text-black/60 leading-snug font-nunito font-medium pt-2 lg:pt-14">
                   <p>Most relationships don’t break suddenly. They strain quietly. Misunderstandings repeat. Communication reduces. Small things start weighing more than they should.</p>
                   <p>Couple counseling isn’t about deciding who is right. It is about understanding the dynamics between two people.</p>
                   <p>We work with couples navigating communication gaps, recurring conflicts, trust concerns, emotional distance, and unresolved resentment.</p>
@@ -283,10 +283,10 @@ export default function ServicesPage() {
                     <AnimatePresence>
                       {showFullRelationship && (
                         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                          <div className="pt-6 flex flex-col gap-5 border-t border-white/10 mt-4">
+                          <div className="pt-6 flex flex-col gap-5 border-t border-black/5 mt-4">
                             <p>Not every conflict is loud. Some just repeat quietly.</p>
                             <p className="font-bold text-[#0F9393] text-[18px] md:text-[22px]">The goal isn’t to “fix” people. It’s to understand patterns, so something can actually shift.</p>
-                            <p className="p-6 bg-white/5 rounded-[24px] border border-white/5 italic font-medium text-white/50 text-[15px] md:text-[17px]">
+                            <p className="p-6 bg-black/5 rounded-[24px] border border-black/5 italic font-medium text-black/40 text-[15px] md:text-[17px]">
                               Strategic couple therapy focused on dynamics, intimacy, and sustainable relational growth.
                             </p>
                           </div>
@@ -306,32 +306,27 @@ export default function ServicesPage() {
                 transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
               >
                 {[...RELATIONSHIP_CARDS, ...RELATIONSHIP_CARDS].map((card, idx) => (
-                  <div key={`${card.id}-${idx}`} className="flex-shrink-0 w-[240px] md:w-[320px] h-[300px] md:h-[360px] bg-[#1A1A1A] border border-white/10 rounded-[35px] p-4 md:p-6 flex flex-col relative shadow-sm group overflow-hidden">
+                  <div key={`${card.id}-${idx}`} className="flex-shrink-0 w-[240px] md:w-[320px] h-[300px] md:h-[360px] bg-white border border-black/5 rounded-[35px] p-4 md:p-6 flex flex-col relative shadow-sm group overflow-hidden">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] md:text-[12px] font-bold bg-white/5 px-2.5 py-0.5 rounded-full text-white/30 border border-white/5">
+                      <span className="text-[10px] md:text-[12px] font-bold bg-black/5 px-2.5 py-0.5 rounded-full text-black/30 border border-black/5">
                         {idx % 3 === 0 ? 'Couples | High Res' : 'Marital | Private'}
                       </span>
-                      <div className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-white/5 flex items-center justify-center opacity-50">
+                      <div className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-black/5 flex items-center justify-center opacity-50">
                         <div className="w-1 h-1 rounded-full bg-[#0F9393]/30" />
                       </div>
                     </div>
 
                     <div className="flex flex-col gap-0.5">
-                      <h3 className="text-[17px] md:text-[20px] font-bold font-georgia leading-tight text-white line-clamp-1">
+                      <h3 className="text-[17px] md:text-[20px] font-bold font-georgia leading-tight text-black line-clamp-1">
                         {card.title}
                       </h3>
-                      <p className="text-[11px] md:text-[13px] text-white/30 font-nunito leading-tight line-clamp-1">
+                      <p className="text-[11px] md:text-[13px] text-black/40 font-nunito leading-tight line-clamp-1">
                         Professional support for relational health.
                       </p>
                     </div>
 
                     <div className="absolute bottom-4 md:bottom-6 left-4 md:left-6 right-4 md:right-6 h-[140px] md:h-[180px] rounded-[28px] overflow-hidden">
                       <Image src={card.image} alt={card.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
-                      <div className="absolute bottom-3 left-3">
-                        <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 cursor-pointer hover:bg-white/20 transition-all shadow-lg">
-                          <span className="text-[9px] md:text-[11px] font-bold text-white uppercase tracking-wider">Explore</span>
-                        </div>
-                      </div>
                     </div>
                   </div>
                 ))}
@@ -352,10 +347,10 @@ export default function ServicesPage() {
           minHeight: sectionHeights['3'] ? `${sectionHeights['3']}px` : 'auto'
         }}
       >
-        <div className="relative w-[97vw] max-w-[2300px] bg-[#111111] rounded-[40px] md:rounded-[80px] border border-white/10 shadow-2xl overflow-hidden flex flex-col items-center pt-28 md:pt-44 pb-20 px-6 md:px-12 lg:px-24 pointer-events-auto z-20">
+        <div className="relative w-[97vw] max-w-[2440px] bg-[#111111] rounded-t-[40px] rounded-b-[40px] border border-white/10 shadow-2xl overflow-hidden flex flex-col items-center pt-18 pb-24 px-6 md:px-12 lg:px-24 pointer-events-auto z-20">
           <div className="relative z-10 w-full">
             {/* Intro Header: 2-Column Grid */}
-            <div className="w-full flex flex-col items-center mb-12">
+            <div className="w-full flex flex-col items-center mb-16">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-20 items-start w-full max-w-[1400px]">
                 {/* Left Column: Heading & Primary Subtext */}
                 <div className="flex flex-col gap-6 text-left">
@@ -365,7 +360,7 @@ export default function ServicesPage() {
                     <span className="text-[#0F9393]">Stress Therapy.</span>
                   </h2>
                   <div className="max-w-[450px]">
-                    <p className="font-nunito font-bold text-[18px] md:text-[22px] text-white/60 mb-8 leading-tight">
+                    <p className="font-nunito font-semibold text-[18px] md:text-[22px] text-white/60 mb-8 leading-tight">
                       Therapy for when your mind doesn’t switch off.
                     </p>
                     <Button variant="black" className="bg-[#0F9393] text-white hover:bg-[#0D7A7A] w-full md:w-[280px] h-[60px] rounded-full text-[16px] md:text-[18px]" onClick={openBookingModal}>
@@ -375,7 +370,7 @@ export default function ServicesPage() {
                 </div>
 
                 {/* Right Column: Descriptions &Philosophy */}
-                <div className="flex flex-col gap-4 text-left text-[16px] md:text-[19px] text-white/70 leading-snug font-nunito pt-2 lg:pt-14">
+                <div className="flex flex-col gap-4 text-left text-[16px] md:text-[19px] text-white/70 leading-snug font-nunito font-medium pt-2 lg:pt-14">
                   <p>Anxiety doesn’t always look dramatic. It’s just constant. Racing thoughts. Restlessness. A sense that something is wrong.</p>
                   <p>You don’t need to calm down. You need to understand what’s happening beneath the surface.</p>
                   <p>We help with generalised anxiety, panic attacks, social anxiety, health anxiety, and stress overload.</p>
@@ -445,7 +440,7 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* PILLAR 04: ADOLESCENT & YOUNG ADULT */}
+      {/* PILLAR 04: ADOLESCENT & YOUNG ADULT (White Card) */}
       <section
         ref={card4Ref}
         data-section-id="4"
@@ -455,30 +450,30 @@ export default function ServicesPage() {
           minHeight: sectionHeights['4'] ? `${sectionHeights['4']}px` : 'auto'
         }}
       >
-        <div className="relative w-[97vw] max-w-[2300px] bg-[#0E0E0E] rounded-[40px] md:rounded-[80px] border border-white/10 shadow-2xl overflow-hidden flex flex-col items-center pt-28 md:pt-44 pb-20 px-6 md:px-12 lg:px-24 pointer-events-auto z-20">
+        <div className="relative w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-t-[40px] rounded-b-[40px] border border-black/5 shadow-2xl overflow-hidden flex flex-col items-center pt-18 pb-24 px-6 md:px-12 lg:px-24 pointer-events-auto z-20">
           <div className="relative z-10 w-full">
             {/* Intro Header: 2-Column Grid */}
-            <div className="w-full flex flex-col items-center mb-12">
+            <div className="w-full flex flex-col items-center mb-16">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-20 items-start w-full max-w-[1400px]">
                 {/* Left Column: Heading & Primary Subtext */}
                 <div className="flex flex-col gap-6 text-left">
                   <span className="text-[#0F9393] font-bold uppercase tracking-[0.2em] text-[14px]">PILLAR 04</span>
-                  <h2 className="text-[36px] md:text-[64px] font-bold font-georgia text-white leading-[1] tracking-tight text-balance">
+                  <h2 className="text-[36px] md:text-[64px] font-bold font-georgia text-black leading-[1] tracking-tight text-balance">
                     Adolescent & <br />
                     <span className="text-[#0F9393]">Young Adults.</span>
                   </h2>
                   <div className="max-w-[450px]">
-                    <p className="font-nunito font-bold text-[18px] md:text-[22px] text-white/60 mb-8 leading-tight">
+                    <p className="font-nunito font-semibold text-[18px] md:text-[22px] text-black/50 mb-8 leading-tight">
                       Growing up feels different now. Pressure from academics, career, expectations, it builds up quietly.
                     </p>
-                    <Button variant="white" className="bg-white text-black hover:bg-gray-200 w-full md:w-[280px] h-[60px] rounded-full text-[16px] md:text-[18px]" onClick={openBookingModal}>
+                    <Button variant="black" className="bg-black text-white hover:bg-gray-800 w-full md:w-[280px] h-[60px] rounded-full text-[16px] md:text-[18px]" onClick={openBookingModal}>
                       Support Your Growth
                     </Button>
                   </div>
                 </div>
 
                 {/* Right Column: Descriptions &Philosophy */}
-                <div className="flex flex-col gap-4 text-left text-[16px] md:text-[19px] text-white/70 leading-snug font-nunito pt-2 lg:pt-14">
+                <div className="flex flex-col gap-4 text-left text-[16px] md:text-[19px] text-black/60 leading-snug font-nunito font-medium pt-2 lg:pt-14">
                   <p>Academic pressure, career confusion, identity struggles, social anxiety, comparison—it’s a lot, and it shows up in ways that are often dismissed.</p>
                   <p>This is a space where things don’t have to be filtered. A safe, structured space for adolescents and young adults to process and find steadiness.</p>
                   
@@ -491,10 +486,10 @@ export default function ServicesPage() {
                     <AnimatePresence>
                       {showFullAdolescent && (
                         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                          <div className="pt-6 flex flex-col gap-5 border-t border-white/10 mt-4">
+                          <div className="pt-6 flex flex-col gap-5 border-t border-black/5 mt-4">
                             <p>Identity development isn&apos;t just about finding yourself—it&apos;s about understanding the environment you&apos;re growing up in.</p>
                             <p className="font-bold text-[#0F9393] text-[18px] md:text-[22px]">We provide professional guidance for navigating transitions and peer dynamics.</p>
-                            <p className="p-6 bg-white/5 rounded-[24px] border border-white/5 italic font-medium text-white/50 text-[15px] md:text-[17px]">
+                            <p className="p-6 bg-black/5 rounded-[24px] border border-black/5 italic font-medium text-black/40 text-[15px] md:text-[17px]">
                               Evidence-based counseling for the internal and external challenges of young adulthood.
                             </p>
                           </div>
@@ -514,18 +509,18 @@ export default function ServicesPage() {
                 transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
               >
                 {[...ADOLESCENT_CARDS, ...ADOLESCENT_CARDS].slice(0, 12).map((card, idx) => (
-                  <div key={`${card.id}-${idx}`} className="flex-shrink-0 w-[240px] md:w-[320px] h-[300px] md:h-[360px] bg-[#1A1A1A] border border-white/10 rounded-[35px] p-4 md:p-6 flex flex-col relative shadow-sm group overflow-hidden">
+                  <div key={`${card.id}-${idx}`} className="flex-shrink-0 w-[240px] md:w-[320px] h-[300px] md:h-[360px] bg-white border border-black/5 rounded-[35px] p-4 md:p-6 flex flex-col relative shadow-sm group overflow-hidden">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] md:text-[12px] font-bold bg-white/5 px-2.5 py-0.5 rounded-full text-white/30 border border-white/5">
+                      <span className="text-[10px] md:text-[12px] font-bold bg-black/5 px-2.5 py-0.5 rounded-full text-black/30 border border-black/5">
                         Transition | Support
                       </span>
                     </div>
 
                     <div className="flex flex-col gap-0.5">
-                      <h3 className="text-[17px] md:text-[20px] font-bold font-georgia leading-tight text-white line-clamp-1">
+                      <h3 className="text-[17px] md:text-[20px] font-bold font-georgia leading-tight text-black line-clamp-1">
                         {card.title}
                       </h3>
-                      <p className="text-[11px] md:text-[13px] text-white/30 font-nunito leading-tight line-clamp-1">
+                      <p className="text-[11px] md:text-[13px] text-black/40 font-nunito leading-tight line-clamp-1">
                         Support for the modern young adult.
                       </p>
                     </div>
@@ -533,8 +528,8 @@ export default function ServicesPage() {
                     <div className="absolute bottom-4 md:bottom-6 left-4 md:left-6 right-4 md:right-6 h-[140px] md:h-[180px] rounded-[28px] overflow-hidden">
                       <Image src={card.image} alt={card.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
                       <div className="absolute bottom-3 left-3">
-                        <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 cursor-pointer hover:bg-white/20 transition-all shadow-lg">
-                          <span className="text-[9px] md:text-[11px] font-bold text-white uppercase tracking-wider">Expand</span>
+                        <div className="flex items-center gap-1.5 bg-black/5 backdrop-blur-md px-3 py-1.5 rounded-full border border-black/10 cursor-pointer hover:bg-black/10 transition-all shadow-lg">
+                          <span className="text-[9px] md:text-[11px] font-bold text-black uppercase tracking-wider">Expand</span>
                         </div>
                       </div>
                     </div>
@@ -557,10 +552,10 @@ export default function ServicesPage() {
           minHeight: sectionHeights['5'] ? `${sectionHeights['5']}px` : 'auto'
         }}
       >
-        <div className="relative w-[97vw] max-w-[2300px] bg-[#111111] rounded-[35px] md:rounded-[80px] border border-white/10 shadow-2xl overflow-hidden flex flex-col items-center pt-28 md:pt-44 pb-20 px-6 md:px-12 lg:px-24 pointer-events-auto z-20">
+        <div className="relative w-[97vw] max-w-[2440px] bg-[#111111] rounded-t-[40px] rounded-b-[40px] border border-white/10 shadow-2xl overflow-hidden flex flex-col items-center pt-18 pb-24 px-6 md:px-12 lg:px-24 pointer-events-auto z-20">
           <div className="relative z-10 w-full">
             {/* Intro Header: 2-Column Grid */}
-            <div className="w-full flex flex-col items-center mb-12">
+            <div className="w-full flex flex-col items-center mb-16">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-20 items-start w-full max-w-[1400px]">
                 {/* Left Column: Heading & Primary Subtext */}
                 <div className="flex flex-col gap-6 text-left">
@@ -570,7 +565,7 @@ export default function ServicesPage() {
                     <span className="text-[#0F9393]">Interpersonal.</span>
                   </h2>
                   <div className="max-w-[450px]">
-                    <p className="font-nunito font-bold text-[18px] md:text-[22px] text-white/60 mb-8 leading-tight">
+                    <p className="font-nunito font-semibold text-[18px] md:text-[22px] text-white/60 mb-8 leading-tight">
                       When it’s not just one person. In families, things are often unspoken or dismissed. But they show up.
                     </p>
                     <Button variant="black" className="bg-[#0F9393] text-white hover:bg-[#0D7A7A] w-full md:w-[280px] h-[60px] rounded-full text-[16px] md:text-[18px]" onClick={openBookingModal}>
@@ -580,7 +575,7 @@ export default function ServicesPage() {
                 </div>
 
                 {/* Right Column: Descriptions &Philosophy */}
-                <div className="flex flex-col gap-4 text-left text-[16px] md:text-[19px] text-white/70 leading-snug font-nunito pt-2 lg:pt-14">
+                <div className="flex flex-col gap-4 text-left text-[16px] md:text-[19px] text-white/70 leading-snug font-nunito font-medium pt-2 lg:pt-14">
                   <p>Families don’t come with manuals. Just patterns. We work with families dealing with conflict, communication gaps, dependency, and generational differences.</p>
                   <p>Family therapy helps understand patterns without blame. Rebuilding bridges and communication channels.</p>
                   

@@ -160,10 +160,10 @@ export const LandingStack = () => {
           </div>
 
           <div className="w-full px-4 flex justify-center pb-20 -mt-[150px] md:-mt-[200px] relative z-10">
-            <div className="w-[97vw] max-w-[2400px] bg-[#FEFEFC] rounded-[40px] pt-16 pb-[100px] md:pb-[150px] px-6 md:px-12 lg:px-16 flex flex-col items-center shadow-xl">
+            <div className="w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-t-[40px] rounded-b-[40px] pt-18 pb-24 px-6 md:px-12 lg:px-24 flex flex-col items-center shadow-2xl pointer-events-auto">
               {/* Centered Title */}
               <div className="w-full flex flex-col items-center text-center mb-16">
-                <h2 className="font-georgia text-[36px] font-bold leading-tight text-black max-w-[900px]">
+                <h2 className="font-georgia text-[36px] md:text-[52px] lg:text-[64px] font-bold leading-[1.1] tracking-tight text-black max-w-[1200px] text-balance">
                   There’s a reason it’s called Unheard.
                 </h2>
               </div>
@@ -184,7 +184,7 @@ export const LandingStack = () => {
                   {/* Card 1b: Philosophy Text */}
                   <div className="rounded-[30px] border border-black/10 p-8 md:p-10 flex flex-col justify-between bg-white hover:shadow-lg transition-all aspect-square">
                     <span className="text-[20px] font-bold text-black/20 font-nunito">01</span>
-                    <p className="font-nunito text-[18px] xl:text-[20px] font-bold text-black/80 leading-relaxed">
+                    <p className="font-nunito text-[18px] xl:text-[20px] font-semibold text-black/80 leading-relaxed">
                       unHeard., isn&apos;t built on quick fixes or motivational language.
                     </p>
                   </div>
@@ -193,7 +193,7 @@ export const LandingStack = () => {
                   <div className="rounded-[30px] border border-black/10 p-8 md:p-10 flex flex-col justify-between bg-[#F8F8F6] hover:shadow-lg transition-all aspect-square">
                     <span className="text-[20px] font-bold text-black/20 font-nunito">02</span>
                     <div className="space-y-4">
-                      <p className="font-nunito text-[18px] xl:text-[20px] font-bold text-black/80 leading-relaxed">
+                      <p className="font-nunito text-[18px] xl:text-[20px] font-semibold text-black/80 leading-relaxed">
                         It’s built on careful listening. On trained observation. On understanding before intervention.
                       </p>
                       <p className="font-nunito text-[15px] xl:text-[17px] font-semibold text-black/50 leading-relaxed">
@@ -268,8 +268,8 @@ export const LandingStack = () => {
         }}
       >
         <div className="w-[97vw] max-w-[2440px] bg-[#171612] rounded-t-[40px] rounded-b-[40px] pt-18 pb-24 px-6 md:px-12 lg:px-24 flex flex-col items-center shadow-2xl pointer-events-auto">
-          <div className="text-center mb-10 max-w-[900px]">
-            <h2 className="font-georgia text-[36px] font-bold leading-tight text-white mb-6">
+          <div className="text-center mb-16 max-w-[900px]">
+            <h2 className="font-georgia text-[36px] md:text-[52px] lg:text-[64px] font-bold leading-[1.1] tracking-tight text-white mb-6">
               Why Unheard?
             </h2>
           </div>
@@ -300,7 +300,7 @@ export const LandingStack = () => {
                     Therapy for when your mind doesn&apos;t switch off.
                   </h3>
                   <div className="space-y-4">
-                    <p className="font-nunito text-[18px] md:text-[20px] text-black/80 leading-relaxed">
+                    <p className="font-nunito text-[18px] md:text-[20px] font-semibold text-black/80 leading-relaxed">
                       Anxiety doesn’t always look dramatic. It’s just constant. Racing thoughts. Restlessness. A sense that something is wrong.
                       <br />
 
@@ -417,9 +417,11 @@ export const LandingStack = () => {
           minHeight: sectionHeights['3'] ? `${sectionHeights['3']}px` : 'auto'
         }}
       >
-        <div className="w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-t-[40px] rounded-b-[40px] pt-40 pb-40 px-6 md:px-12 lg:px-24 flex flex-col items-center shadow-[0_-20px_50px_rgba(0,0,0,0.3)] pointer-events-auto">
-          <div className="text-center mb-16 max-w-[900px]">
-            <h2 className="font-georgia text-[36px] md:text-[48px] font-bold leading-tight text-black">Your Questions, Answered <br /> <span className="text-[#0F9393]">At Unheard.</span></h2>
+        <div className="w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-t-[40px] rounded-b-[40px] pt-18 pb-24 px-6 md:px-12 lg:px-24 flex flex-col items-center shadow-2xl pointer-events-auto">
+          <div className="text-center mb-16 max-w-[1200px]">
+            <h2 className="font-georgia text-[36px] md:text-[52px] lg:text-[64px] font-bold leading-[1.1] tracking-tight text-black">
+              Your Questions, Answered <br /> <span className="text-[#0F9393]">At Unheard.</span>
+            </h2>
           </div>
           <div className="flex flex-col lg:flex-row w-full max-w-[1200px] gap-12 lg:gap-20 items-stretch">
             <div className="w-full lg:w-1/2 flex justify-center lg:justify-end shrink-0">
@@ -450,13 +452,13 @@ export const LandingStack = () => {
           minHeight: sectionHeights['4'] ? `${sectionHeights['4']}px` : 'auto'
         }}
       >
-        <div className="w-[97vw] max-w-[2440px] bg-[#171612] rounded-t-[40px] rounded-b-[40px] pt-40 pb-40 flex flex-col items-center shadow-2xl pointer-events-auto border-t border-white/5 overflow-hidden">
+        <div className="w-[97vw] max-w-[2440px] bg-[#171612] rounded-t-[40px] rounded-b-[40px] pt-18 pb-24 px-6 md:px-12 lg:px-24 flex flex-col items-center shadow-2xl pointer-events-auto border-t border-white/5 overflow-hidden">
           <div className="absolute top-0 right-0 w-[40vw] h-[40vw] bg-[#0F9393]/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
           
           <div className="relative z-10 w-full flex flex-col items-center">
             {/* Header Title */}
-            <div className="text-center mb-16 px-6 max-w-[1200px]">
-              <h2 className="font-georgia text-[36px] md:text-[42px] lg:text-[48px] font-bold leading-[1.05] text-white">
+            <div className="text-center mb-16 px-6 max-w-[1400px]">
+              <h2 className="font-georgia text-[36px] md:text-[52px] lg:text-[64px] font-bold leading-[1.1] tracking-tight text-white">
                 Comprehensive support for <br /> <span className="opacity-80">every mental landscape.</span>
               </h2>
             </div>
@@ -533,12 +535,12 @@ export const LandingStack = () => {
           minHeight: sectionHeights['5'] ? `${sectionHeights['5']}px` : 'auto'
         }}
       >
-        <div className="w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-t-[40px] rounded-b-[40px] pt-40 pb-40 px-6 md:px-12 lg:px-24 flex flex-col items-center shadow-[0_-20px_50px_rgba(0,0,0,0.3)] pointer-events-auto">
+        <div className="w-[97vw] max-w-[2440px] bg-[#FEFEFC] rounded-t-[40px] rounded-b-[40px] pt-18 pb-24 px-6 md:px-12 lg:px-24 flex flex-col items-center shadow-2xl pointer-events-auto">
           <div className="w-full max-w-[1440px] flex flex-col items-center">
-            <div className="text-center mb-24 max-w-[900px]">
-              <h2 className="font-georgia text-[36px] md:text-[48px] font-bold leading-tight text-black flex flex-col items-center">
+            <div className="text-center mb-24 max-w-[1200px]">
+              <h2 className="font-georgia text-[36px] md:text-[52px] lg:text-[64px] font-bold leading-[1.1] tracking-tight text-black flex flex-col items-center">
                 <span className="text-[#0F9393] mb-4">Unheard Truth:</span>
-                <span className="opacity-40 text-[24px] md:text-[32px] font-medium italic leading-relaxed text-center">Discover, Reflect, and Grow</span>
+                <span className="opacity-40 text-[24px] md:text-[32px] lg:text-[40px] font-medium italic leading-[1.1] text-center">Discover, Reflect, and Grow</span>
               </h2>
               <div className="mt-8 w-24 h-1 bg-[#0F9393]/20 mx-auto rounded-full" />
             </div>
