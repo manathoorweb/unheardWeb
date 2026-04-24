@@ -319,15 +319,11 @@ export default function AboutPage() {
                 className="object-cover transition-transform duration-1000 group-hover:scale-105" 
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-              {/* Overlay Badge */}
-             
             </div>
 
             {/* Left Side: White Narrative Card */}
             <div className="w-full lg:w-[37%] bg-white p-10 md:p-14 rounded-[50px] flex flex-col justify-between shadow-2xl relative border border-black/5 hover:bg-black/[0.01] transition-all group overflow-hidden">
               <div className="relative z-10 flex flex-col gap-8">
-               
-                
                 <h3 className="text-[28px] md:text-[36px] font-bold text-black font-georgia leading-[1.2] tracking-tight">
                   You don’t need to be <br />
                   <span className="text-[#0F9393]">in crisis</span> to start therapy. <br />
