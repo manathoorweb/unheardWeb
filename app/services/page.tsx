@@ -12,9 +12,8 @@ const INDIVIDUAL_CARDS = [
   { id: 3, title: 'Depression and low mood', image: '/assets/service/bento_depression.webp', size: 'md' },
   { id: 4, title: 'Emotional burnout and fatigue', image: '/assets/service/bento_burnout.webp', size: 'lg' },
   { id: 5, title: 'Self-doubt and low confidence', image: '/assets/service/bento_self_doubt.webp', size: 'md' },
-  { id: 6, title: 'Stress related to work, studies or life decisions', image: '/assets/service/bento_stress.webp', size: 'md' },
-  { id: 7, title: 'Feeling stuck, disconnected, or overwhelmed', image: '/assets/service/bento_stuck.webp', size: 'lg' },
-  { id: 8, title: 'Personal Growth & Emotional Clarity', image: '/assets/service/bento_growth.webp', size: 'md' }
+  { id: 6, title: 'Stress related to work, studies,life', image: '/assets/service/bento_stress.webp', size: 'md' },
+  { id: 7, title: 'Feeling stuck,overwhelmed, disconnected', image: '/assets/service/bento_stuck.webp', size: 'md' }
 ];
 
 const RELATIONSHIP_CARDS = [
@@ -153,8 +152,7 @@ export default function ServicesPage() {
                   </h2>
                   <div className="max-w-[450px]">
                     <p className="font-nunito font-semibold text-[18px] md:text-[22px] text-white/60 mb-8 leading-tight">
-                      Therapy for when your mind won&apos;t slow down. You might not call it a problem yet but it&apos;s there.
-                    </p>
+                      For when your inner world feels difficult to sit with.                    </p>
                     <Button variant="black" className="bg-[#0F9393] text-white hover:bg-[#0D7A7A] w-full md:w-[280px] h-[60px] rounded-full text-[16px] md:text-[18px]" onClick={openBookingModal}>
                       Consult for Individuals
                     </Button>
@@ -166,13 +164,13 @@ export default function ServicesPage() {
                   <p>Anxiety, overthinking, low mood, burnout, emotional instability, self-doubt—these don’t always look serious from the outside.</p>
                   <p>The constant overthinking. The anxiety that sits in the background. The feeling of being mentally exhausted without a clear reason.</p>
                   <p>At unHeard., individual therapy is not about fixing you. It’s about understanding what’s happening beneath the surface, so things won’t keep repeating in the same way.</p>
-                  
+
                   <div className="mt-4">
                     <button onClick={() => setShowFullIndividual(!showFullIndividual)} className="text-[#0F9393] font-bold flex items-center gap-2 hover:underline transition-all text-[16px]">
                       {showFullIndividual ? 'Read Less' : 'Read more'}
                       <span className={`transition-transform duration-300 ${showFullIndividual ? 'rotate-180' : ''}`}>↓</span>
                     </button>
-                    
+
                     <AnimatePresence>
                       {showFullIndividual && (
                         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
@@ -192,6 +190,13 @@ export default function ServicesPage() {
               </div>
             </div>
 
+            {/* Moving Cards Header */}
+            <div className="w-full flex flex-col items-center">
+              <div className="w-full max-w-[1400px] mb-8 text-left uppercase">
+                <span className="text-[#FFFFFF] font-black tracking-[0.4em] text-[20px]">What this helps with</span>
+              </div>
+            </div>
+
             {/* Breaking Out: Moving Cards Marquee (Full Screen Width) */}
             <div className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden py-6 md:py-10">
               <motion.div
@@ -200,31 +205,16 @@ export default function ServicesPage() {
                 transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
               >
                 {[...INDIVIDUAL_CARDS, ...INDIVIDUAL_CARDS].map((card, idx) => (
-                  <div key={`${card.id}-${idx}`} className="flex-shrink-0 w-[240px] md:w-[320px] h-[300px] md:h-[360px] bg-[#1A1A1A] border border-white/10 rounded-[35px] p-4 md:p-6 flex flex-col relative shadow-sm group overflow-hidden">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] md:text-[12px] font-bold bg-white/5 px-2.5 py-0.5 rounded-full text-white/30 border border-white/5">
-                        {idx % 4 === 0 ? '18-65 | Private' : idx % 4 === 1 ? '13-25 | Teens' : idx % 4 === 2 ? 'Person | Group' : '18-65 | Family'}
-                      </span>
-                      <div className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-white/5 flex items-center justify-center opacity-50">
-                        <div className="w-1 h-1 rounded-full bg-[#0F9393]/30" />
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col gap-0.5">
-                      <h3 className="text-[17px] md:text-[20px] font-bold font-georgia leading-tight text-white line-clamp-1">
-                        {card.title.split(' and ')[0]}
+                  <div key={`${card.id}-${idx}`} className="flex-shrink-0 w-[240px] md:w-[320px] h-[230px] md:h-[292px] bg-[#1A1A1A] border border-white/10 rounded-[30px] relative shadow-sm group overflow-hidden">
+                    <div className="p-5 md:p-6 pb-0">
+                      <h3 className="text-[17px] md:text-[20px] font-bold font-georgia leading-tight text-white line-clamp-2">
+                        {card.title}
                       </h3>
-                      <p className="text-[11px] md:text-[13px] text-white/30 font-nunito leading-tight line-clamp-1">
-                        {card.title.includes('and') ? card.title.split(' and ')[1] : 'Personalized support.'}
-                      </p>
                     </div>
 
-                    <div className="absolute bottom-4 md:bottom-6 left-4 md:left-6 right-4 md:right-6 h-[140px] md:h-[180px] rounded-[28px] overflow-hidden">
-                      <Image src={card.image} alt={card.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
-                      <div className="absolute bottom-3 left-3">
-                        <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 cursor-pointer hover:bg-white/20 transition-all shadow-lg">
-                          <span className="text-[9px] md:text-[11px] font-bold text-white uppercase tracking-wider">Read More</span>
-                        </div>
+                    <div className="absolute bottom-5 left-5 right-5">
+                      <div className="relative w-full h-[135px] md:h-[180px] rounded-[20px] overflow-hidden">
+                        <Image src={card.image} alt={card.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
                       </div>
                     </div>
                   </div>
@@ -232,11 +222,10 @@ export default function ServicesPage() {
               </motion.div>
               <div ref={target1Ref} className="mt-8"></div>
             </div>
-            </div>
+          </div>
         </div>
       </section>
 
-      {/* PILLAR 02: RELATIONSHIP COUNSELING (Black Card) */}
       <section
         ref={card2Ref}
         data-section-id="2"
@@ -250,10 +239,9 @@ export default function ServicesPage() {
           <div className="relative z-10 w-full">
             {/* Intro Header: 2-Column Grid (No nested card background) */}
             <div className="w-full flex flex-col items-center mb-16">
-             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-20 items-start w-full max-w-[1400px]">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-20 items-start w-full max-w-[1400px] -mt-8 md:-mt-12">
                 {/* Left Column: Heading & Primary Subtext */}
                 <div className="flex flex-col gap-6 text-left">
-                  <span className="text-[#0F9393] font-bold uppercase tracking-[0.2em] text-[14px]">PILLAR 02</span>
                   <h2 className="text-[36px] md:text-[64px] font-bold font-georgia text-black leading-[1] tracking-tight text-balance">
                     Relationship & <br />
                     <span className="text-[#0F9393]">Couple Counseling.</span>
@@ -273,13 +261,13 @@ export default function ServicesPage() {
                   <p>Most relationships don’t break suddenly. They strain quietly. Misunderstandings repeat. Communication reduces. Small things start weighing more than they should.</p>
                   <p>Couple counseling isn’t about deciding who is right. It is about understanding the dynamics between two people.</p>
                   <p>We work with couples navigating communication gaps, recurring conflicts, trust concerns, emotional distance, and unresolved resentment.</p>
-                  
+
                   <div className="mt-4">
                     <button onClick={() => setShowFullRelationship(!showFullRelationship)} className="text-[#0F9393] font-bold flex items-center gap-2 hover:underline transition-all text-[16px]">
                       {showFullRelationship ? 'Read Less' : 'Read more about this pillar'}
                       <span className={`transition-transform duration-300 ${showFullRelationship ? 'rotate-180' : ''}`}>↓</span>
                     </button>
-                    
+
                     <AnimatePresence>
                       {showFullRelationship && (
                         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
@@ -298,6 +286,13 @@ export default function ServicesPage() {
               </div>
             </div>
 
+            {/* Moving Cards Header */}
+            <div className="w-full flex flex-col items-center">
+              <div className="w-full max-w-[1400px] mb-8 text-left uppercase">
+                <span className="text-[#000000] font-black tracking-[0.4em] text-[20px]">What this helps with</span>
+              </div>
+            </div>
+
             {/* Breaking Out: Moving Cards Marquee (Full Screen Width) */}
             <div className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden py-6 md:py-10">
               <motion.div
@@ -306,27 +301,17 @@ export default function ServicesPage() {
                 transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
               >
                 {[...RELATIONSHIP_CARDS, ...RELATIONSHIP_CARDS].map((card, idx) => (
-                  <div key={`${card.id}-${idx}`} className="flex-shrink-0 w-[240px] md:w-[320px] h-[300px] md:h-[360px] bg-white border border-black/5 rounded-[35px] p-4 md:p-6 flex flex-col relative shadow-sm group overflow-hidden">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] md:text-[12px] font-bold bg-black/5 px-2.5 py-0.5 rounded-full text-black/30 border border-black/5">
-                        {idx % 3 === 0 ? 'Couples | High Res' : 'Marital | Private'}
-                      </span>
-                      <div className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-black/5 flex items-center justify-center opacity-50">
-                        <div className="w-1 h-1 rounded-full bg-[#0F9393]/30" />
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col gap-0.5">
-                      <h3 className="text-[17px] md:text-[20px] font-bold font-georgia leading-tight text-black line-clamp-1">
+                  <div key={`${card.id}-${idx}`} className="flex-shrink-0 w-[240px] md:w-[320px] h-[230px] md:h-[292px] bg-white border border-black/5 rounded-[30px] relative shadow-sm group overflow-hidden">
+                    <div className="p-5 md:p-6 pb-0">
+                      <h3 className="text-[17px] md:text-[20px] font-bold font-georgia leading-tight text-black line-clamp-2">
                         {card.title}
                       </h3>
-                      <p className="text-[11px] md:text-[13px] text-black/40 font-nunito leading-tight line-clamp-1">
-                        Professional support for relational health.
-                      </p>
                     </div>
 
-                    <div className="absolute bottom-4 md:bottom-6 left-4 md:left-6 right-4 md:right-6 h-[140px] md:h-[180px] rounded-[28px] overflow-hidden">
-                      <Image src={card.image} alt={card.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
+                    <div className="absolute bottom-5 left-5 right-5">
+                      <div className="relative w-full h-[135px] md:h-[180px] rounded-[20px] overflow-hidden">
+                        <Image src={card.image} alt={card.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -354,7 +339,6 @@ export default function ServicesPage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-20 items-start w-full max-w-[1400px]">
                 {/* Left Column: Heading & Primary Subtext */}
                 <div className="flex flex-col gap-6 text-left">
-                  <span className="text-[#0F9393] font-bold uppercase tracking-[0.2em] text-[14px]">PILLAR 03</span>
                   <h2 className="text-[36px] md:text-[64px] font-bold font-georgia text-white leading-[1] tracking-tight text-balance">
                     Anxiety and <br />
                     <span className="text-[#0F9393]">Stress Therapy.</span>
@@ -374,13 +358,13 @@ export default function ServicesPage() {
                   <p>Anxiety doesn’t always look dramatic. It’s just constant. Racing thoughts. Restlessness. A sense that something is wrong.</p>
                   <p>You don’t need to calm down. You need to understand what’s happening beneath the surface.</p>
                   <p>We help with generalised anxiety, panic attacks, social anxiety, health anxiety, and stress overload.</p>
-                  
+
                   <div className="mt-4">
                     <button onClick={() => setShowFullAnxiety(!showFullAnxiety)} className="text-[#0F9393] font-bold flex items-center gap-2 hover:underline transition-all text-[16px]">
                       {showFullAnxiety ? 'Read Less' : 'Read more about this pillar'}
                       <span className={`transition-transform duration-300 ${showFullAnxiety ? 'rotate-180' : ''}`}>↓</span>
                     </button>
-                    
+
                     <AnimatePresence>
                       {showFullAnxiety && (
                         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
@@ -399,6 +383,13 @@ export default function ServicesPage() {
               </div>
             </div>
 
+            {/* Moving Cards Header */}
+            <div className="w-full flex flex-col items-center">
+              <div className="w-full max-w-[1400px] mb-8 text-left uppercase">
+                <span className="text-[#FFFFFF] font-black tracking-[0.4em] text-[20px]">What this helps with</span>
+              </div>
+            </div>
+
             {/* Breaking Out: Moving Cards Marquee */}
             <div className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden py-6 md:py-10">
               <motion.div
@@ -407,28 +398,16 @@ export default function ServicesPage() {
                 transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
               >
                 {[...ANXIETY_CARDS, ...ANXIETY_CARDS].slice(0, 12).map((card, idx) => (
-                  <div key={`${card.id}-${idx}`} className="flex-shrink-0 w-[240px] md:w-[320px] h-[300px] md:h-[360px] bg-[#1A1A1A] border border-white/10 rounded-[35px] p-4 md:p-6 flex flex-col relative shadow-sm group overflow-hidden">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] md:text-[12px] font-bold bg-white/5 px-2.5 py-0.5 rounded-full text-white/30 border border-white/5">
-                         Relief | Sustainable
-                      </span>
-                    </div>
-
-                    <div className="flex flex-col gap-0.5">
-                      <h3 className="text-[17px] md:text-[20px] font-bold font-georgia leading-tight text-white line-clamp-1">
+                  <div key={`${card.id}-${idx}`} className="flex-shrink-0 w-[240px] md:w-[320px] h-[230px] md:h-[292px] bg-[#1A1A1A] border border-white/10 rounded-[30px] relative shadow-sm group overflow-hidden">
+                    <div className="p-5 md:p-6 pb-0">
+                      <h3 className="text-[17px] md:text-[20px] font-bold font-georgia leading-tight text-white line-clamp-2">
                         {card.title}
                       </h3>
-                      <p className="text-[11px] md:text-[13px] text-white/30 font-nunito leading-tight line-clamp-1">
-                        Expert guidance for emotional stability.
-                      </p>
                     </div>
 
-                    <div className="absolute bottom-4 md:bottom-6 left-4 md:left-6 right-4 md:right-6 h-[140px] md:h-[180px] rounded-[28px] overflow-hidden">
-                      <Image src={card.image} alt={card.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
-                      <div className="absolute bottom-3 left-3">
-                        <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 cursor-pointer hover:bg-white/20 transition-all shadow-lg">
-                          <span className="text-[9px] md:text-[11px] font-bold text-white uppercase tracking-wider">Learn More</span>
-                        </div>
+                    <div className="absolute bottom-5 left-5 right-5">
+                      <div className="relative w-full h-[135px] md:h-[180px] rounded-[20px] overflow-hidden">
+                        <Image src={card.image} alt={card.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
                       </div>
                     </div>
                   </div>
@@ -457,7 +436,6 @@ export default function ServicesPage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-20 items-start w-full max-w-[1400px]">
                 {/* Left Column: Heading & Primary Subtext */}
                 <div className="flex flex-col gap-6 text-left">
-                  <span className="text-[#0F9393] font-bold uppercase tracking-[0.2em] text-[14px]">PILLAR 04</span>
                   <h2 className="text-[36px] md:text-[64px] font-bold font-georgia text-black leading-[1] tracking-tight text-balance">
                     Adolescent & <br />
                     <span className="text-[#0F9393]">Young Adults.</span>
@@ -476,13 +454,13 @@ export default function ServicesPage() {
                 <div className="flex flex-col gap-4 text-left text-[16px] md:text-[19px] text-black/60 leading-snug font-nunito font-medium pt-2 lg:pt-14">
                   <p>Academic pressure, career confusion, identity struggles, social anxiety, comparison—it’s a lot, and it shows up in ways that are often dismissed.</p>
                   <p>This is a space where things don’t have to be filtered. A safe, structured space for adolescents and young adults to process and find steadiness.</p>
-                  
+
                   <div className="mt-4">
                     <button onClick={() => setShowFullAdolescent(!showFullAdolescent)} className="text-[#0F9393] font-bold flex items-center gap-2 hover:underline transition-all text-[16px]">
                       {showFullAdolescent ? 'Read Less' : 'Read more about this pillar'}
                       <span className={`transition-transform duration-300 ${showFullAdolescent ? 'rotate-180' : ''}`}>↓</span>
                     </button>
-                    
+
                     <AnimatePresence>
                       {showFullAdolescent && (
                         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
@@ -501,6 +479,13 @@ export default function ServicesPage() {
               </div>
             </div>
 
+            {/* Moving Cards Header */}
+            <div className="w-full flex flex-col items-center">
+              <div className="w-full max-w-[1400px] mb-8 text-left uppercase">
+                <span className="text-[#000000] font-black tracking-[0.4em] text-[20px]">What this helps with</span>
+              </div>
+            </div>
+
             {/* Breaking Out: Moving Cards Marquee */}
             <div className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden py-6 md:py-10">
               <motion.div
@@ -509,28 +494,16 @@ export default function ServicesPage() {
                 transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
               >
                 {[...ADOLESCENT_CARDS, ...ADOLESCENT_CARDS].slice(0, 12).map((card, idx) => (
-                  <div key={`${card.id}-${idx}`} className="flex-shrink-0 w-[240px] md:w-[320px] h-[300px] md:h-[360px] bg-white border border-black/5 rounded-[35px] p-4 md:p-6 flex flex-col relative shadow-sm group overflow-hidden">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] md:text-[12px] font-bold bg-black/5 px-2.5 py-0.5 rounded-full text-black/30 border border-black/5">
-                        Transition | Support
-                      </span>
-                    </div>
-
-                    <div className="flex flex-col gap-0.5">
-                      <h3 className="text-[17px] md:text-[20px] font-bold font-georgia leading-tight text-black line-clamp-1">
+                  <div key={`${card.id}-${idx}`} className="flex-shrink-0 w-[240px] md:w-[320px] h-[230px] md:h-[292px] bg-white border border-black/5 rounded-[30px] relative shadow-sm group overflow-hidden">
+                    <div className="p-5 md:p-6 pb-0">
+                      <h3 className="text-[17px] md:text-[20px] font-bold font-georgia leading-tight text-black line-clamp-2">
                         {card.title}
                       </h3>
-                      <p className="text-[11px] md:text-[13px] text-black/40 font-nunito leading-tight line-clamp-1">
-                        Support for the modern young adult.
-                      </p>
                     </div>
 
-                    <div className="absolute bottom-4 md:bottom-6 left-4 md:left-6 right-4 md:right-6 h-[140px] md:h-[180px] rounded-[28px] overflow-hidden">
-                      <Image src={card.image} alt={card.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
-                      <div className="absolute bottom-3 left-3">
-                        <div className="flex items-center gap-1.5 bg-black/5 backdrop-blur-md px-3 py-1.5 rounded-full border border-black/10 cursor-pointer hover:bg-black/10 transition-all shadow-lg">
-                          <span className="text-[9px] md:text-[11px] font-bold text-black uppercase tracking-wider">Expand</span>
-                        </div>
+                    <div className="absolute bottom-5 left-5 right-5">
+                      <div className="relative w-full h-[135px] md:h-[180px] rounded-[20px] overflow-hidden">
+                        <Image src={card.image} alt={card.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
                       </div>
                     </div>
                   </div>
@@ -577,13 +550,13 @@ export default function ServicesPage() {
                 <div className="flex flex-col gap-4 text-left text-[16px] md:text-[19px] text-white/70 leading-snug font-nunito font-medium pt-2 lg:pt-14">
                   <p>Families don’t come with manuals. Just patterns. We work with families dealing with conflict, communication gaps, dependency, and generational differences.</p>
                   <p>Family therapy helps understand patterns without blame. Rebuilding bridges and communication channels.</p>
-                  
+
                   <div className="mt-4">
                     <button onClick={() => setShowFullFamily(!showFullFamily)} className="text-[#0F9393] font-bold flex items-center gap-2 hover:underline transition-all text-[16px]">
                       {showFullFamily ? 'Read Less' : 'Read more about this pillar'}
                       <span className={`transition-transform duration-300 ${showFullFamily ? 'rotate-180' : ''}`}>↓</span>
                     </button>
-                    
+
                     <AnimatePresence>
                       {showFullFamily && (
                         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
@@ -602,6 +575,13 @@ export default function ServicesPage() {
               </div>
             </div>
 
+            {/* Moving Cards Header */}
+            <div className="w-full flex flex-col items-center">
+              <div className="w-full max-w-[1400px] mb-8 text-left uppercase">
+                <span className="text-[#FFFFFF] font-black tracking-[0.4em] text-[20px]">What this helps with</span>
+              </div>
+            </div>
+
             {/* Breaking Out: Moving Cards Marquee */}
             <div className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden py-6 md:py-10">
               <motion.div
@@ -610,28 +590,16 @@ export default function ServicesPage() {
                 transition={{ duration: 45, repeat: Infinity, ease: "linear" }}
               >
                 {[...FAMILY_CARDS, ...FAMILY_CARDS].slice(0, 12).map((card, idx) => (
-                  <div key={`${card.id}-${idx}`} className="flex-shrink-0 w-[240px] md:w-[320px] h-[300px] md:h-[360px] bg-[#1A1A1A] border border-white/10 rounded-[35px] p-4 md:p-6 flex flex-col relative shadow-sm group overflow-hidden">
-                    <div className="flex items-center justify-between mb-2">
-                       <span className="text-[10px] md:text-[12px] font-bold bg-white/5 px-2.5 py-0.5 rounded-full text-white/30 border border-white/5">
-                        Relational | Legacy
-                      </span>
-                    </div>
-
-                    <div className="flex flex-col gap-0.5">
-                      <h3 className="text-[17px] md:text-[20px] font-bold font-georgia leading-tight text-white line-clamp-1">
+                  <div key={`${card.id}-${idx}`} className="flex-shrink-0 w-[240px] md:w-[320px] h-[230px] md:h-[292px] bg-[#1A1A1A] border border-white/10 rounded-[30px] relative shadow-sm group overflow-hidden">
+                    <div className="p-5 md:p-6 pb-0">
+                      <h3 className="text-[17px] md:text-[20px] font-bold font-georgia leading-tight text-white line-clamp-2">
                         {card.title}
                       </h3>
-                      <p className="text-[11px] md:text-[13px] text-white/30 font-nunito leading-tight line-clamp-1">
-                        Healing generational patterns.
-                      </p>
                     </div>
 
-                    <div className="absolute bottom-4 md:bottom-6 left-4 md:left-6 right-4 md:right-6 h-[140px] md:h-[180px] rounded-[28px] overflow-hidden">
-                      <Image src={card.image} alt={card.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
-                      <div className="absolute bottom-3 left-3">
-                        <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full border border-white/20 cursor-pointer hover:bg-white/20 transition-all shadow-lg">
-                          <span className="text-[9px] md:text-[11px] font-bold text-white uppercase tracking-wider">Start Here</span>
-                        </div>
+                    <div className="absolute bottom-5 left-5 right-5">
+                      <div className="relative w-full h-[135px] md:h-[180px] rounded-[20px] overflow-hidden">
+                        <Image src={card.image} alt={card.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
                       </div>
                     </div>
                   </div>
