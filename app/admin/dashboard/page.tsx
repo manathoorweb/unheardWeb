@@ -230,7 +230,7 @@ export default function AdminDashboard() {
       const updated = registrations.find(r => r.id === selectedSession.id);
       if (updated) setSelectedSession(updated);
     }
-  }, [registrations])
+  }, [registrations, selectedSession])
 
 
   const handleCloseSession = async () => {
@@ -371,7 +371,13 @@ export default function AdminDashboard() {
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-gray-100 p-1">
                   <div className="w-full h-full bg-gray-50 rounded-lg overflow-hidden">
-                    <img src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${profile?.full_name || 'Admin'}`} className="w-full h-full object-cover" />
+                    <Image 
+                      src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${profile?.full_name || 'Admin'}`} 
+                      className="w-full h-full object-cover" 
+                      alt={profile?.full_name || 'Admin'}
+                      width={48}
+                      height={48}
+                    />
                   </div>
                 </div>
                 <div className="flex flex-col">
@@ -619,10 +625,12 @@ export default function AdminDashboard() {
                          className="w-36 h-36 md:w-44 md:h-44 rounded-full p-2 bg-white shadow-2xl relative z-10"
                        >
                           <div className="w-full h-full rounded-full overflow-hidden bg-gray-50 border-4 border-gray-50">
-                             <img 
+                             <Image 
                                src={profile.avatar_url || `https://ui-avatars.com/api/?name=${profile.full_name}&background=0F9393&color=fff&size=256`} 
                                className="w-full h-full object-cover" 
                                alt={profile.full_name}
+                               width={176}
+                               height={176}
                              />
                           </div>
                        </motion.div>
@@ -1012,9 +1020,15 @@ export default function AdminDashboard() {
               <div className="flex-1 overflow-y-auto px-8 pb-10 flex flex-col gap-8">
                 <div className="flex justify-between items-start">
                   <div className="flex items-center gap-5">
-                    <div className="w-16 h-16 bg-white rounded-3xl p-1 shadow-sm border border-gray-100">
-                      <img src={`https://ui-avatars.com/api/?name=${selectedSession?.guest_info?.name || 'User'}&background=0F9393&color=fff`} className="w-full h-full rounded-2xl object-cover" />
-                    </div>
+                     <div className="w-16 h-16 bg-white rounded-3xl p-1 shadow-sm border border-gray-100 overflow-hidden relative">
+                        <Image 
+                          src={`https://ui-avatars.com/api/?name=${selectedSession?.guest_info?.name || 'User'}&background=0F9393&color=fff`} 
+                          className="w-full h-full rounded-2xl object-cover" 
+                          alt={selectedSession?.guest_info?.name || 'User'}
+                          width={64}
+                          height={64}
+                        />
+                     </div>
                     <div className="flex flex-col">
                       <h2 className="text-[24px] font-bold tracking-tight text-gray-900">{selectedSession?.guest_info?.name}</h2>
                       <p className="text-gray-400 font-bold text-[13px]">Professional Profile</p>

@@ -5,7 +5,9 @@ import { normalizePhone } from '@/utils/phone';
 
 export async function POST(req: Request) {
   try {
-    let { phone, type = 'booking' } = await req.json();
+    const body = await req.json();
+    let { phone } = body;
+    const { type = 'booking' } = body;
     if (!phone) return NextResponse.json({ success: false, error: 'Phone number is required' }, { status: 400 });
 
     phone = normalizePhone(phone);

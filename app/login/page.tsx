@@ -3,10 +3,10 @@
 import { createClient } from '@/utils/supabase/client'
 import { useState, useEffect } from 'react'
 import { 
-  Phone, ChevronRight, MessageSquare, 
+  Phone, ChevronRight, 
   ShieldCheck, Sparkles, Calendar, 
   MapPin, User, Clock, CheckCircle2,
-  X, Mail, Apple, Globe
+  X
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 

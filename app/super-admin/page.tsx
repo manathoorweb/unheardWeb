@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import Button from '@/components/ui/Button'
 import { 
-  Trash2, Users, LayoutDashboard, 
+  Trash2, Users, 
   PenTool, Ticket, Phone, 
   MonitorPlay, ArrowLeftRight, 
-  Sparkles, Calendar, UserCircle,
-  Plus, Smartphone, AlertCircle, LogOut
+  Sparkles, 
+  Plus, Smartphone, LogOut
 } from 'lucide-react'
 import Image from 'next/image'
 import BlogEditor from '@/components/BlogEditor'
