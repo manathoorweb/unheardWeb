@@ -19,6 +19,10 @@ if (!globalForWhatsApp.qrDataUrl) globalForWhatsApp.qrDataUrl = null;
 // Reusable Logger Singleton to save RAM
 const logger = pino({ level: 'silent' });
 
+// Unique ID for this instance to prevent multi-instance connection wars
+const instanceId = Math.random().toString(36).substring(7);
+let heartbeatInterval: NodeJS.Timeout | null = null;
+
 export class WhatsAppManager {
   static getStatus() {
     return {
@@ -104,7 +108,31 @@ export class WhatsAppManager {
       return globalForWhatsApp.socket;
     }
 
-    console.log('🔄 Initializing WhatsApp connection...');
+    console.log(`🔄 [Instance ${instanceId}] Initializing WhatsApp connection...`);
+    
+    // singleton guard via Supabase
+    const supabase = await createAdminClient();
+    try {
+      const { data: lock } = await supabase.from('whatsapp_auth').select('data, updated_at').eq('id', 'connection_lock').single();
+      if (lock) {
+        const lastUpdate = new Date(lock.updated_at).getTime();
+        const isLocked = (Date.now() - lastUpdate) < 20000; // 20 second lock
+        if (isLocked && lock.data?.instanceId !== instanceId && !force) {
+          console.log(`🚫 WhatsApp connection locked by another instance (${lock.data?.instanceId}). Skipping initialization.`);
+          return null;
+        }
+      }
+      
+      // Acquire/Renew lock
+      await supabase.from('whatsapp_auth').upsert({
+        id: 'connection_lock',
+        data: { instanceId, status: 'connecting' },
+        updated_at: new Date().toISOString()
+      });
+    } catch (e) {
+      console.warn('Failed to check/acquire WhatsApp lock:', e);
+    }
+
     globalForWhatsApp.status = 'initializing';
     
     // 2. Cleanup existing socket if any
@@ -142,32 +170,62 @@ export class WhatsAppManager {
           try {
             const dataUrl = await QRCode.toDataURL(qr, { margin: 2, scale: 6 });
             globalForWhatsApp.qrDataUrl = dataUrl;
-          } catch (err) { }
+          } catch {}
         }
 
         if (connection === 'close') {
           const lastDisconnectError = lastDisconnect?.error as any;
           const statusCode = lastDisconnectError?.output?.statusCode;
           
+          const isConflict = statusCode === 440; // Session replaced by another instance
           const isFatal = statusCode === DisconnectReason.loggedOut || statusCode === 405;
-          const shouldReconnect = !isFatal;
+          const shouldReconnect = !isFatal && !isConflict; // Don't fight for connection if conflict
           
           console.error(`⚠️ WhatsApp Connection Closed (Status ${statusCode}). Reconnecting: ${shouldReconnect}`);
           
           globalForWhatsApp.socket = null; 
           globalForWhatsApp.qrDataUrl = null;
 
+          if (heartbeatInterval) {
+            clearInterval(heartbeatInterval);
+            heartbeatInterval = null;
+          }
+
           if (shouldReconnect) {
             globalForWhatsApp.status = 'disconnected';
-            setTimeout(() => this.connectToWhatsApp(), 5000); 
+            // Randomized delay to prevent thundering herd
+            const delay = 5000 + Math.random() * 5000;
+            setTimeout(() => this.connectToWhatsApp(), delay); 
           } else {
-            globalForWhatsApp.status = 'error';
-            await NotificationController.notifyAdminTokenExpired(`WhatsApp Session Expired (Status ${statusCode}). Manual scan required.`);
+            globalForWhatsApp.status = isConflict ? 'disconnected' : 'error';
+            if (isFatal) {
+              await NotificationController.notifyAdminTokenExpired(`WhatsApp Session Expired (Status ${statusCode}). Manual scan required.`);
+            }
           }
         } else if (connection === 'open') {
-          console.log('✅ WhatsApp authenticated and connected!');
+          console.log(`✅ [Instance ${instanceId}] WhatsApp authenticated and connected!`);
           globalForWhatsApp.status = 'authenticated';
           globalForWhatsApp.qrDataUrl = null; 
+
+          // Start Heartbeat
+          if (heartbeatInterval) clearInterval(heartbeatInterval);
+          heartbeatInterval = setInterval(async () => {
+            if (globalForWhatsApp.status === 'authenticated') {
+              try {
+                const sb = await createAdminClient();
+                await sb.from('whatsapp_auth').upsert({
+                  id: 'connection_lock',
+                  data: { instanceId, status: 'authenticated' },
+                  updated_at: new Date().toISOString()
+                });
+              } catch {}
+            } else {
+              if (heartbeatInterval) {
+                clearInterval(heartbeatInterval);
+                heartbeatInterval = null;
+              }
+            }
+          }, 15000);
         }
       });
 

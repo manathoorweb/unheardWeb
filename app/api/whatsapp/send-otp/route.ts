@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { createClient, createAdminClient } from '@/utils/supabase/server';
+import { createAdminClient } from '@/utils/supabase/server';
 import { WhatsAppManager } from '@/lib/whatsapp/WhatsAppClient';
 import { normalizePhone } from '@/utils/phone';
 
 export async function POST(req: Request) {
   try {
-    let { phone } = await req.json();
+    let { phone, type = 'booking' } = await req.json();
     if (!phone) return NextResponse.json({ success: false, error: 'Phone number is required' }, { status: 400 });
 
     phone = normalizePhone(phone);
@@ -39,7 +39,14 @@ export async function POST(req: Request) {
     
     if (dbError) throw dbError;
 
-    const message = `*unHeard Authorization*\n\nYour session booking verification code is: *${otpCode}*\n\n_Do not share this code._`;
+    // Contextual messaging
+    let message = '';
+    if (type === 'login') {
+      message = `*unHeard Therapist Studio*\n\nYour dashboard access code is: *${otpCode}*\n\n_Keep this code confidential._`;
+    } else {
+      message = `*unHeard Authorization*\n\nYour session booking verification code is: *${otpCode}*\n\n_Do not share this code._`;
+    }
+    
     const wsStatus = await WhatsAppManager.sendMessage(phone, message);
 
     if (!wsStatus.success) {

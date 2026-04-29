@@ -53,9 +53,6 @@ export default function ServicesPage() {
   const { openBookingModal } = useBooking();
   const [showFullIndividual, setShowFullIndividual] = useState(false);
   const [showFullRelationship, setShowFullRelationship] = useState(false);
-  const [showFullAdolescent, setShowFullAdolescent] = useState(false);
-  const [showFullFamily, setShowFullFamily] = useState(false);
-  const [showFullAnxiety, setShowFullAnxiety] = useState(false);
 
   // STICKY PINNING LOGIC
   const card1Ref = useRef<HTMLElement>(null);

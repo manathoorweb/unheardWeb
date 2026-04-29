@@ -5,7 +5,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { createClient } from '@/utils/supabase/client';
 import { useBooking } from '@/components/BookingContext';
-import Button from '@/components/ui/Button';
 
 // ----------------------------------------------------------------------
 // THERAPIST CARD COMPONENT (INDUSTRIAL PREMIUM DESIGN)
@@ -66,7 +65,7 @@ const TherapistCard = ({ t, openBooking }: { t: any, openBooking: (id: string) =
           <div className="flex justify-between items-center border-t border-white/5 pt-8">
             <div className="flex flex-col gap-1">
               <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] leading-none">Perspective</span>
-              <span className="text-[16px] font-bold text-white font-georgia italic">{t.perspective || 'Insight-Driven'}</span>
+              <span className="text-[16px] font-bold text-white font-georgia italic">{t.microtag || t.perspective || 'Insight-Driven'}</span>
             </div>
             <div className="text-right flex flex-col gap-1">
               <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] leading-none">Impact</span>

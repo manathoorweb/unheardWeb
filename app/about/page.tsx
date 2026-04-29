@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import { useBooking } from '@/components/BookingContext';
 import { blogData } from '@/lib/data/landing';

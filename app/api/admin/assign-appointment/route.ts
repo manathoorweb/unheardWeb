@@ -4,53 +4,48 @@ import { WhatsAppManager } from '@/lib/whatsapp/WhatsAppClient';
 
 export async function POST(req: Request) {
   try {
-    const { appointment_id, therapist_id, meeting_link } = await req.json();
+    const { questionnaire_id, therapist_id, meeting_link } = await req.json();
 
-    if (!appointment_id || !therapist_id) {
-      return NextResponse.json({ success: false, error: 'Appointment ID and Therapist ID are required' }, { status: 400 });
+    if (!questionnaire_id || !therapist_id) {
+      return NextResponse.json({ success: false, error: 'Questionnaire ID and Therapist ID are required' }, { status: 400 });
     }
 
     const adminSupabase = await createAdminClient();
 
-    // 1. Get the appointment details
-    const { data: appointment, error: aptError } = await adminSupabase
-      .from('appointments')
-      .select('*, pre_booking_questionnaires(answers)')
-      .eq('id', appointment_id)
+    // 1. Get the questionnaire details
+    const { data: questionnaire, error: qError } = await adminSupabase
+      .from('pre_booking_questionnaires')
+      .select('*')
+      .eq('id', questionnaire_id)
       .single();
 
-    if (aptError || !appointment) {
-      return NextResponse.json({ success: false, error: 'Appointment not found' }, { status: 404 });
+    if (qError || !questionnaire) {
+      return NextResponse.json({ success: false, error: 'Session request not found' }, { status: 404 });
     }
 
-    // 2. Perform Virtual Room Allocation if link not manually provided
+    // 2. Perform Virtual Room Allocation
     let final_meeting_link = meeting_link;
+    const startIso = new Date(questionnaire.requested_start_time).toISOString();
+    const duration = questionnaire.is_trial ? 30 : 60;
+    const endIso = new Date(new Date(questionnaire.requested_start_time).getTime() + duration * 60 * 1000).toISOString();
 
     if (!final_meeting_link) {
-      const startIso = new Date(appointment.start_time).toISOString();
-      // Assume 1 hour default duration constraint for locking
-      const endIso = new Date(new Date(appointment.start_time).getTime() + 60 * 60 * 1000).toISOString();
-
-      // Find overlapping appointments directly conflicting with this hour block
+      // Find overlapping appointments directly conflicting with this block
       const { data: overlaps } = await adminSupabase
         .from('appointments')
         .select('meeting_link')
-        .neq('id', appointment_id)
         .in('status', ['confirmed', 'approved'])
         .not('meeting_link', 'is', null)
         .gte('start_time', startIso)
         .lte('start_time', endIso);
 
       const busyLinks = (overlaps || []).map(o => o.meeting_link).filter(link => link.includes('google'));
-
-      // Find an active virtual room NOT in busyLinks
       const { data: activeRooms } = await adminSupabase
         .from('virtual_rooms')
         .select('gmeet_link')
         .eq('is_active', true);
 
       const availableRoom = activeRooms?.find(room => !busyLinks.includes(room.gmeet_link));
-
       if (availableRoom) {
         final_meeting_link = availableRoom.gmeet_link;
       } else {
@@ -61,95 +56,79 @@ export async function POST(req: Request) {
       }
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://unheard.co.in';
-    const gateway_link = `${baseUrl}/room/${appointment_id}`;
-
-    // 3. Assign the therapist and update the assignment status
-    const { error: updateError } = await adminSupabase
+    // 3. Create the appointment
+    const { data: appointment, error: aptError } = await adminSupabase
       .from('appointments')
-      .update({
+      .insert([{
+        patient_id: questionnaire.patient_id,
         therapist_id: therapist_id,
-        assignment_status: 'assigned',
+        start_time: startIso,
+        end_time: endIso,
         status: 'confirmed',
-        meeting_link: final_meeting_link
-      })
-      .eq('id', appointment_id);
+        is_trial: questionnaire.is_trial,
+        meeting_link: final_meeting_link,
+        pre_booking_id: questionnaire.id,
+        guest_name: questionnaire.guest_name,
+        guest_phone: questionnaire.guest_phone
+      }])
+      .select()
+      .single();
 
-    if (updateError) {
-      return NextResponse.json({ success: false, error: updateError.message }, { status: 500 });
+    if (aptError) {
+      return NextResponse.json({ success: false, error: aptError.message }, { status: 500 });
     }
 
-    // 3. Fetch Therapist info to dispatch WhatsApp
+    // 4. Update the questionnaire
+    await adminSupabase
+      .from('pre_booking_questionnaires')
+      .update({
+        appointment_id: appointment.id,
+        status: 'allotted'
+      })
+      .eq('id', questionnaire.id);
+
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://unheard.co.in';
+    const gateway_link = `${baseUrl}/room/${appointment.id}`;
+
+    // 5. Fetch Therapist info to dispatch WhatsApp
     const { data: therapistProfile } = await adminSupabase
       .from('therapist_profiles')
       .select('full_name, phone, qualification')
       .eq('user_id', therapist_id)
       .maybeSingle();
 
-    const start = new Date(appointment.start_time);
-    
-    const formattedDate = start.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-    const formattedTime = start.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    const formattedDate = new Date(startIso).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    const formattedTime = new Date(startIso).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
 
-    const qData = appointment.pre_booking_questionnaires?.[0]?.answers || {};
-    const guestInfo = qData.guest_info || {};
-    
-    // Robust Phone & Name Detection
-    let patientPhone = appointment.guest_phone || guestInfo.phone || null;
-    let patientName = appointment.guest_name || guestInfo.name || 'Anonymous User';
+    const qAnswers = questionnaire.answers || {};
+    const patientPhone = questionnaire.guest_phone;
+    const patientName = questionnaire.guest_name || 'Anonymous User';
 
-    // FALLBACK: If phone still missing, try fetching from patient profile if it exists
-    if (!patientPhone && appointment.patient_id) {
-       const { data: pProfile } = await adminSupabase
-         .from('patient_profiles')
-         .select('phone, full_name')
-         .eq('user_id', appointment.patient_id)
-         .maybeSingle();
-       
-       if (pProfile) {
-         patientPhone = pProfile.phone;
-         patientName = pProfile.full_name || patientName;
-       }
-    }
-
-    console.log('ASSIGNMENT DEBUG [EXTENDED]:', { 
-        patientPhone, 
-        patientName, 
-        therapistPhone: therapistProfile?.phone,
-        therapistFound: !!therapistProfile,
-        apptId: appointment.id 
-    });
-
-    // 4. Send WhatsApp to Therapist
+    // 6. Send WhatsApp to Therapist
     if (therapistProfile?.phone) {
       const tGatewayLink = `${gateway_link}?type=therapist`;
-      const therapistMsg = `*New Appointment Assigned!* ✅\n\nDr. ${therapistProfile.full_name}, an admin has assigned a new session to you.\n\n*Patient:* ${patientName}\n*Date:* ${formattedDate}\n*Time:* ${formattedTime}\n*Type:* ${qData.type || 'Individual'} (${qData.service || 'General'})\n\n🔗 *Join Session Room:* ${tGatewayLink}\n\nPlease check your dashboard for details.`;
-      const tRes = await WhatsAppManager.sendMessage(therapistProfile.phone, therapistMsg);
-      console.log('Therapist WhatsApp Result:', tRes);
+      const therapistMsg = `*New Appointment Assigned!* ✅\n\nDr. ${therapistProfile.full_name}, an admin has assigned a new session to you.\n\n*Patient:* ${patientName}\n*Date:* ${formattedDate}\n*Time:* ${formattedTime}\n*Type:* ${qAnswers.type || 'Individual'} (${qAnswers.service || 'General'})\n\n🔗 *Join Session Room:* ${tGatewayLink}\n\nPlease check your dashboard for details.`;
+      await WhatsAppManager.sendMessage(therapistProfile.phone, therapistMsg);
     }
-    // 5. Send WhatsApp to Patient
+
+    // 7. Send WhatsApp to Patient
     if (patientPhone) {
       const therapistName = therapistProfile?.full_name || 'your assigned therapist';
       const therapistQual = therapistProfile?.qualification ? `\n*Specialization:* ${therapistProfile.qualification}` : '';
       
       let msgAction = `🔒 *Meeting Access:* A secure Google Meet link will be generated and shared with you strictly *6 hours* before your session starts.`;
       
-      // DEV MODE OVERRIDE: Send link immediately for testing
       if (process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_SITE_URL?.includes('localhost')) {
         msgAction = `🔗 *Test Link (Dev Mode):* ${gateway_link}\n\nNote: In production, this link is only shared 6 hours before.`;
       }
 
       const patientMsg = `*Therapist Assigned & Confirmed!* 🎉\n\nHi ${patientName}, great news! Your session has been officially confirmed.\n\nYou have been matched with *Dr. ${therapistName}* who is highly experienced and specifically trained for your needs.${therapistQual}\n\n🗓️ *Date:* ${formattedDate}\n⏰ *Time:* ${formattedTime}\n\n${msgAction}\n\nSee you soon!`;
-      
-      const pRes = await WhatsAppManager.sendMessage(patientPhone, patientMsg);
-      console.log('Patient WhatsApp Result:', pRes);
+      await WhatsAppManager.sendMessage(patientPhone, patientMsg);
 
-      // DEV MODE ONLY: Also send the 15-minute reminder copy immediately for verification
       if (process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_SITE_URL?.includes('localhost')) {
          const pGatewayLink = `${gateway_link}?type=patient`;
          const reminderMsg = `*Your Session is Starting Soon!* ⏳ (Dev Test)\n\nHi ${patientName}, your session is starting in *15 minutes*.\n\n🔗 *Join Now:* ${pGatewayLink}\n\nPlease join 2 minutes early to test your audio and video.`;
          await WhatsAppManager.sendMessage(patientPhone, reminderMsg);
-         console.log('Dev Mode 15m Reminder Simulated');
       }
     }
 

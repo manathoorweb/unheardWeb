@@ -17,6 +17,10 @@ interface TherapistProfileData {
   specialties: string[];
   note: string;
   avatar_url: string;
+  tagline?: string;
+  microtag?: string;
+  approach?: string;
+  good_fit_for?: string[];
 }
 
 export default function TherapistProfile({ params }: { params: Promise<{ id: string }> }) {
@@ -183,7 +187,7 @@ export default function TherapistProfile({ params }: { params: Promise<{ id: str
             <div className="w-full lg:w-[55%] flex flex-col gap-6 md:gap-10">
               <div className="flex flex-col gap-3 md:gap-4">
                 <span className="bg-[#0F9393]/10 text-[#0F9393] px-4 md:px-6 py-1.5 md:py-2 rounded-full text-[12px] md:text-[14px] font-bold uppercase tracking-[0.2em] w-fit">
-                   Mental Health Expert
+                   {t.microtag || "Mental Health Expert"}
                 </span>
                 <h1 className="text-[32px] md:text-[60px] lg:text-[80px] font-bold font-georgia text-black leading-[1.1] tracking-[-0.03em]">
                   {t.full_name}
@@ -193,7 +197,7 @@ export default function TherapistProfile({ params }: { params: Promise<{ id: str
               <div className="relative">
                 <div className="absolute -left-4 md:-left-6 top-0 text-[40px] md:text-[64px] font-georgia text-[#0F9393]/20 leading-none">&ldquo;</div>
                 <p className="text-[16px] md:text-[22px] lg:text-[28px] font-bold text-black/80 leading-relaxed font-nunito italic max-w-[600px] pl-4 md:pl-6 border-l-2 md:border-l-4 border-[#0F9393]/20">
-                  {t.bio || "Helping you find the strength to navigate through life's most complex emotional landscapes."}
+                  {t.tagline || t.bio || "Helping you find the strength to navigate through life's most complex emotional landscapes."}
                 </p>
               </div>
               
@@ -270,6 +274,49 @@ export default function TherapistProfile({ params }: { params: Promise<{ id: str
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* SECTION 2.5: BIO & APPROACH (INTEGRATED) */}
+      <section className="relative w-full flex flex-col items-center px-2 md:px-0 py-20">
+        <div className="w-full md:w-[90vw] max-w-[1400px] grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24">
+          
+          {/* Bio & Approach */}
+          <div className="flex flex-col gap-12">
+            <div className="flex flex-col gap-6">
+              <h3 className="text-[#0F9393] text-[14px] font-black uppercase tracking-[0.3em]">Biography</h3>
+              <p className="text-gray-300 text-[18px] md:text-[20px] leading-relaxed font-nunito">
+                {t.bio}
+              </p>
+            </div>
+            
+            {t.approach && (
+              <div className="flex flex-col gap-6">
+                <h3 className="text-[#0F9393] text-[14px] font-black uppercase tracking-[0.3em]">Therapeutic Approach</h3>
+                <p className="text-gray-300 text-[18px] md:text-[20px] leading-relaxed font-nunito">
+                  {t.approach}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Good Fit For */}
+          {t.good_fit_for && t.good_fit_for.length > 0 && (
+            <div className="bg-[#1C1B17] rounded-[32px] p-10 md:p-16 border border-white/5 shadow-2xl">
+              <h3 className="text-white text-[24px] md:text-[32px] font-bold font-georgia mb-10 flex items-center gap-4">
+                <span className="w-8 h-1 bg-[#0F9393]"></span>
+                Good fit for:
+              </h3>
+              <ul className="flex flex-col gap-6">
+                {t.good_fit_for.map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-4 text-gray-400 text-[16px] md:text-[18px] font-bold">
+                    <span className="text-[#0F9393] mt-1">✦</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </section>
 

@@ -215,56 +215,30 @@ export async function requestSession(data: {
     }
   }
 
-  // 4. CREATE APPOINTMENT (Hybrid Auth/Guest)
-  const appointmentPayload: any = {
-    start_time: start.toISOString(),
-    end_time: end.toISOString(),
+  // 4. CREATE PENDING QUESTIONNAIRE (Primary Entry Point)
+  const questionnairePayload: any = {
+    patient_id: user?.id || null,
+    guest_name: user?.user_metadata?.full_name || data.patient_details?.name || 'Guest',
+    guest_phone: cleanPhone,
+    guest_email: user?.email || data.patient_details?.email || '',
+    requested_start_time: start.toISOString(),
     is_trial: data.is_trial,
     status: 'pending',
-    guest_name: user?.user_metadata?.full_name || data.patient_details?.name || 'Guest',
-    guest_phone: cleanPhone
-  }
-  
-  if (data.therapist_id) {
-    appointmentPayload.therapist_id = data.therapist_id;
-  }
-
-  if (user) {
-    appointmentPayload.patient_id = user.id
-  } else {
-    // NOTE: Also storing in questionnaire for legacy compatibility
-    data.questionnaire = {
+    answers: {
       ...data.questionnaire,
-      guest_info: {
-        name: data.patient_details?.name || 'Guest',
-        email: data.patient_details?.email || '',
-        phone: cleanPhone
-      }
-    };
+      ip_address: ip
+    }
   }
 
-  const { data: appointment, error: aptError } = await adminSupabase
-    .from('appointments')
-    .insert([appointmentPayload])
+  const { data: questionnaire, error: qError } = await adminSupabase
+    .from('pre_booking_questionnaires')
+    .insert([questionnairePayload])
     .select()
     .single()
 
-    if (aptError) {
-      console.error('DATABASE ERROR [appointments]:', aptError)
-      return { success: false, error: 'Database error: Could not create appointment.' }
-    }
-
-  // 5. SAVE QUESTIONNAIRE
-  const { error: qError } = await adminSupabase
-    .from('pre_booking_questionnaires')
-    .insert([{
-      appointment_id: appointment.id,
-      answers: data.questionnaire
-    }])
-
     if (qError) {
       console.error('DATABASE ERROR [questionnaire]:', qError)
-      return { success: false, error: 'Database error: Could not save questionnaire.' }
+      return { success: false, error: 'Database error: Could not save session request.' }
     }
 
   // 6. WHATSAPP NOTIFICATIONS
@@ -280,19 +254,8 @@ export async function requestSession(data: {
       WhatsAppManager.sendMessage(data.phone, patientMsg).catch(console.error);
     }
 
-    // B. Notify Therapist
-    if (data.therapist_id) {
-      const { data: therapistProfile } = await adminSupabase
-        .from('therapist_profiles')
-        .select('full_name, phone')
-        .eq('user_id', data.therapist_id)
-        .single()
-
-      if (therapistProfile?.phone) {
-        const therapistMsg = `*New Booking Alert!* 🔔\n\nDr. ${therapistProfile.full_name}, you have a new ${data.is_trial ? 'Trial' : 'Standard'} session request from *${displayName}* for *${formattedDate}* at *${formattedTime}*.\n\nPlease log in to confirm the appointment.`
-        WhatsAppManager.sendMessage(therapistProfile.phone, therapistMsg).catch(console.error);
-      }
-    }
+    // B. Notify Super Admin (Optional, but useful since it's a new request)
+    // ...
   } catch (error) {
     console.error('Non-blocking WhatsApp Notification Error:', error)
   }
@@ -312,8 +275,8 @@ export async function requestSession(data: {
        ip_address: ip
     }).eq('phone_number', cleanPhone);
 
-    revalidatePath('/admin/dashboard')
-    return { success: true, appointmentId: appointment.id }
+    revalidatePath('/super-admin')
+    return { success: true, questionnaireId: questionnaire.id }
   } catch (error: any) {
     console.error('CRITICAL SESSION REQUEST ERROR:', error)
     return { success: false, error: error.message || 'An unexpected internal error occurred.' }

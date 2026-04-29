@@ -1,7 +1,6 @@
 import { createClient, createAdminClient } from '@/utils/supabase/server'
 import { NextResponse } from 'next/server'
-import { resend } from '@/lib/resend'
-import { WhatsAppManager } from '@/lib/whatsapp/WhatsAppClient'
+import { NotificationController } from '@/lib/notifications/NotificationController'
 import { normalizePhone } from '@/utils/phone'
 
 export async function POST(request: Request) {
@@ -62,35 +61,14 @@ export async function POST(request: Request) {
     phone: formattedPhone
   }, { onConflict: 'user_id' });
 
-  // 4. Send WhatsApp message
-  const waMessage = `Hi ${full_name || 'there'},\n\nYou have been invited to join unHeard as a specialized therapist.\n\nPlease login at https://unheard.co.in/login with your phone number and OTP to complete your setup.`;
-  await WhatsAppManager.sendMessage(formattedPhone, waMessage);
-
   const inviteLink = `${new URL(request.url).origin}/login`
+  
+  await NotificationController.notifyTherapistInvite({
+    email,
+    phone: formattedPhone,
+    name: full_name,
+    inviteLink
+  });
 
-  try {
-    const { data, error } = await resend.emails.send({
-      from: 'Unheard <onboarding@unheard.care>',
-      to: [email],
-      subject: 'Invite: Join the Unheard Therapist Team',
-      html: `
-        <div style="font-family: sans-serif; padding: 20px; color: #333;">
-          <h2 style="color: #0F9393;">Welcome to unHeard.</h2>
-          <p>Hi ${full_name || 'there'},</p>
-          <p>You have been invited to join unHeard as a specialized therapist (Admin).</p>
-          <p>Please click the link below to login using your phone number and OTP:</p>
-          <a href="${inviteLink}" style="display: inline-block; padding: 12px 24px; background: #000; color: #fff; text-decoration: none; border-radius: 6px; font-weight: bold;">Login to Unheard</a>
-          <p style="margin-top: 20px; font-size: 14px; color: #666;">If you have any questions, please contact our support team.</p>
-        </div>
-      `,
-    })
-
-    if (error) {
-      return NextResponse.json({ error }, { status: 500 })
-    }
-
-    return NextResponse.json({ success: true, data })
-  } catch {
-    return NextResponse.json({ error: 'Failed to send invite' }, { status: 500 })
-  }
+  return NextResponse.json({ success: true })
 }

@@ -101,4 +101,26 @@ CREATE TABLE IF NOT EXISTS public.virtual_rooms (
 
 ALTER TABLE public.virtual_rooms ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Super admins manage virtual rooms" ON public.virtual_rooms;
-CREATE POLICY "Super admins and admins manage virtual rooms" ON public.virtual_rooms FOR ALL USING (true);
+-- 22. QUEUE STABILIZATION: QUESTIONNAIRE-FIRST WORKFLOW
+-- Decouples questionnaires from appointments to allow pending requests before allotment.
+ALTER TABLE public.pre_booking_questionnaires DROP CONSTRAINT IF EXISTS pre_booking_questionnaires_appointment_id_fkey;
+ALTER TABLE public.pre_booking_questionnaires ALTER COLUMN appointment_id DROP NOT NULL;
+
+ALTER TABLE public.pre_booking_questionnaires ADD COLUMN IF NOT EXISTS patient_id UUID REFERENCES auth.users(id) ON DELETE SET NULL;
+ALTER TABLE public.pre_booking_questionnaires ADD COLUMN IF NOT EXISTS guest_name TEXT;
+ALTER TABLE public.pre_booking_questionnaires ADD COLUMN IF NOT EXISTS guest_phone TEXT;
+ALTER TABLE public.pre_booking_questionnaires ADD COLUMN IF NOT EXISTS guest_email TEXT;
+ALTER TABLE public.pre_booking_questionnaires ADD COLUMN IF NOT EXISTS requested_start_time TIMESTAMP WITH TIME ZONE;
+ALTER TABLE public.pre_booking_questionnaires ADD COLUMN IF NOT EXISTS is_trial BOOLEAN DEFAULT FALSE;
+ALTER TABLE public.pre_booking_questionnaires ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'pending';
+
+-- Link Appointments back to Questionnaires
+ALTER TABLE public.appointments ADD COLUMN IF NOT EXISTS pre_booking_id UUID REFERENCES public.pre_booking_questionnaires(id) ON DELETE SET NULL;
+
+-- Relax appointments constraints for therapist-first assignment
+ALTER TABLE public.appointments ALTER COLUMN patient_id DROP NOT NULL;
+ALTER TABLE public.appointments ALTER COLUMN therapist_id DROP NOT NULL;
+
+-- Enable RLS for the new columns
+DROP POLICY IF EXISTS "Super admins manage questionnaires" ON public.pre_booking_questionnaires;
+CREATE POLICY "Super admins manage questionnaires" ON public.pre_booking_questionnaires FOR ALL USING (true);

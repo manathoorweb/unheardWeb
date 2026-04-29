@@ -1,5 +1,6 @@
 import { createAdminClient } from '@/utils/supabase/server';
 import { NextResponse } from 'next/server';
+import { NotificationController } from '@/lib/notifications/NotificationController';
 
 export async function POST(req: Request) {
   try {
@@ -33,6 +34,22 @@ export async function POST(req: Request) {
 
     if (cleanupError) {
        console.error('Cleanup error (non-fatal):', cleanupError);
+    }
+    
+    // 3. Dispatch Notifications
+    const { data: apt } = await adminSupabase
+      .from('appointments')
+      .select('guest_name, guest_email, guest_phone')
+      .eq('id', appointment_id)
+      .single();
+
+    if (apt?.guest_email && apt?.guest_phone) {
+      await NotificationController.notifySessionSummary({
+        email: apt.guest_email,
+        phone: apt.guest_phone,
+        name: apt.guest_name || 'Anonymous',
+        summary: summary || 'No summary provided.'
+      });
     }
 
     return NextResponse.json({ success: true });

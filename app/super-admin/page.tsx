@@ -3,10 +3,15 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import Button from '@/components/ui/Button'
-import { Trash2, Users, LayoutDashboard, PenTool, Ticket, Phone, MonitorPlay, ArrowLeftRight, CheckCircle2, AlertCircle, Clock } from 'lucide-react'
+import { 
+  Trash2, Users, LayoutDashboard, 
+  PenTool, Ticket, Phone, 
+  MonitorPlay, ArrowLeftRight, 
+  Sparkles, Calendar, UserCircle,
+  Plus, Smartphone, AlertCircle, LogOut
+} from 'lucide-react'
 import Image from 'next/image'
 import BlogEditor from '@/components/BlogEditor'
-
 import { useCallback } from 'react'
 
 interface AdminRole {
@@ -62,6 +67,9 @@ export default function SuperAdminDashboard() {
   const [virtualRooms, setVirtualRooms] = useState<any[]>([])
   const [editingBlog, setEditingBlog] = useState<Partial<Blog> | null>(null)
   const [whatsappStatus, setWhatsappStatus] = useState<WhatsappStatus>({ status: 'disconnected', qrDataUrl: null })
+  const [editingProfile, setEditingProfile] = useState<any>(null)
+  const [selectedQueueItem, setSelectedQueueItem] = useState<any | null>(null)
+  const [showQueueSheet, setShowQueueSheet] = useState(false)
   
   // Coupon Form State
   const [couponForm, setCouponForm] = useState({
@@ -141,15 +149,12 @@ export default function SuperAdminDashboard() {
 
   const fetchQueue = useCallback(async () => {
     let query = supabase
-      .from('appointments')
-      .select(`
-        *,
-        pre_booking_questionnaires(answers)
-      `)
+      .from('pre_booking_questionnaires')
+      .select('*')
       .order('created_at', { ascending: false });
     
     if (!showClosed) {
-        query = query.is('therapist_id', null);
+        query = query.eq('status', 'pending');
     }
     
     const { data } = await query;
@@ -179,7 +184,7 @@ export default function SuperAdminDashboard() {
       }
     }
     init();
-  }, [supabase, fetchAdmins, fetchQueue]);
+  }, [supabase, fetchAdmins, fetchQueue, fetchVirtualRooms]);
 
   const handleSaveBlog = async (blogData: Partial<Blog>) => {
     const { data: { user } } = await supabase.auth.getUser()
@@ -250,94 +255,167 @@ export default function SuperAdminDashboard() {
     }
   }
 
-  const handleAssignTherapist = async (appointmentId: string, therapistId: string, meetingLink: string) => {
+  const handleAssignTherapist = async (questionnaireId: string, therapistId: string, meetingLink: string) => {
     if (!therapistId) return alert('Please select a therapist first');
     setLoading(true);
     try {
       const res = await fetch('/api/admin/assign-appointment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ appointment_id: appointmentId, therapist_id: therapistId, meeting_link: meetingLink }),
+        body: JSON.stringify({ questionnaire_id: questionnaireId, therapist_id: therapistId, meeting_link: meetingLink }),
       });
       const data = await res.json();
       if (data.success) {
         alert('Therapist assigned and WhatsApp messages dispatched!');
+        setShowQueueSheet(false);
         fetchQueue();
       } else {
         alert(data.error || 'Failed to assign therapist');
       }
-    } catch (e: any) {
+    } catch {
       alert('Error assigning therapist');
     } finally {
       setLoading(false);
     }
   };
 
-  const getDuration = (appt: any) => {
-    if (!appt.joined_at_therapist || !appt.joined_at_patient) return null;
-    const start = Math.max(new Date(appt.joined_at_therapist).getTime(), new Date(appt.joined_at_patient).getTime());
-    const end = appt.completed_at ? new Date(appt.completed_at).getTime() : Date.now();
-    const diff = Math.floor((end - start) / (1000 * 60));
-    return diff;
+  const handleEditProfile = async (userId: string) => {
+    setLoading(true);
+    const { data } = await supabase.from('therapist_profiles').select('*').eq('user_id', userId).single();
+    if (data) setEditingProfile(data);
+    setLoading(false);
   }
 
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    const { error } = await supabase
+      .from('therapist_profiles')
+      .update(editingProfile)
+      .eq('user_id', editingProfile.user_id);
+
+    if (error) {
+      alert(error.message);
+    } else {
+      alert('Profile updated successfully!');
+      setEditingProfile(null);
+      fetchAdmins();
+    }
+    setLoading(false);
+  }
+
+
   return (
-    <div className="min-h-screen bg-[#FEFEFC] font-nunito flex">
-      {/* Sidebar */}
-      <aside className="w-[280px] bg-white border-r border-gray-100 p-8 flex flex-col gap-10 flex-shrink-0 sticky top-0 h-screen overflow-y-auto custom-scrollbar">
-        <h2 className="text-[28px] font-georgia font-bold text-[#0F9393]">unHeard <span className="text-[12px] text-gray-400 font-bold uppercase tracking-widest block">System Admin</span></h2>
+    <div className="min-h-screen bg-[#F8F9FA] font-sans flex flex-col md:flex-row relative">
+      {/* Sidebar - Studio Admin Edition */}
+      <aside className="hidden md:flex w-[280px] bg-white border-r border-gray-100 p-10 flex-col gap-10 sticky top-0 h-screen overflow-y-auto scrollbar-hide">
+        <div className="flex flex-col gap-2">
+          <div className="w-12 h-12 bg-black rounded-[18px] flex items-center justify-center text-white shadow-xl">
+            <Sparkles size={24} />
+          </div>
+          <h2 className="text-[22px] font-black tracking-tighter text-gray-900 mt-4">unHeard</h2>
+          <p className="text-[10px] text-[#0F9393] font-black uppercase tracking-[0.4em]">System Admin</p>
+        </div>
         
-        <nav className="flex flex-col gap-3">
+        <nav className="flex flex-col gap-2">
           <button 
             onClick={() => { setActiveTab('queue'); fetchQueue(); }}
-            className={`flex items-center gap-4 px-6 py-4 rounded-2xl font-bold text-[14px] transition-all ${activeTab === 'queue' ? 'bg-[#0F9393] text-white shadow-lg' : 'text-gray-400 hover:bg-gray-50'}`}
+            className={`flex items-center gap-4 px-6 py-4 rounded-[22px] font-black text-[13px] uppercase tracking-widest transition-all duration-300 cursor-pointer ${activeTab === 'queue' ? 'bg-[#0F9393] text-white shadow-xl shadow-[#0F9393]/20 scale-105' : 'text-gray-400 hover:bg-gray-50'}`}
           >
-            <LayoutDashboard size={20} /> Registrations
+            <Users size={18} /> Queue
           </button>
           <button 
             onClick={() => setActiveTab('invite')}
-            className={`flex items-center gap-4 px-6 py-4 rounded-2xl font-bold text-[14px] transition-all ${activeTab === 'invite' ? 'bg-[#0F9393] text-white shadow-lg' : 'text-gray-400 hover:bg-gray-50'}`}
+            className={`flex items-center gap-4 px-6 py-4 rounded-[22px] font-black text-[13px] uppercase tracking-widest transition-all duration-300 cursor-pointer ${activeTab === 'invite' ? 'bg-[#0F9393] text-white shadow-xl shadow-[#0F9393]/20 scale-105' : 'text-gray-400 hover:bg-gray-50'}`}
           >
-            <Users size={20} /> Management
+            <Smartphone size={18} /> Staff
           </button>
           <button 
             onClick={() => { setActiveTab('blogs'); fetchBlogs(); }}
-            className={`flex items-center gap-4 px-6 py-4 rounded-2xl font-bold text-[14px] transition-all ${activeTab === 'blogs' ? 'bg-[#0F9393] text-white shadow-lg' : 'text-gray-400 hover:bg-gray-50'}`}
+            className={`flex items-center gap-4 px-6 py-4 rounded-[22px] font-black text-[13px] uppercase tracking-widest transition-all duration-300 cursor-pointer ${activeTab === 'blogs' ? 'bg-[#0F9393] text-white shadow-xl shadow-[#0F9393]/20 scale-105' : 'text-gray-400 hover:bg-gray-50'}`}
           >
-            <PenTool size={20} /> Blog Library
+            <PenTool size={18} /> Content
           </button>
           <button 
             onClick={() => { setActiveTab('coupons'); fetchCoupons(); }}
-            className={`flex items-center gap-4 px-6 py-4 rounded-2xl font-bold text-[14px] transition-all ${activeTab === 'coupons' ? 'bg-[#0F9393] text-white shadow-lg' : 'text-gray-400 hover:bg-gray-50'}`}
+            className={`flex items-center gap-4 px-6 py-4 rounded-[22px] font-black text-[13px] uppercase tracking-widest transition-all duration-300 cursor-pointer ${activeTab === 'coupons' ? 'bg-[#0F9393] text-white shadow-xl shadow-[#0F9393]/20 scale-105' : 'text-gray-400 hover:bg-gray-50'}`}
           >
-            <Ticket size={20} /> Coupons
+            <Ticket size={18} /> Offers
           </button>
           <button 
             onClick={() => setActiveTab('whatsapp')}
-            className={`flex items-center gap-4 px-6 py-4 rounded-2xl font-bold text-[14px] transition-all ${activeTab === 'whatsapp' ? 'bg-[#0F9393] text-white shadow-lg' : 'text-gray-400 hover:bg-gray-50'}`}
+            className={`flex items-center gap-4 px-6 py-4 rounded-[22px] font-black text-[13px] uppercase tracking-widest transition-all duration-300 cursor-pointer ${activeTab === 'whatsapp' ? 'bg-[#0F9393] text-white shadow-xl shadow-[#0F9393]/20 scale-105' : 'text-gray-400 hover:bg-gray-50'}`}
           >
-            <Phone size={20} /> WhatsApp Engine
+            <Phone size={18} /> Engine
           </button>
-          <button 
-            onClick={() => { setActiveTab('rooms'); fetchVirtualRooms(); }}
-            className={`flex items-center gap-4 px-6 py-4 rounded-2xl font-bold text-[14px] transition-all ${activeTab === 'rooms' ? 'bg-[#0F9393] text-white shadow-lg' : 'text-gray-400 hover:bg-gray-50'}`}
-          >
-            <MonitorPlay size={20} /> Virtual Rooms
-          </button>
-
-          {isTherapist && (
-            <button 
-              onClick={() => window.location.href = '/admin/dashboard'}
-              className="flex items-center gap-4 px-6 py-4 rounded-2xl font-bold transition-all bg-gray-900 text-white hover:bg-black mt-12 shadow-lg"
-            >
-               <ArrowLeftRight size={20} className="text-[#0F9393]" /> Therapist View
-            </button>
-          )}
         </nav>
+
+        {isTherapist && (
+          <button 
+            onClick={() => window.location.href = '/admin/dashboard'}
+            className="mt-auto flex items-center gap-4 p-5 bg-black text-white rounded-[28px] hover:bg-gray-900 transition-all cursor-pointer shadow-xl group"
+          >
+            <div className="w-10 h-10 rounded-xl bg-[#0F9393] flex items-center justify-center group-hover:rotate-12 transition-all">
+              <ArrowLeftRight size={18} className="text-white" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[12px] font-black tracking-tight leading-none">Therapist View</span>
+              <span className="text-[9px] text-[#0F9393] font-black uppercase tracking-widest mt-1">Switch Pro</span>
+            </div>
+          </button>
+        )}
       </aside>
 
+      {/* Mobile Bottom Nav - Classic Fixed */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 py-4 flex justify-around items-center z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+        <button onClick={() => setActiveTab('queue')} className={`flex flex-col items-center gap-1 cursor-pointer transition-all ${activeTab === 'queue' ? 'text-[#0F9393]' : 'text-gray-400'}`}>
+          <Users size={20} />
+          <span className="text-[10px] font-bold uppercase tracking-wider">Queue</span>
+        </button>
+        <button onClick={() => setActiveTab('invite')} className={`flex flex-col items-center gap-1 cursor-pointer transition-all ${activeTab === 'invite' ? 'text-[#0F9393]' : 'text-gray-400'}`}>
+          <Smartphone size={20} />
+          <span className="text-[10px] font-bold uppercase tracking-wider">Staff</span>
+        </button>
+        <button onClick={() => setActiveTab('blogs')} className={`flex flex-col items-center gap-1 cursor-pointer transition-all ${activeTab === 'blogs' ? 'text-[#0F9393]' : 'text-gray-400'}`}>
+          <PenTool size={20} />
+          <span className="text-[10px] font-bold uppercase tracking-wider">Content</span>
+        </button>
+        <button onClick={() => setActiveTab('whatsapp')} className={`flex flex-col items-center gap-1 cursor-pointer transition-all ${activeTab === 'whatsapp' ? 'text-[#0F9393]' : 'text-gray-400'}`}>
+          <Phone size={20} />
+          <span className="text-[10px] font-bold uppercase tracking-wider">Engine</span>
+        </button>
+      </nav>
+
       {/* Main Content Pane */}
-      <main className="flex-1 p-8 md:p-12 overflow-y-auto max-h-screen">
+      <main className="flex-1 p-5 md:p-12 overflow-y-auto max-h-screen pb-32 md:pb-12">
+        {/* Top Header Controls */}
+        <div className="flex justify-between items-center mb-10 md:mb-12">
+           <div className="flex flex-col">
+              <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest leading-none mb-1">System Controller</p>
+              <h1 className="text-[24px] font-bold text-gray-900 tracking-tight leading-none">Super Admin</h1>
+           </div>
+           <div className="flex gap-2">
+              {isTherapist && (
+                <button 
+                  onClick={() => window.location.href = '/admin/dashboard'}
+                  className="w-10 h-10 bg-white rounded-xl shadow-sm border border-gray-100 flex items-center justify-center text-[#0F9393] cursor-pointer hover:bg-gray-50 transition-all"
+                  title="Switch to Therapist View"
+                >
+                  <MonitorPlay size={18} />
+                </button>
+              )}
+              <button 
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                  window.location.href = '/login';
+                }}
+                className="w-10 h-10 bg-white rounded-xl shadow-sm border border-gray-100 flex items-center justify-center text-red-400 cursor-pointer hover:bg-red-50 transition-all"
+                title="Logout"
+              >
+                <LogOut size={18} />
+              </button>
+           </div>
+        </div>
 
         {activeTab === 'invite' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -379,7 +457,7 @@ export default function SuperAdminDashboard() {
                   />
                 </label>
                 <Button type="submit" variant="black" className="w-full mt-2" disabled={loading}>
-                  {loading ? 'Sending...' : 'Send Invite via Resend'}
+                  {loading ? 'Sending...' : 'Send Invite (Email & WhatsApp)'}
                 </Button>
                 {message && <p className={`text-center font-bold ${message.includes('success') ? 'text-green-600' : 'text-red-600'}`}>{message}</p>}
               </form>
@@ -408,6 +486,13 @@ export default function SuperAdminDashboard() {
                            >
                               {admin.is_blogger ? 'Blogger Active' : 'Enable Blogging'}
                            </button>
+                           <span className="text-gray-300">•</span>
+                           <button 
+                             onClick={() => handleEditProfile(admin.user_id)}
+                             className="text-[12px] font-black uppercase tracking-widest text-[#0F9393] hover:underline"
+                           >
+                              Edit Profile
+                           </button>
                         </div>
                       </div>
                       <div className="flex gap-2">
@@ -424,6 +509,17 @@ export default function SuperAdminDashboard() {
 
         {activeTab === 'blogs' && (
           <div className="flex flex-col gap-8">
+            {/* Mobile Fallback */}
+            <div className="md:hidden flex flex-col items-center justify-center py-20 px-6 bg-white rounded-[32px] border border-dashed border-gray-200 text-center gap-4">
+              <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-300">
+                <PenTool size={32} />
+              </div>
+              <h3 className="text-[20px] font-bold text-gray-900">Desktop Only Feature</h3>
+              <p className="text-gray-500 text-[14px] leading-relaxed max-w-[280px]">Please open this on a desktop computer to access the clinical content management and blog editor tools.</p>
+            </div>
+
+            {/* Desktop Blog View */}
+            <div className="hidden md:flex flex-col gap-8">
              <div className="flex justify-between items-center bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm">
                 <div className="flex flex-col">
                   <h2 className="text-[24px] font-georgia font-bold text-black">Global Blog Repository</h2>
@@ -484,103 +580,81 @@ export default function SuperAdminDashboard() {
                  ))}
                </div>
              )}
+            </div>
           </div>
         )}
 
         {activeTab === 'queue' && (
-          <div className="bg-white p-10 rounded-[32px] shadow-xl border border-gray-100 flex flex-col gap-6 text-black min-h-[500px]">
-             <div className="flex justify-between items-center mb-4">
-                <div>
-                   <h2 className="text-[28px] font-bold font-georgia text-gray-900">{showClosed ? 'All Session Logs' : 'Unassigned Registrations'}</h2>
-                   <p className="text-gray-500 font-nunito">Review pending patient registrations and manually assign them to an available therapist.</p>
+          <div className="bg-white p-6 md:p-10 rounded-[32px] shadow-xl border border-gray-100 flex flex-col gap-8 text-black min-h-[500px]">
+             <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-6">
+                <div className="flex flex-col gap-1">
+                   <h2 className="text-[26px] md:text-[32px] font-bold font-georgia text-gray-900 tracking-tight">{showClosed ? 'All Requests' : 'Clinical Intake Queue'}</h2>
+                   <p className="text-gray-400 font-bold text-[13px] uppercase tracking-widest">{showClosed ? 'Full session request history' : 'Assessing new patient questionnaires'}</p>
                 </div>
-                <button 
-                   onClick={() => setShowClosed(!showClosed)}
-                   className={`px-6 py-2.5 rounded-full text-[13px] font-bold transition-all border ${showClosed ? 'bg-black text-white' : 'bg-white text-gray-500 border-gray-100 hover:bg-gray-50'}`}
-                >
-                   {showClosed ? 'Back to Queue' : 'Monitor Live Sessions'}
-                </button>
-                <button onClick={fetchQueue} className="text-[#0F9393] font-bold text-[14px] hover:underline">Refresh List</button>
+                <div className="flex flex-wrap gap-3">
+                   <button 
+                      onClick={() => { setShowClosed(!showClosed); fetchQueue(); }}
+                      className={`flex-1 md:flex-none px-6 py-3 rounded-2xl text-[13px] font-bold transition-all border shadow-sm ${showClosed ? 'bg-black text-white border-black' : 'bg-white text-gray-500 border-gray-100 hover:bg-gray-50'}`}
+                   >
+                      {showClosed ? 'View Pending Only' : 'Monitor Full History'}
+                   </button>
+                   <button 
+                     onClick={fetchQueue}
+                     className="w-12 h-12 md:w-auto md:px-6 bg-[#0F9393]/5 text-[#0F9393] rounded-2xl flex items-center justify-center font-bold text-[13px] hover:bg-[#0F9393]/10 transition-all border border-[#0F9393]/10"
+                     title="Refresh Queue"
+                   >
+                      <Sparkles size={18} className="md:mr-2" />
+                      <span className="hidden md:inline">Sync Data</span>
+                   </button>
+                </div>
              </div>
 
-             <div className="flex flex-col gap-6">
+             <div className="grid grid-cols-1 gap-4">
                 {queue.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-20 text-center bg-gray-50 rounded-3xl border border-dashed border-gray-200">
-                    <p className="text-gray-500 font-bold mb-2">Queue is Empty</p>
-                    <p className="text-gray-400 text-[14px]">All registrations have been assigned successfully.</p>
+                    <p className="text-gray-500 font-bold mb-2">Queue is Clear</p>
+                    <p className="text-gray-400 text-[14px]">No pending intakes require clinical assessment.</p>
                   </div>
                 ) : (
-                  queue.map((appt) => {
-                    const qData = appt.pre_booking_questionnaires?.[0]?.answers || {};
-                    const guestInfo = qData.guest_info || {};
+                  queue.map((request) => {
+                    const qAnswers = request.answers || {};
+                    const isAllotted = request.status === 'allotted';
                     
                     return (
-                      <div key={appt.id} className="p-6 border border-gray-100 rounded-3xl shadow-sm hover:shadow-md transition-shadow bg-white">
-                        <div className="flex flex-col lg:flex-row justify-between gap-6">
-                           <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-4">
-                                 <h3 className="font-bold text-[22px] font-georgia text-black">{guestInfo.name || 'Anonymous User'}</h3>
-                                 {appt.is_trial && <span className="bg-[#0F9393]/10 text-[#0F9393] text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full">Trial Session</span>}
-                              </div>
-                              <div className="grid grid-cols-2 gap-y-3 gap-x-6 text-[14px] mb-4 text-black">
-                                 <div>
-                                    <p className="text-gray-400 text-[11px] font-bold uppercase tracking-widest">Contact</p>
-                                    <p className="font-bold text-gray-800">{guestInfo.phone || 'No Phone Sync'}</p>
-                                 </div>
-                                 <div>
-                                    <p className="text-gray-400 text-[11px] font-bold uppercase tracking-widest">Type / Concern</p>
-                                    <p className="font-bold text-gray-800">{qData.type || 'Individual'} • {qData.service || 'General'}</p>
-                                 </div>
-                                 <div>
-                                    <p className="text-gray-400 text-[11px] font-bold uppercase tracking-widest">Age Group</p>
-                                    <p className="font-bold text-gray-800">{qData.age || 'Unspecified'}</p>
-                                 </div>
-                                 <div>
-                                    <p className="text-gray-400 text-[11px] font-bold uppercase tracking-widest">Language</p>
-                                    <p className="font-bold text-gray-800">{qData.language || 'Unspecified'}</p>
-                                 </div>
-                                 <div className="col-span-2 mt-2">
-                                    <p className="text-[#0F9393] text-[14px] font-bold">
-                                       Requested Date: {new Date(appt.start_time).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
-                                    </p>
-                                 </div>
-                              </div>
+                      <div 
+                        key={request.id} 
+                        onClick={() => { setSelectedQueueItem(request); setShowQueueSheet(true); }}
+                        className={`p-6 border rounded-[28px] shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-6 group ${isAllotted ? 'bg-gray-50/50 border-gray-100 grayscale' : 'bg-white border-[#0F9393]/10'}`}
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-[#0F9393]/10 rounded-2xl flex items-center justify-center text-[#0F9393] font-bold">
+                            {request.guest_name?.[0] || 'A'}
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-[16px] font-bold text-gray-900">{request.guest_name || 'Anonymous'}</span>
+                            <span className={`text-[11px] font-black uppercase tracking-widest mt-1 ${isAllotted ? 'text-gray-400' : 'text-[#0F9393]'}`}>{request.is_trial ? 'Discovery' : 'Standard'}</span>
+                          </div>
+                        </div>
+                        
+                        <div className="flex flex-wrap gap-3 md:gap-8">
+                           <div className="flex flex-col">
+                              <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Age</span>
+                              <span className="text-[14px] font-bold text-gray-800">{qAnswers.age || 'N/A'}</span>
                            </div>
-                           
-                           <div className="flex-1 bg-gray-50 rounded-2xl p-6 flex flex-col justify-center border border-gray-100 text-black">
-                              <p className="text-gray-800 font-bold mb-4 font-georgia text-[18px]">Assign to Therapist</p>
-                              <form 
-                                onSubmit={(e) => {
-                                  e.preventDefault();
-                                  const formData = new FormData(e.currentTarget);
-                                  handleAssignTherapist(
-                                    appt.id, 
-                                    formData.get('therapist_id') as string,
-                                    formData.get('meeting_link') as string
-                                  );
-                                }}
-                                className="flex flex-col gap-3"
-                              >
-                                 <select 
-                                   name="therapist_id" 
-                                   required
-                                   defaultValue=""
-                                   className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-white font-bold outline-none focus:border-[#0F9393]"
-                                 >
-                                   <option value="" disabled>Select an active therapist</option>
-                                   {admins.filter(a => a.full_name).map(admin => (
-                                     <option key={admin.user_id} value={admin.user_id}>Dr. {admin.full_name}</option>
-                                   ))}
-                                 </select>
-                                 <input 
-                                   type="url"
-                                   name="meeting_link"
-                                   placeholder="Meet Link (leave blank for Auto-Assign)"
-                                   className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-white font-bold outline-none focus:border-[#0F9393]"
-                                 />
-                                 <Button variant="black" type="submit" disabled={loading} className="w-full">Assign & Notify</Button>
-                              </form>
+                           <div className="flex flex-col">
+                              <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Language</span>
+                              <span className="text-[14px] font-bold text-gray-800">{qAnswers.language || 'N/A'}</span>
                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                           <div className="flex flex-col md:items-end">
+                              <span className="text-[14px] font-bold text-gray-900">{new Date(request.requested_start_time).toLocaleDateString([], { day: '2-digit', month: 'short' })}</span>
+                              <span className="text-[11px] font-bold text-gray-400">{new Date(request.requested_start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                           </div>
+                           <button className="px-5 py-2 bg-gray-50 text-gray-400 rounded-xl text-[10px] font-bold uppercase tracking-widest group-hover:bg-black group-hover:text-white transition-all">
+                             Assess
+                           </button>
                         </div>
                       </div>
                     )
@@ -839,7 +913,199 @@ export default function SuperAdminDashboard() {
               </div>
           </div>
         )}
+        {editingProfile && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-6">
+            <div className="bg-white w-full max-w-4xl rounded-[32px] p-10 shadow-2xl flex flex-col gap-6 animate-in fade-in zoom-in duration-300 max-h-[90vh] overflow-y-auto custom-scrollbar">
+              <div className="flex justify-between items-center">
+                <h2 className="text-[28px] font-georgia font-bold text-gray-900">Edit Therapist Profile</h2>
+                <button onClick={() => setEditingProfile(null)} className="text-gray-400 hover:text-gray-600 font-bold">✕ Close</button>
+              </div>
+
+              <form onSubmit={handleUpdateProfile} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="flex flex-col gap-2">
+                  <label className="text-[12px] font-black text-gray-400 uppercase">Full Name</label>
+                  <input 
+                    type="text" 
+                    value={editingProfile.full_name || ''} 
+                    onChange={(e) => setEditingProfile({...editingProfile, full_name: e.target.value})}
+                    className="w-full border border-gray-100 rounded-xl px-5 py-3 outline-none focus:border-[#0F9393] bg-gray-50/50 font-bold"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-[12px] font-black text-gray-400 uppercase">Microtag (e.g. Aligned Growth)</label>
+                  <input 
+                    type="text" 
+                    value={editingProfile.microtag || ''} 
+                    onChange={(e) => setEditingProfile({...editingProfile, microtag: e.target.value})}
+                    className="w-full border border-gray-100 rounded-xl px-5 py-3 outline-none focus:border-[#0F9393] bg-gray-50/50 font-bold"
+                  />
+                </div>
+                <div className="col-span-full flex flex-col gap-2">
+                  <label className="text-[12px] font-black text-gray-400 uppercase">Qualification</label>
+                  <input 
+                    type="text" 
+                    value={editingProfile.qualification || ''} 
+                    onChange={(e) => setEditingProfile({...editingProfile, qualification: e.target.value})}
+                    className="w-full border border-gray-100 rounded-xl px-5 py-3 outline-none focus:border-[#0F9393] bg-gray-50/50 font-bold"
+                  />
+                </div>
+                <div className="col-span-full flex flex-col gap-2">
+                  <label className="text-[12px] font-black text-gray-400 uppercase">Tagline</label>
+                  <input 
+                    type="text" 
+                    value={editingProfile.tagline || ''} 
+                    onChange={(e) => setEditingProfile({...editingProfile, tagline: e.target.value})}
+                    className="w-full border border-gray-100 rounded-xl px-5 py-3 outline-none focus:border-[#0F9393] bg-gray-50/50 font-bold italic"
+                  />
+                </div>
+                <div className="col-span-full flex flex-col gap-2">
+                  <label className="text-[12px] font-black text-gray-400 uppercase">Biography</label>
+                  <textarea 
+                    value={editingProfile.bio || ''} 
+                    onChange={(e) => setEditingProfile({...editingProfile, bio: e.target.value})}
+                    className="w-full h-32 border border-gray-100 rounded-xl px-5 py-4 outline-none focus:border-[#0F9393] bg-gray-50/50 font-medium resize-none"
+                  />
+                </div>
+                <div className="col-span-full flex flex-col gap-2">
+                  <label className="text-[12px] font-black text-gray-400 uppercase">Therapeutic Approach</label>
+                  <textarea 
+                    value={editingProfile.approach || ''} 
+                    onChange={(e) => setEditingProfile({...editingProfile, approach: e.target.value})}
+                    className="w-full h-32 border border-gray-100 rounded-xl px-5 py-4 outline-none focus:border-[#0F9393] bg-gray-50/50 font-medium resize-none"
+                  />
+                </div>
+                <div className="col-span-full flex flex-col gap-2">
+                  <label className="text-[12px] font-black text-gray-400 uppercase">Good Fit For (One per line)</label>
+                  <textarea 
+                    value={editingProfile.good_fit_for?.join('\n') || ''} 
+                    onChange={(e) => setEditingProfile({...editingProfile, good_fit_for: e.target.value.split('\n').filter(l => l.trim())})}
+                    className="w-full h-32 border border-gray-100 rounded-xl px-5 py-4 outline-none focus:border-[#0F9393] bg-gray-50/50 font-medium resize-none"
+                  />
+                </div>
+                <div className="col-span-full pt-4">
+                  <Button type="submit" variant="black" className="w-full h-[60px] text-[18px]" disabled={loading}>
+                    {loading ? 'Saving...' : 'Update Profile'}
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </main>
+
+      {/* Clinical Intake Detail Sheet */}
+      {showQueueSheet && selectedQueueItem && (
+        <div className="fixed inset-0 z-[200]">
+          <div onClick={() => setShowQueueSheet(false)} className="absolute inset-0 bg-black/40 backdrop-blur-md" />
+          <div className="absolute bottom-0 left-0 right-0 h-[85vh] bg-[#F8F9FA] rounded-t-[42px] shadow-2xl flex flex-col animate-in slide-in-from-bottom duration-500">
+            <div className="w-full flex justify-center py-4 cursor-grab">
+              <div className="w-12 h-1.5 bg-gray-200 rounded-full" />
+            </div>
+            <div className="flex-1 overflow-y-auto px-8 pb-10 flex flex-col gap-8">
+              <div className="flex justify-between items-start">
+                <div className="flex items-center gap-5">
+                  <div className="w-16 h-16 bg-white rounded-3xl p-1 shadow-sm border border-gray-100">
+                    <div className="w-full h-full bg-[#0F9393]/10 rounded-2xl flex items-center justify-center text-[#0F9393] text-2xl font-bold">
+                      {selectedQueueItem.guest_name?.[0] || 'A'}
+                    </div>
+                  </div>
+                  <div className="flex flex-col">
+                    <h2 className="text-[24px] font-bold tracking-tight text-gray-900">{selectedQueueItem.guest_name}</h2>
+                    <p className="text-[#0F9393] font-bold text-[13px] uppercase tracking-widest">{selectedQueueItem.is_trial ? 'Discovery Session' : 'Standard Session'}</p>
+                  </div>
+                </div>
+                <button onClick={() => setShowQueueSheet(false)} className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-400 shadow-sm border border-gray-100"><Plus size={20} className="rotate-45" /></button>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                 <div className="bg-white border border-gray-100 p-5 rounded-[28px] shadow-sm">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Service</span>
+                    <span className="text-[14px] font-bold text-gray-900">{selectedQueueItem.answers?.service || 'N/A'}</span>
+                 </div>
+                 <div className="bg-white border border-gray-100 p-5 rounded-[28px] shadow-sm">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Language</span>
+                    <span className="text-[14px] font-bold text-gray-900">{selectedQueueItem.answers?.language || 'N/A'}</span>
+                 </div>
+                 <div className="bg-white border border-gray-100 p-5 rounded-[28px] shadow-sm">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Age Group</span>
+                    <span className="text-[14px] font-bold text-gray-900">{selectedQueueItem.answers?.age || 'N/A'}</span>
+                 </div>
+                 <div className="bg-white border border-gray-100 p-5 rounded-[28px] shadow-sm">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Phone</span>
+                    <span className="text-[14px] font-bold text-gray-900">{selectedQueueItem.guest_phone || 'N/A'}</span>
+                 </div>
+                 <div className="bg-white border border-gray-100 p-5 rounded-[28px] shadow-sm">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Email</span>
+                    <span className="text-[14px] font-bold text-gray-900 truncate block">{selectedQueueItem.guest_email || 'N/A'}</span>
+                 </div>
+                 <div className="bg-white border border-gray-100 p-5 rounded-[28px] shadow-sm">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Requested</span>
+                    <span className="text-[14px] font-bold text-gray-900">{new Date(selectedQueueItem.requested_start_time).toLocaleDateString([], { day: '2-digit', month: 'short' })} {new Date(selectedQueueItem.requested_start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                 </div>
+              </div>
+
+              {selectedQueueItem.status !== 'allotted' ? (
+                <div className="bg-[#111111] rounded-[40px] p-8 md:p-10 text-white shadow-2xl flex flex-col gap-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-1.5 h-6 bg-[#0F9393] rounded-full" />
+                    <h4 className="text-[12px] font-bold text-gray-400 uppercase tracking-[0.3em]">Clinical Assignment</h4>
+                  </div>
+                  
+                  <form 
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const formData = new FormData(e.currentTarget);
+                      handleAssignTherapist(
+                        selectedQueueItem.id, 
+                        formData.get('therapist_id') as string,
+                        formData.get('meeting_link') as string
+                      );
+                    }}
+                    className="flex flex-col gap-6"
+                  >
+                    <div className="flex flex-col gap-2">
+                       <label className="text-[10px] font-bold text-[#0F9393] uppercase tracking-widest ml-1">Primary Therapist</label>
+                       <select 
+                         name="therapist_id" 
+                         required
+                         defaultValue=""
+                         className="w-full h-[64px] border-none rounded-2xl px-6 bg-white/5 text-white font-bold outline-none focus:ring-2 focus:ring-[#0F9393] transition-all"
+                       >
+                         <option value="" disabled className="text-black">Choose Professional...</option>
+                         {admins.filter(a => a.full_name).map(admin => (
+                           <option key={admin.user_id} value={admin.user_id} className="text-black">Dr. {admin.full_name}</option>
+                         ))}
+                       </select>
+                    </div>
+                    
+                    <div className="flex flex-col gap-2">
+                       <label className="text-[10px] font-bold text-[#0F9393] uppercase tracking-widest ml-1">Session Gateway (Optional Override)</label>
+                       <input 
+                         type="url"
+                         name="meeting_link"
+                         placeholder="Paste custom Google Meet link here..."
+                         className="w-full h-[64px] border-none rounded-2xl px-6 bg-white/5 text-white font-bold outline-none focus:ring-2 focus:ring-[#0F9393] transition-all placeholder:text-gray-600"
+                       />
+                    </div>
+
+                    <Button variant="black" type="submit" disabled={loading} className="w-full h-[76px] bg-[#0F9393] hover:bg-[#0D7F7F] border-none text-[16px] font-black uppercase tracking-[0.2em] rounded-3xl shadow-xl mt-4">
+                       {loading ? 'Processing...' : 'Confirm Assignment'}
+                    </Button>
+                  </form>
+                </div>
+              ) : (
+                <div className="bg-green-500/5 border border-green-500/10 p-10 rounded-[40px] flex flex-col items-center text-center gap-4">
+                   <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center text-green-500">
+                      <Sparkles size={40} />
+                   </div>
+                   <h3 className="text-[24px] font-bold text-gray-900">Successfully Allotted</h3>
+                   <p className="text-gray-500 max-w-xs">This request has been processed and clinical resources have been assigned.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

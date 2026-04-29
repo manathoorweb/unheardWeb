@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { requestSession } from '@/lib/actions';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronRight, ChevronLeft, Calendar, Clock } from 'lucide-react';
@@ -35,9 +35,7 @@ export default function BookingModal({ isOpen, onClose, initialConfig }: Booking
   const [supabase] = useState(() => createClient());
   const [therapists, setTherapists] = useState<Therapist[]>([]);
 
-  const [user, setUser] = useState<any>(null); // Supabase user type is complex, leaving any for now or using User from @supabase/supabase-js if available. 
-  // Actually I can just use 'any' for the user object from supabase for now or specify 'any' to avoid the 'any' error if it's strict.
-  // The error was on line 27.
+  const [user, setUser] = useState<any>(null); 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -54,9 +52,17 @@ export default function BookingModal({ isOpen, onClose, initialConfig }: Booking
   });
 
   const [timeLeft, setTimeLeft] = useState(310); // 110 seconds
-  const [pressTimer, setPressTimer] = useState<NodeJS.Timeout | null>(null);
   const [previewTherapist, setPreviewTherapist] = useState<Therapist | null>(null);
   const [deviceId, setDeviceId] = useState<string>('');
+
+  const closeAndReset = useCallback(() => {
+    onClose();
+    setTimeout(() => {
+      setStep(1);
+      setDirection(1);
+      setTimeLeft(110);
+    }, 300);
+  }, [onClose]);
 
   useEffect(() => {
     const setFp = async () => {
@@ -76,6 +82,7 @@ export default function BookingModal({ isOpen, onClose, initialConfig }: Booking
   }, [supabase]);
 
   useEffect(() => {
+    if (!isOpen || user) return;
     async function checkUser() {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
@@ -89,7 +96,7 @@ export default function BookingModal({ isOpen, onClose, initialConfig }: Booking
       }
     }
     checkUser();
-  }, [supabase]);
+  }, [supabase, isOpen, user]);
 
   useEffect(() => {
     if (isOpen && initialConfig) {
@@ -122,7 +129,7 @@ export default function BookingModal({ isOpen, onClose, initialConfig }: Booking
       alert("Your booking session has expired. Please start over to secure your slot.");
       closeAndReset();
     }
-  }, [timeLeft, isOpen]);
+  }, [timeLeft, isOpen, closeAndReset]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -146,7 +153,7 @@ export default function BookingModal({ isOpen, onClose, initialConfig }: Booking
       const res = await fetch('/api/whatsapp/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: formData.phone })
+        body: JSON.stringify({ phone: formData.phone, type: 'booking' })
       });
       const data = await res.json();
       if (!data.success) throw new Error(data.error);
@@ -200,15 +207,6 @@ export default function BookingModal({ isOpen, onClose, initialConfig }: Booking
   const handlePrev = () => {
     setDirection(-1);
     setStep((s) => Math.max(s - 1, 1));
-  };
-  
-  const closeAndReset = () => {
-    onClose();
-    setTimeout(() => {
-      setStep(1);
-      setDirection(1);
-      setTimeLeft(110);
-    }, 300);
   };
 
   const handleBookNow = async () => {
@@ -264,24 +262,13 @@ export default function BookingModal({ isOpen, onClose, initialConfig }: Booking
         throw new Error(result.error);
       }
 
-      alert('Booking Request Sent Successfully!');
+      alert('Session Request Received! A clinical expert is reviewing your questionnaire and will assign the best therapist for you within 30 minutes.');
       closeAndReset();
     } catch (err: any) {
       alert(err.message || 'Failed to book');
     } finally {
       setLoading(false);
     }
-  };
-
-  const handlePressStart = (t: Therapist) => {
-    const timer = setTimeout(() => {
-      setPreviewTherapist(t);
-    }, 500);
-    setPressTimer(timer);
-  };
-
-  const handlePressEnd = () => {
-    if (pressTimer) clearTimeout(pressTimer);
   };
 
   const selectedTherapistData = therapists.find(t => t.user_id === formData.therapist_id);
@@ -313,7 +300,7 @@ export default function BookingModal({ isOpen, onClose, initialConfig }: Booking
       
       <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-colors ${timeLeft < 60 ? 'bg-red-50 border-red-100 text-red-500 animate-pulse' : 'bg-gray-50 border-gray-100 text-gray-500'}`}>
         <Clock size={14} />
-        <span className="font-nunito font-black text-[12px] tracking-tight">
+        <span className="font-nunito font-bold text-[12px] tracking-tight">
           {formatTime(timeLeft)}
         </span>
       </div>
@@ -514,7 +501,7 @@ export default function BookingModal({ isOpen, onClose, initialConfig }: Booking
                                  <button 
                                    key={time} 
                                    onClick={() => setFormData({...formData, scheduled_time: time})} 
-                                   className={`py-3 rounded-xl text-[14px] font-black border-2 ${formData.scheduled_time === time ? 'bg-[#0F9393] border-[#0F9393] text-white shadow-md' : 'bg-white border-gray-100 text-gray-600 hover:border-gray-300'}`}
+                                   className={`py-3 rounded-xl text-[14px] font-bold border-2 ${formData.scheduled_time === time ? 'bg-[#0F9393] border-[#0F9393] text-white shadow-md' : 'bg-white border-gray-100 text-gray-600 hover:border-gray-300'}`}
                                  >
                                    {time}
                                  </button>
