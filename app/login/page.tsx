@@ -9,6 +9,7 @@ import {
   X
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import PWAInstallPrompt from '@/components/PWAInstallPrompt'
 
 const FloatingIcon = ({ icon: Icon, delay, x, y, size = 32 }: any) => (
   <motion.div
@@ -302,6 +303,7 @@ export default function Login() {
           </AnimatePresence>
         </div>
       </motion.div>
+      <PWAInstallPrompt />
     </div>
   )
 }

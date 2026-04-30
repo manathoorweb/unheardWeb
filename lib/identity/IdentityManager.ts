@@ -18,7 +18,7 @@ export class IdentityManager {
     const supabase = await createAdminClient();
     
     // 1. Search for matches
-    let query = supabase.from('identity_trails').select('*');
+    const query = supabase.from('identity_trails').select('*');
     
     const conditions: string[] = [];
     if (phone) conditions.push(`phones.cs.["${phone}"]`);
@@ -54,12 +54,12 @@ export class IdentityManager {
       identity = newIdentity as UserIdentity;
     } else {
       // Resolve & Merge if multiple rows found
-      let mergedPhones = new Set<string>();
-      let mergedFingerprints = new Set<string>();
-      let mergedCoupons = new Set<string>();
+      const mergedPhones = new Set<string>();
+      const mergedFingerprints = new Set<string>();
+      const mergedCoupons = new Set<string>();
       let isTrialClaimed = false;
-      let primaryId = matches[0].id;
-      let targetUserId = userId || matches[0].user_id;
+      const primaryId = matches[0].id;
+      const targetUserId = userId || matches[0].user_id;
 
       matches.forEach(m => {
         (m.phones || []).forEach((p: string) => mergedPhones.add(p));

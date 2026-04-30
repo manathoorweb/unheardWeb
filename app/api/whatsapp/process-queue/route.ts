@@ -1,8 +1,8 @@
-import { createAdminClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { WhatsAppManager } from '@/lib/whatsapp/WhatsAppClient';
 import { NextResponse } from 'next/server';
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
     const sb = await createAdminClient();
     
