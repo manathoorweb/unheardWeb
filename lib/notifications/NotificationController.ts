@@ -109,7 +109,7 @@ export class NotificationController {
    * Notification for therapist invite
    */
   static async notifyTherapistInvite({ email, phone, name, inviteLink }: { email: string, phone: string, name: string, inviteLink: string }) {
-    const waMessage = `Hi ${name || 'there'},\n\nYou have been invited to join unHeard as a specialized therapist.\n\nPlease login at ${inviteLink} with your phone number and OTP to complete your setup.`;
+    const waMessage = `Hi ${name || 'there'},\n\nYou have been invited to join unHeard as a specialized therapist.\n\nPlease login at ${inviteLink} with your phone number and OTP to complete your setup. \n\nInstall the app when prompted and then head to profile and complete the profile Happy Day!\n\n`;
     
     await Promise.all([
       this.sendEmail({
@@ -121,7 +121,9 @@ export class NotificationController {
             <p>Hi ${name || 'there'},</p>
             <p>You have been invited to join unHeard as a specialized therapist (Admin).</p>
             <p>Please click the link below to login using your phone number and OTP:</p>
+             <p>Install the app when prompted and then head to profile and complete the profile Happy Day!</p>
             <a href="${inviteLink}" style="display: inline-block; padding: 12px 24px; background: #000; color: #fff; text-decoration: none; border-radius: 6px; font-weight: bold;">Login to Unheard</a>
+
           </div>
         `,
       }),

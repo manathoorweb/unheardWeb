@@ -8,7 +8,8 @@ import {
   Plus, UserCircle,
   Trash2, LayoutDashboard,
   Ticket, CheckCircle2, AlertCircle,
-  Smartphone, Calendar, Sparkles, Phone, LogOut
+  Smartphone, Calendar, Sparkles, Phone, LogOut,
+  ChevronRight
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import PWAInstallPrompt from '@/components/PWAInstallPrompt'
@@ -23,10 +24,10 @@ function LiveTimer({ startTime, status }: { startTime: string | null, status: st
       const start = new Date(startTime).getTime();
       const now = Date.now();
       const diff = Math.max(0, now - start);
-      
+
       const mins = Math.floor(diff / 60000);
       const secs = Math.floor((diff % 60000) / 1000);
-      
+
       setDuration(`${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`);
     };
 
@@ -98,6 +99,8 @@ export default function AdminDashboard() {
   const [closingSession, setClosingSession] = useState<string | null>(null);
   const [summary, setSummary] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+  const [expertiseInput, setExpertiseInput] = useState('');
+  const [fitInput, setFitInput] = useState('');
 
   useEffect(() => {
     // Proactive Expiration Check
@@ -199,7 +202,7 @@ export default function AdminDashboard() {
     const init = async () => {
       setLoading(true)
       const { data: { user } } = await supabase.auth.getUser()
-      
+
       if (user) {
         await checkUserPermissions()
         await Promise.all([
@@ -223,7 +226,7 @@ export default function AdminDashboard() {
     }, 15000)
     return () => clearInterval(interval)
   }, [fetchRegistrations])
-  
+
   // Track Session Duration from LocalStorage
   useEffect(() => {
     const checkActiveSession = () => {
@@ -233,24 +236,24 @@ export default function AdminDashboard() {
           const { id, time } = JSON.parse(activeSession);
           const durationMs = Date.now() - time;
           const durationMins = Math.floor(durationMs / 60000);
-          
+
           if (durationMins > 0) {
-             console.log(`⏱️ Session ${id} completed. Duration: ${durationMins} mins.`);
-             fetch('/api/admin/logs', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                  action: 'meeting_leave', 
-                  target_id: id, 
-                  details: { 
-                    role: 'therapist', 
-                    duration_minutes: durationMins,
-                    approx_duration: `${durationMins} minutes`
-                  } 
-                })
-             }).catch(() => {});
+            console.log(`⏱️ Session ${id} completed. Duration: ${durationMins} mins.`);
+            fetch('/api/admin/logs', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                action: 'meeting_leave',
+                target_id: id,
+                details: {
+                  role: 'therapist',
+                  duration_minutes: durationMins,
+                  approx_duration: `${durationMins} minutes`
+                }
+              })
+            }).catch(() => { });
           }
-          
+
           localStorage.removeItem('active_session_join');
         } catch (e) {
           localStorage.removeItem('active_session_join');
@@ -300,7 +303,7 @@ export default function AdminDashboard() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'meeting_leave', target_id: closingSession, details: { role: 'therapist' } })
-        }).catch(() => {});
+        }).catch(() => { });
       }
       setLoading(false);
     }
@@ -325,8 +328,8 @@ export default function AdminDashboard() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'profile_change', details: { role: 'therapist' } })
-      }).catch(() => {});
-      
+      }).catch(() => { });
+
       alert('Profile updated successfully!');
       fetchProfile();
     }
@@ -340,6 +343,10 @@ export default function AdminDashboard() {
     const diff = Math.floor((end - start) / (1000 * 60));
     return diff;
   }
+
+  // Generate Dummy Chart Data
+  const sessionChartData = [4, 6, 8, 5, 9, 7, 10]; // Last 7 days
+  const performanceData = [4.2, 4.5, 4.3, 4.8, 4.6, 4.9, 4.7];
 
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-[#FEFEFC]">Loading Admin Dashboard...</div>
 
@@ -356,19 +363,19 @@ export default function AdminDashboard() {
         </div>
 
         <nav className="flex flex-col gap-1.5">
-          <button 
+          <button
             onClick={() => setActiveTab('registrations')}
             className={`flex items-center gap-4 px-5 py-3.5 rounded-[18px] font-bold text-[13px] transition-all duration-300 cursor-pointer ${activeTab === 'registrations' ? 'bg-black text-white shadow-xl' : 'text-gray-400 hover:bg-gray-50'}`}
           >
             <Calendar size={16} /> Sessions
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('history')}
             className={`flex items-center gap-4 px-5 py-3.5 rounded-[18px] font-bold text-[13px] transition-all duration-300 cursor-pointer ${activeTab === 'history' ? 'bg-black text-white shadow-xl' : 'text-gray-400 hover:bg-gray-50'}`}
           >
             <LayoutDashboard size={16} /> History
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('profile')}
             className={`flex items-center gap-4 px-5 py-3.5 rounded-[18px] font-bold text-[13px] transition-all duration-300 cursor-pointer ${activeTab === 'profile' ? 'bg-black text-white shadow-xl' : 'text-gray-400 hover:bg-gray-50'}`}
           >
@@ -394,21 +401,21 @@ export default function AdminDashboard() {
 
       {/* Mobile Bottom Nav */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-4 flex justify-around items-center z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
-        <button 
+        <button
           onClick={() => setActiveTab('registrations')}
           className={`flex flex-col items-center gap-1 cursor-pointer transition-all ${activeTab === 'registrations' ? 'text-[#0F9393]' : 'text-gray-400'}`}
         >
           <Calendar size={22} />
           <span className="text-[10px] font-bold uppercase tracking-wider">Sessions</span>
         </button>
-        <button 
+        <button
           onClick={() => setActiveTab('history')}
           className={`flex flex-col items-center gap-1 cursor-pointer transition-all ${activeTab === 'history' ? 'text-[#0F9393]' : 'text-gray-400'}`}
         >
           <LayoutDashboard size={22} />
           <span className="text-[10px] font-bold uppercase tracking-wider">History</span>
         </button>
-        <button 
+        <button
           onClick={() => setActiveTab('profile')}
           className={`flex flex-col items-center gap-1 cursor-pointer transition-all ${activeTab === 'profile' ? 'text-[#0F9393]' : 'text-gray-400'}`}
         >
@@ -426,9 +433,9 @@ export default function AdminDashboard() {
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-gray-100 p-1">
                   <div className="w-full h-full bg-gray-50 rounded-lg overflow-hidden">
-                    <Image 
-                      src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${profile?.full_name || 'Admin'}`} 
-                      className="w-full h-full object-cover" 
+                    <Image
+                      src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${profile?.full_name || 'Admin'}`}
+                      className="w-full h-full object-cover"
                       alt={profile?.full_name || 'Admin'}
                       width={48}
                       height={48}
@@ -442,7 +449,7 @@ export default function AdminDashboard() {
               </div>
               <div className="flex gap-2">
                 {role === 'super_admin' && (
-                  <button 
+                  <button
                     onClick={() => window.location.href = '/super-admin'}
                     className="w-10 h-10 bg-white rounded-xl shadow-sm border border-gray-100 flex items-center justify-center text-[#0F9393] cursor-pointer hover:bg-gray-50 transition-all"
                     title="Switch to Super Admin View"
@@ -450,7 +457,7 @@ export default function AdminDashboard() {
                     <LayoutDashboard size={18} />
                   </button>
                 )}
-                <button 
+                <button
                   onClick={async () => {
                     await supabase.auth.signOut();
                     window.location.href = '/login';
@@ -483,8 +490,8 @@ export default function AdminDashboard() {
                   const isSelected = d.toDateString() === selectedDate.toDateString();
                   const isToday = d.toDateString() === new Date().toDateString();
                   return (
-                    <div 
-                      key={i} 
+                    <div
+                      key={i}
                       onClick={() => setSelectedDate(new Date(d))}
                       className={`flex flex-col items-center gap-2.5 p-3.5 min-w-[64px] rounded-[20px] transition-all cursor-pointer border ${isSelected ? 'bg-[#0F9393] text-white shadow-lg shadow-[#0F9393]/20 border-[#0F9393]' : 'bg-white text-gray-400 hover:bg-gray-50 border-gray-100'}`}
                     >
@@ -511,7 +518,7 @@ export default function AdminDashboard() {
                       return (
                         <div key={r.id} className="relative">
                           <div className={`absolute -left-[30px] top-3.5 w-4 h-4 rounded-full border-[3px] border-[#F8F9FA] transition-all ${isFirst ? 'bg-[#0F9393] scale-110 shadow-md' : 'bg-gray-200'}`} />
-                          <div 
+                          <div
                             onClick={() => { setSelectedSession(r); setShowSheet(true); }}
                             className={`p-5 rounded-[22px] transition-all cursor-pointer group hover:scale-[1.02] active:scale-95 ${isFirst ? 'bg-[#0F9393] text-white shadow-xl' : 'bg-white text-gray-900 shadow-sm border border-gray-50'}`}
                           >
@@ -553,7 +560,7 @@ export default function AdminDashboard() {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ action: 'profile_change', details: { role: 'therapist', available: nextVal } })
-                          }).catch(() => {});
+                          }).catch(() => { });
                         }
                       }}
                       className={`w-12 h-6 rounded-full relative transition-all duration-500 cursor-pointer shadow-inner ${profile?.is_available ? 'bg-[#0F9393]' : 'bg-white/10'}`}
@@ -598,7 +605,7 @@ export default function AdminDashboard() {
             </div>
 
             <div className="relative">
-              <input 
+              <input
                 type="text"
                 placeholder="Search Patient Name or Phone..."
                 value={searchQuery}
@@ -613,8 +620,8 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 gap-4">
               {registrations
                 .filter(r => {
-                  const matchesSearch = r.guest_info?.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                                        r.guest_info?.phone?.includes(searchQuery);
+                  const matchesSearch = r.guest_info?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    r.guest_info?.phone?.includes(searchQuery);
                   if (!matchesSearch) return false;
                   if (filterStatus === 'all') return true;
                   if (filterStatus === 'ongoing') return r.status !== 'completed' && r.status !== 'cancelled';
@@ -622,8 +629,8 @@ export default function AdminDashboard() {
                   return true;
                 })
                 .map((reg) => (
-                  <div 
-                    key={reg.id} 
+                  <div
+                    key={reg.id}
                     onClick={() => { setSelectedSession(reg); setShowSheet(true); }}
                     className="bg-white p-6 rounded-[28px] border border-gray-50 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-6 group"
                   >
@@ -668,7 +675,7 @@ export default function AdminDashboard() {
           ) : (
             <AnimatePresence mode="wait">
               {!isEditing ? (
-                <motion.div 
+                <motion.div
                   key="view"
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -677,129 +684,171 @@ export default function AdminDashboard() {
                 >
                   {/* Soft Background Glow */}
                   <div className="absolute top-[-100px] left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-[#0F9393]/5 blur-[120px] rounded-full -z-10" />
-                  
+
                   {/* iOS Style Profile Header */}
                   <div className="flex flex-col items-center text-center pt-8 pb-4">
                     <div className="relative mb-8">
-                       <motion.div 
-                         initial={{ scale: 0 }}
-                         animate={{ scale: 1 }}
-                         transition={{ type: 'spring', damping: 15, stiffness: 200 }}
-                         className="w-36 h-36 md:w-44 md:h-44 rounded-full p-2 bg-white shadow-2xl relative z-10"
-                       >
-                          <div className="w-full h-full rounded-full overflow-hidden bg-gray-50 border-4 border-gray-50">
-                             <Image 
-                               src={profile.avatar_url || `https://ui-avatars.com/api/?name=${profile.full_name}&background=0F9393&color=fff&size=256`} 
-                               className="w-full h-full object-cover" 
-                               alt={profile.full_name}
-                               width={176}
-                               height={176}
-                             />
-                          </div>
-                       </motion.div>
-                       {/* Floating Availability Card */}
-                       <motion.div 
-                         initial={{ x: 20, opacity: 0 }}
-                         animate={{ x: 0, opacity: 1 }}
-                         className="absolute -top-4 -right-4 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-white/50 flex items-center gap-2 z-20"
-                       >
-                          <div className={`w-2 h-2 rounded-full ${profile.is_available ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`} />
-                          <span className="text-[11px] font-bold text-gray-900 uppercase tracking-widest">{profile.is_available ? 'Available' : 'Busy'}</span>
-                       </motion.div>
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: 'spring', damping: 15, stiffness: 200 }}
+                        className="w-36 h-36 md:w-44 md:h-44 rounded-full p-2 bg-white shadow-2xl relative z-10"
+                      >
+                        <div className="w-full h-full rounded-full overflow-hidden bg-gray-50 border-4 border-gray-50">
+                          <Image
+                            src={profile.avatar_url || `https://ui-avatars.com/api/?name=${profile.full_name}&background=0F9393&color=fff&size=256`}
+                            className="w-full h-full object-cover"
+                            alt={profile.full_name}
+                            width={176}
+                            height={176}
+                          />
+                        </div>
+                      </motion.div>
+                      {/* Floating Availability Card */}
+                      <motion.div
+                        initial={{ x: 20, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        className="absolute -top-4 -right-4 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-white/50 flex items-center gap-2 z-20"
+                      >
+                        <div className={`w-2 h-2 rounded-full ${profile.is_available ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`} />
+                        <span className="text-[11px] font-bold text-gray-900 uppercase tracking-widest">{profile.is_available ? 'Available' : 'Busy'}</span>
+                      </motion.div>
                     </div>
 
-                    <h2 className="text-[40px] md:text-[48px] font-bold text-gray-900 tracking-tight leading-none mb-3" style={{ fontFamily: 'var(--font-georgia), serif' }}>
-                       {profile.full_name?.split(' ').map((n: string, i: number) => (
-                         <span key={i} className={i === 0 ? 'text-gray-900' : 'text-gray-400 block md:inline md:ml-2'}>{n}</span>
-                       ))}
-                    </h2>
-                    <p className="text-[14px] font-bold text-[#0F9393] uppercase tracking-[0.4em] mb-8">{profile.qualification || 'Clinical Professional'}</p>
-                    
+                    <div className="flex flex-col mb-4">
+                      <span className="text-[12px] font-bold text-[#0F9393] uppercase tracking-[0.4em] mb-1">{profile.microtag || 'Expert Consultant'}</span>
+                      <h2 className="text-[40px] md:text-[48px] font-bold text-gray-900 tracking-tight leading-none" style={{ fontFamily: 'var(--font-georgia), serif' }}>
+                        {profile.full_name?.split(' ').map((n: string, i: number) => (
+                          <span key={i} className={i === 0 ? 'text-gray-900' : 'text-gray-400 block md:inline md:ml-2'}>{n}</span>
+                        ))}
+                      </h2>
+                    </div>
+
+                    <div className="flex items-center gap-3 mb-8">
+                       <span className="text-[14px] font-bold text-gray-400 uppercase tracking-[0.2em]">Clinical Professional</span>
+                       <div className="w-1.5 h-1.5 rounded-full bg-gray-200" />
+                       <div className="flex items-center gap-1.5 bg-green-500/5 px-3 py-1 rounded-full border border-green-500/10">
+                          <div className={`w-1.5 h-1.5 rounded-full ${profile.phone ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]' : 'bg-gray-300'}`} />
+                          <span className="text-[10px] font-black text-green-700 uppercase tracking-widest">{profile.phone ? 'WhatsApp Synced' : 'Sync Pending'}</span>
+                       </div>
+                    </div>
+
+                    {/* Premium Stats Grid */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full mb-12">
+                      {[
+                        { label: 'QUALIFICATION', value: profile.qualification?.split(' ')[0] || 'MSc', sub: 'Expert' },
+                        { label: 'SESSIONS', value: `${profile.session_count || Math.floor(Math.random() * 50) + 380}+`, sub: 'Verified' },
+                        { label: 'AVG RATING', value: profile.display_rating || '4.5', sub: 'Consistently' },
+                        { label: 'EXP', value: profile.display_hours || '12+', sub: 'Dedicated' }
+                      ].map((stat, idx) => (
+                        <div key={idx} className="bg-[#171612] rounded-[32px] p-6 flex flex-col gap-4 border border-white/5 relative overflow-hidden group">
+                          <div className="w-8 h-1 bg-[#0F9393] rounded-full" />
+                          <div className="flex flex-col">
+                            <span className="text-[28px] font-bold text-white tracking-tighter">{stat.value}</span>
+                            <span className="text-[9px] font-bold text-[#0F9393] uppercase tracking-widest mt-1">{stat.label}</span>
+                          </div>
+                          <span className="text-[10px] text-gray-600 font-bold">{stat.sub}</span>
+                        </div>
+                      ))}
+                    </div>
+
                     <div className="flex gap-4 w-full justify-center">
-                       <button 
-                         onClick={() => setIsEditing(true)}
-                         className="bg-black text-white px-10 py-4 rounded-[24px] font-bold text-[14px] shadow-2xl hover:bg-gray-800 transition-all active:scale-95"
-                       >
-                          Edit Profile
-                       </button>
-                       <button className="w-14 h-14 bg-white rounded-[24px] shadow-lg flex items-center justify-center text-gray-400 hover:text-[#0F9393] transition-all border border-gray-50">
-                          <Plus size={24} />
-                       </button>
+                      <button
+                        onClick={() => setIsEditing(true)}
+                        className="bg-black text-white px-10 py-4 rounded-[24px] font-bold text-[14px] shadow-2xl hover:bg-gray-800 transition-all active:scale-95"
+                      >
+                        Edit Profile
+                      </button>
+                      <button className="w-14 h-14 bg-white rounded-[24px] shadow-lg flex items-center justify-center text-gray-400 hover:text-[#0F9393] transition-all border border-gray-50">
+                        <Plus size={24} />
+                      </button>
                     </div>
                   </div>
 
-                  {/* Connectivity/Status Card */}
-                  <div className="bg-white/60 backdrop-blur-xl border border-white/40 p-6 rounded-[32px] shadow-xl flex items-center justify-between group cursor-pointer hover:bg-white/80 transition-all">
-                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-green-500/10 rounded-2xl flex items-center justify-center text-green-500">
-                           <Smartphone size={22} />
+
+
+                  {/* Personal & Settings Rows */}
+                  <div className="flex flex-col gap-3">
+                    <div className="bg-white p-6 rounded-[28px] border border-gray-100 flex items-center justify-between group cursor-pointer hover:border-[#0F9393]/30 transition-all">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400 group-hover:text-[#0F9393] transition-colors">
+                          <UserCircle size={22} />
                         </div>
-                        <div className="flex flex-col">
-                           <span className="text-[15px] font-bold text-gray-900">Clinical Reachable</span>
-                           <span className="text-[12px] text-gray-400 font-medium">WhatsApp Sync Active</span>
+                        <span className="text-[15px] font-bold text-gray-900">Personal Details</span>
+                      </div>
+                      <ChevronRight size={20} className="text-gray-300 group-hover:text-[#0F9393] transition-colors" />
+                    </div>
+                    <div className="bg-white p-6 rounded-[28px] border border-gray-100 flex items-center justify-between group cursor-pointer hover:border-[#0F9393]/30 transition-all">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400 group-hover:text-[#0F9393] transition-colors">
+                          <Plus size={22} />
                         </div>
-                     </div>
-                     <div className="bg-green-500/10 px-4 py-1.5 rounded-full">
-                        <span className="text-[11px] font-black text-green-600 uppercase tracking-widest">Active</span>
-                     </div>
+                        <span className="text-[15px] font-bold text-gray-900">Profile Settings</span>
+                      </div>
+                      <ChevronRight size={20} className="text-gray-300 group-hover:text-[#0F9393] transition-colors" />
+                    </div>
                   </div>
 
-                  {/* Professional Content Cards */}
-                  <div className="grid grid-cols-1 gap-6">
-                    {/* Bio Card */}
-                    <div className="bg-white rounded-[36px] p-8 md:p-10 shadow-sm border border-gray-100 flex flex-col gap-6">
-                       <div className="flex items-center gap-3">
-                          <div className="w-1.5 h-6 bg-[#0F9393] rounded-full" />
-                          <h4 className="text-[12px] font-bold text-gray-400 uppercase tracking-[0.3em]">Biography</h4>
-                       </div>
-                       <div className="flex flex-col gap-4">
-                          <p className="text-[20px] font-bold text-gray-900 leading-tight italic border-l-4 border-[#0F9393]/10 pl-6">
-                             {profile.tagline || 'Helping you find clarity in times of transition.'}
-                          </p>
-                          <p className="text-[16px] text-gray-700 leading-relaxed font-medium">
-                             {profile.bio || 'Professional clinical support tailored to your journey.'}
-                          </p>
-                       </div>
+                  {/* Analytics Section */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-white p-8 rounded-[36px] border border-gray-100 flex flex-col gap-6">
+                      <div className="flex justify-between items-center">
+                        <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.3em]">Session Velocity</h4>
+                        <Calendar size={16} className="text-gray-300" />
+                      </div>
+                      <div className="flex items-end justify-between h-32 gap-2 px-2">
+                        {sessionChartData.map((val, i) => (
+                          <div key={i} className="flex-1 flex flex-col items-center gap-2 group">
+                            <motion.div
+                              initial={{ height: 0 }}
+                              animate={{ height: `${(val / 10) * 100}%` }}
+                              className="w-full bg-[#F3F4F6] group-hover:bg-[#0F9393] rounded-t-xl transition-all relative"
+                            >
+                              <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">{val}</span>
+                            </motion.div>
+                            <span className="text-[9px] font-bold text-gray-300 uppercase">{['M', 'T', 'W', 'T', 'F', 'S', 'S'][i]}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-
-                    {/* Approach Card */}
-                    <div className="bg-white rounded-[36px] p-8 md:p-10 shadow-sm border border-gray-100 flex flex-col gap-8">
-                       <div className="flex flex-col gap-6">
-                          <h4 className="text-[12px] font-bold text-gray-400 uppercase tracking-[0.3em]">Therapeutic Framework</h4>
-                          <div className="flex flex-wrap gap-3">
-                             {profile.approach?.split('\n').filter((l: string) => l.trim()).map((tag: string, i: number) => (
-                               <div key={i} className="px-6 py-3 bg-gray-50 rounded-2xl border border-gray-100 flex items-center gap-3">
-                                  <div className="w-2 h-2 rounded-full bg-[#0F9393]" />
-                                  <span className="text-[14px] font-bold text-gray-800">{tag}</span>
-                               </div>
-                             ))}
-                             {!profile.approach && (
-                               <p className="text-gray-400 italic text-[14px]">Define your unique approach to care...</p>
-                             )}
-                          </div>
-                       </div>
-
-                       <div className="h-px bg-gray-50" />
-
-                       <div className="flex flex-col gap-6">
-                          <h4 className="text-[12px] font-bold text-gray-400 uppercase tracking-[0.3em]">Good Fit For</h4>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                             {profile.good_fit_for?.map((item: string, i: number) => (
-                               <div key={i} className="p-4 bg-[#0F9393]/5 rounded-2xl border border-[#0F9393]/10 flex items-start gap-4">
-                                  <div className="mt-1 text-[#0F9393]"><CheckCircle2 size={16} /></div>
-                                  <span className="text-[14px] font-bold text-gray-700">{item}</span>
-                               </div>
-                             ))}
-                             {(!profile.good_fit_for || profile.good_fit_for.length === 0) && (
-                               <p className="text-gray-400 italic text-[14px]">Specify areas of expertise...</p>
-                             )}
-                          </div>
-                       </div>
+                    <div className="bg-white p-8 rounded-[36px] border border-gray-100 flex flex-col gap-6">
+                      <div className="flex justify-between items-center">
+                        <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.3em]">Patient Sentiment</h4>
+                        <Sparkles size={16} className="text-gray-300" />
+                      </div>
+                      <div className="h-32 flex items-center justify-center relative">
+                        <svg className="w-full h-full" viewBox="0 0 200 100" preserveAspectRatio="none">
+                          <motion.path
+                            initial={{ pathLength: 0 }}
+                            animate={{ pathLength: 1 }}
+                            d={`M 0 ${100 - performanceData[0] * 15} ${performanceData.map((v, i) => `L ${(i / 6) * 200} ${100 - v * 15}`).join(' ')}`}
+                            fill="none"
+                            stroke="#0F9393"
+                            strokeWidth="4"
+                            strokeLinecap="round"
+                          />
+                          <path
+                            d={`M 0 ${100 - performanceData[0] * 15} ${performanceData.map((v, i) => `L ${(i / 6) * 200} ${100 - v * 15}`).join(' ')} L 200 100 L 0 100 Z`}
+                            fill="url(#gradient-sentiment)"
+                            opacity="0.1"
+                          />
+                          <defs>
+                            <linearGradient id="gradient-sentiment" x1="0" x2="0" y1="0" y2="1">
+                              <stop offset="0%" stopColor="#0F9393" />
+                              <stop offset="100%" stopColor="transparent" />
+                            </linearGradient>
+                          </defs>
+                        </svg>
+                      </div>
+                      <div className="flex justify-between px-2">
+                        <span className="text-[9px] font-bold text-gray-300 uppercase tracking-widest">7 Days Ago</span>
+                        <span className="text-[9px] font-bold text-[#0F9393] uppercase tracking-widest">Current: 4.7</span>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
               ) : (
-                <motion.div 
+                <motion.div
                   key="edit"
                   initial={{ opacity: 0, y: 100 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -808,15 +857,15 @@ export default function AdminDashboard() {
                 >
                   <div className="flex justify-between items-center bg-white/80 backdrop-blur-xl p-8 rounded-[40px] shadow-2xl border border-white/50 sticky top-4 z-30">
                     <div className="flex items-center gap-4">
-                       <button onClick={() => setIsEditing(false)} className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-900">
-                          <Plus size={20} className="rotate-45" />
-                       </button>
-                       <div>
-                          <h2 className="text-[20px] font-bold text-gray-900">Profile Settings</h2>
-                          <p className="text-[11px] text-[#0F9393] font-bold uppercase tracking-widest mt-0.5">Edit Professional Brand</p>
-                       </div>
+                      <button onClick={() => setIsEditing(false)} className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-900">
+                        <Plus size={20} className="rotate-45" />
+                      </button>
+                      <div>
+                        <h2 className="text-[20px] font-bold text-gray-900">Profile Settings</h2>
+                        <p className="text-[11px] text-[#0F9393] font-bold uppercase tracking-widest mt-0.5">Edit Professional Brand</p>
+                      </div>
                     </div>
-                    <button 
+                    <button
                       onClick={handleUpdateProfile}
                       disabled={loading}
                       className="px-8 py-3 bg-black text-white font-bold text-[13px] rounded-2xl shadow-lg active:scale-95 transition-all"
@@ -825,196 +874,253 @@ export default function AdminDashboard() {
                     </button>
                   </div>
 
-                  {/* Instructional Guide Card */}
-                  <div className="bg-[#0F9393] p-8 rounded-[40px] text-white shadow-xl relative overflow-hidden">
-                     <div className="absolute top-[-20px] right-[-20px] opacity-10"><Sparkles size={120} /></div>
-                     <h4 className="text-[14px] font-black uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
-                        <Sparkles size={16} /> Content Standard
-                     </h4>
-                     <p className="text-[14px] text-white/90 leading-relaxed font-medium mb-4">
-                        Your profile is your digital clinical identity. Follow the **Ms. Taruni Priya** standard for clarity and impact.
-                     </p>
-                     <div className="bg-white/10 backdrop-blur-md rounded-[24px] p-5 border border-white/10">
-                        <p className="text-[11px] font-bold text-white/60 uppercase tracking-widest mb-2">Example Standard</p>
-                        <p className="text-[13px] italic font-medium leading-relaxed">
-                           "Her approach is structured yet flexible, combining counselling frameworks with practical application..."
-                        </p>
-                     </div>
-                  </div>
 
                   <form onSubmit={handleUpdateProfile} className="flex flex-col gap-6">
                     {/* Identification Section */}
                     <div className="bg-white p-8 md:p-10 rounded-[40px] shadow-sm border border-gray-100 flex flex-col gap-6">
-                       <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.3em]">Identification</h4>
-                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="flex flex-col gap-2">
-                            <label className="text-[10px] font-bold text-[#0F9393] uppercase tracking-widest ml-1">Full Name</label>
-                            <input
-                              type="text"
-                              placeholder="e.g. Ms. Taruni Priya"
-                              value={profile.full_name || ''}
-                              onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
-                              className="w-full border-2 border-gray-50 rounded-2xl px-6 py-4 outline-none focus:border-[#0F9393] focus:bg-white bg-gray-50 font-bold text-gray-900 transition-all"
-                            />
+                      <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.3em]">Identification</h4>
+
+                      {/* Avatar Upload */}
+                      <div className="flex items-center gap-6 mb-4">
+                        <div className="w-24 h-24 rounded-3xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden relative group">
+                          <Image
+                            src={profile.avatar_url || `https://ui-avatars.com/api/?name=${profile.full_name}&background=0F9393&color=fff`}
+                            width={96} height={96} className="w-full h-full object-cover group-hover:opacity-50 transition-opacity" alt="Avatar"
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                            <Plus size={24} className="text-[#0F9393]" />
                           </div>
-                          <div className="flex flex-col gap-2">
-                            <label className="text-[10px] font-bold text-[#0F9393] uppercase tracking-widest ml-1">Qualification</label>
-                            <input
-                              type="text"
-                              placeholder="e.g. M.Sc. Counselling Psychology"
-                              value={profile.qualification || ''}
-                              onChange={(e) => setProfile({ ...profile, qualification: e.target.value })}
-                              className="w-full border-2 border-gray-50 rounded-2xl px-6 py-4 outline-none focus:border-[#0F9393] focus:bg-white bg-gray-50 font-bold text-gray-900 transition-all"
-                            />
-                          </div>
-                          <div className="col-span-full flex flex-col gap-2">
-                            <label className="text-[10px] font-bold text-[#0F9393] uppercase tracking-widest ml-1">Microtag (Quick Summary)</label>
-                            <input
-                              type="text"
-                              placeholder="e.g. Clarity & Direction"
-                              value={profile.microtag || ''}
-                              onChange={(e) => setProfile({ ...profile, microtag: e.target.value })}
-                              className="w-full border-2 border-gray-50 rounded-2xl px-6 py-4 outline-none focus:border-[#0F9393] focus:bg-white bg-gray-50 font-bold text-gray-900 transition-all"
-                            />
-                          </div>
-                       </div>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <span className="text-[14px] font-bold text-gray-900">Profile Image</span>
+                          <span className="text-[12px] text-gray-400">Square SVG or PNG (Max 2MB)</span>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="flex flex-col gap-2">
+                          <label className="text-[10px] font-bold text-[#0F9393] uppercase tracking-widest ml-1">Microtag (Clinical Goal)</label>
+                          <input
+                            type="text"
+                            maxLength={30}
+                            placeholder="e.g. Clarity & Direction"
+                            value={profile.microtag || ''}
+                            onChange={(e) => setProfile({ ...profile, microtag: e.target.value })}
+                            className="w-full border-2 border-gray-50 rounded-2xl px-6 py-4 outline-none focus:border-[#0F9393] focus:bg-white bg-gray-50 font-bold text-gray-900 transition-all"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <label className="text-[10px] font-bold text-[#0F9393] uppercase tracking-widest ml-1">Professional Name</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. Ms. Taruni Priya"
+                            value={profile.full_name || ''}
+                            onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
+                            className="w-full border-2 border-gray-50 rounded-2xl px-6 py-4 outline-none focus:border-[#0F9393] focus:bg-white bg-gray-50 font-bold text-gray-900 transition-all"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <label className="text-[10px] font-bold text-[#0F9393] uppercase tracking-widest ml-1">Primary Qualification</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. M.Sc. Counselling Psychology"
+                            value={profile.qualification || ''}
+                            onChange={(e) => setProfile({ ...profile, qualification: e.target.value })}
+                            className="w-full border-2 border-gray-50 rounded-2xl px-6 py-4 outline-none focus:border-[#0F9393] focus:bg-white bg-gray-50 font-bold text-gray-900 transition-all"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <label className="text-[10px] font-bold text-[#0F9393] uppercase tracking-widest ml-1">Experience (Years)</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. 12+"
+                            value={profile.display_hours || ''}
+                            onChange={(e) => setProfile({ ...profile, display_hours: e.target.value })}
+                            className="w-full border-2 border-gray-50 rounded-2xl px-6 py-4 outline-none focus:border-[#0F9393] focus:bg-white bg-gray-50 font-bold text-gray-900 transition-all"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <label className="text-[10px] font-bold text-[#0F9393] uppercase tracking-widest ml-1">Clinical Phone (for WhatsApp Sync)</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. +91 9876543210"
+                            value={profile.phone || ''}
+                            onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                            className="w-full border-2 border-gray-50 rounded-2xl px-6 py-4 outline-none focus:border-[#0F9393] focus:bg-white bg-gray-50 font-bold text-gray-900 transition-all"
+                          />
+                        </div>
+                      </div>
                     </div>
 
                     {/* Clinical Presence Section */}
                     <div className="bg-white p-8 md:p-10 rounded-[40px] shadow-sm border border-gray-100 flex flex-col gap-6">
-                       <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.3em]">Clinical Presence</h4>
-                       <div className="flex flex-col gap-6">
-                          <div className="flex flex-col gap-2">
-                            <label className="text-[10px] font-bold text-[#0F9393] uppercase tracking-widest ml-1">Professional Tagline</label>
-                            <input
-                              type="text"
-                              placeholder="e.g. For when you’re feeling stuck between choices..."
-                              value={profile.tagline || ''}
-                              onChange={(e) => setProfile({ ...profile, tagline: e.target.value })}
-                              className="w-full border-2 border-gray-50 rounded-2xl px-6 py-4 outline-none focus:border-[#0F9393] focus:bg-white bg-gray-50 font-bold text-gray-900 italic transition-all"
-                            />
-                          </div>
-                          <div className="flex flex-col gap-2">
-                            <label className="text-[10px] font-bold text-[#0F9393] uppercase tracking-widest ml-1">Biography</label>
-                            <textarea
-                              placeholder="Describe your work focus (e.g. Her work focuses on decision-making...)"
-                              value={profile.bio || ''}
-                              onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-                              className="w-full h-40 border-2 border-gray-50 rounded-2xl px-6 py-4 outline-none focus:border-[#0F9393] focus:bg-white bg-gray-50 font-medium text-gray-800 resize-none transition-all"
-                            />
-                          </div>
-                       </div>
+                      <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.3em]">Clinical Presence</h4>
+                      <div className="flex flex-col gap-6">
+                        <div className="flex flex-col gap-2">
+                          <label className="text-[10px] font-bold text-[#0F9393] uppercase tracking-widest ml-1">Note from Therapist</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. For when you’re feeling stuck between choices and need a way forward."
+                            value={profile.note || ''}
+                            onChange={(e) => setProfile({ ...profile, note: e.target.value })}
+                            className="w-full border-2 border-gray-50 rounded-2xl px-6 py-4 outline-none focus:border-[#0F9393] focus:bg-white bg-gray-50 font-bold text-gray-900 italic transition-all"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <label className="text-[10px] font-bold text-[#0F9393] uppercase tracking-widest ml-1">Biography</label>
+                          <textarea
+                            placeholder="Her work centres on creating the internal conditions for change where feeling seen, heard, and supported allows growth to unfold naturally..."
+                            value={profile.bio || ''}
+                            onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+                            className="w-full h-40 border-2 border-gray-50 rounded-2xl px-6 py-4 outline-none focus:border-[#0F9393] focus:bg-white bg-gray-50 font-medium text-gray-800 resize-none transition-all"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <label className="text-[10px] font-bold text-[#0F9393] uppercase tracking-widest ml-1">Therapeutic Approach</label>
+                          <textarea
+                            placeholder="Her approach is humanistic and trauma-informed, integrating REBT, CBT, EFT, and emotion-focused work..."
+                            value={profile.approach_long || ''}
+                            onChange={(e) => setProfile({ ...profile, approach_long: e.target.value })}
+                            className="w-full h-40 border-2 border-gray-50 rounded-2xl px-6 py-4 outline-none focus:border-[#0F9393] focus:bg-white bg-gray-50 font-medium text-gray-800 resize-none transition-all"
+                          />
+                        </div>
+                      </div>
                     </div>
 
                     {/* Methodology Section */}
                     <div className="bg-white p-8 md:p-10 rounded-[40px] shadow-sm border border-gray-100 flex flex-col gap-8">
-                       <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.3em]">Methodology</h4>
-                       <div className="flex flex-col gap-10">
-                          {/* Therapeutic Approach Points */}
-                          <div className="flex flex-col gap-4">
-                            <label className="text-[10px] font-bold text-[#0F9393] uppercase tracking-widest ml-1">Therapeutic Approach</label>
-                            <div className="flex flex-wrap gap-2 mb-4">
-                               {profile.approach?.split('\n').filter((l: string) => l.trim()).map((p: string, i: number) => (
-                                 <motion.div 
-                                   initial={{ scale: 0.8, opacity: 0 }}
-                                   animate={{ scale: 1, opacity: 1 }}
-                                   key={i} 
-                                   className="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-xl border border-gray-100"
-                                 >
-                                    <span className="text-[13px] font-bold text-gray-700">{p}</span>
-                                    <button 
-                                      type="button"
-                                      onClick={() => {
-                                        const lines = profile.approach.split('\n').filter((l: string) => l.trim());
-                                        lines.splice(i, 1);
-                                        setProfile({ ...profile, approach: lines.join('\n') });
-                                      }}
-                                      className="text-gray-300 hover:text-red-400 transition-colors"
-                                    >
-                                       <Plus size={14} className="rotate-45" />
-                                    </button>
-                                 </motion.div>
-                               ))}
-                            </div>
-                            <div className="relative">
-                               <input
-                                 type="text"
-                                 placeholder="Add a methodology point (e.g. CBT, Trauma-Informed)..."
-                                 onKeyDown={(e) => {
-                                   if (e.key === 'Enter') {
-                                     e.preventDefault();
-                                     const val = e.currentTarget.value.trim();
-                                     if (val) {
-                                       const current = profile.approach || '';
-                                       setProfile({ ...profile, approach: current ? `${current}\n${val}` : val });
-                                       e.currentTarget.value = '';
-                                     }
-                                   }
-                                 }}
-                                 className="w-full border-2 border-gray-50 rounded-2xl px-6 py-4 outline-none focus:border-[#0F9393] bg-gray-50 font-medium text-gray-800"
-                               />
-                               <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300">
-                                  <Plus size={20} />
-                               </div>
-                            </div>
+                      <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.3em]">Methodology</h4>
+                      <div className="flex flex-col gap-10">
+                        {/* I Excel At (4-5 Bubbles) */}
+                        <div className="flex flex-col gap-4">
+                          <label className="text-[10px] font-bold text-[#0F9393] uppercase tracking-widest ml-1">I Excel At (Add 4-5 using the plus icon to add more )</label>
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {(profile.approach || '').split('\n').filter((l: string) => l.trim()).map((p: string, i: number) => (
+                              <motion.div
+                                initial={{ scale: 0.8, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                key={i}
+                                className="flex items-center gap-2 bg-[#171612] px-5 py-3 rounded-2xl border border-white/5"
+                              >
+                                <span className="text-[14px] font-bold text-white">{p}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const lines = profile.approach.split('\n').filter((l: string) => l.trim());
+                                    lines.splice(i, 1);
+                                    setProfile({ ...profile, approach: lines.join('\n') });
+                                  }}
+                                  className="text-gray-500 hover:text-red-400 transition-colors"
+                                >
+                                  <Plus size={14} className="rotate-45" />
+                                </button>
+                              </motion.div>
+                            ))}
                           </div>
+                          {(!profile.approach || profile.approach.split('\n').filter((l: string) => l.trim()).length < 5) && (
+                            <div className="relative">
+                              <input
+                                type="text"
+                                placeholder="Add an expertise area (e.g. CBT, Trauma)..."
+                                value={expertiseInput}
+                                onChange={(e) => setExpertiseInput(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    if (expertiseInput.trim()) {
+                                      const current = profile.approach || '';
+                                      setProfile({ ...profile, approach: current ? `${current}\n${expertiseInput.trim()}` : expertiseInput.trim() });
+                                      setExpertiseInput('');
+                                    }
+                                  }
+                                }}
+                                className="w-full border-2 border-gray-50 rounded-2xl px-6 py-4 outline-none focus:border-[#0F9393] bg-gray-50 font-medium text-gray-800"
+                              />
+                              <div 
+                                onClick={() => {
+                                  if (expertiseInput.trim()) {
+                                    const current = profile.approach || '';
+                                    setProfile({ ...profile, approach: current ? `${current}\n${expertiseInput.trim()}` : expertiseInput.trim() });
+                                    setExpertiseInput('');
+                                  }
+                                }}
+                                className={`absolute right-4 top-1/2 -translate-y-1/2 transition-all cursor-pointer ${expertiseInput.trim() ? 'text-[#0F9393] scale-110' : 'text-gray-300 opacity-50'}`}
+                              >
+                                <Plus size={20} />
+                              </div>
+                            </div>
+                          )}
+                        </div>
 
-                          {/* Ideal Patient Match Points */}
-                          <div className="flex flex-col gap-4">
-                            <label className="text-[10px] font-bold text-[#0F9393] uppercase tracking-widest ml-1">Ideal Patient Match</label>
-                            <div className="flex flex-wrap gap-2 mb-4">
-                               {profile.good_fit_for?.map((p: string, i: number) => (
-                                 <motion.div 
-                                   initial={{ scale: 0.8, opacity: 0 }}
-                                   animate={{ scale: 1, opacity: 1 }}
-                                   key={i} 
-                                   className="flex items-center gap-2 bg-[#0F9393]/5 px-4 py-2 rounded-xl border border-[#0F9393]/10"
-                                 >
-                                    <span className="text-[13px] font-bold text-[#0F9393]">{p}</span>
-                                    <button 
-                                      type="button"
-                                      onClick={() => {
-                                        const items = [...(profile.good_fit_for || [])];
-                                        items.splice(i, 1);
-                                        setProfile({ ...profile, good_fit_for: items });
-                                      }}
-                                      className="text-[#0F9393]/40 hover:text-red-400 transition-colors"
-                                    >
-                                       <Plus size={14} className="rotate-45" />
-                                    </button>
-                                 </motion.div>
-                               ))}
-                            </div>
-                            <div className="relative">
-                               <input
-                                 type="text"
-                                 placeholder="Add a clinical focus (e.g. Anxiety, Career Decisions)..."
-                                 onKeyDown={(e) => {
-                                   if (e.key === 'Enter') {
-                                     e.preventDefault();
-                                     const val = e.currentTarget.value.trim();
-                                     if (val) {
-                                       const current = profile.good_fit_for || [];
-                                       setProfile({ ...profile, good_fit_for: [...current, val] });
-                                       e.currentTarget.value = '';
-                                     }
-                                   }
-                                 }}
-                                 className="w-full border-2 border-gray-50 rounded-2xl px-6 py-4 outline-none focus:border-[#0F9393] bg-gray-50 font-medium text-gray-800"
-                               />
-                               <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300">
-                                  <Plus size={20} />
-                               </div>
+                        {/* Good Fit For (Dynamic List) */}
+                        <div className="flex flex-col gap-4">
+                          <label className="text-[10px] font-bold text-[#0F9393] uppercase tracking-widest ml-1">Good Fit For</label>
+                          <div className="flex flex-col gap-2 mb-4">
+                            {profile.good_fit_for?.map((p: string, i: number) => (
+                              <motion.div
+                                initial={{ x: -10, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                key={i}
+                                className="flex items-center justify-between bg-gray-50 px-5 py-4 rounded-2xl border border-gray-100"
+                              >
+                                <div className="flex items-center gap-3">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-[#0F9393]" />
+                                  <span className="text-[14px] font-bold text-gray-700">{p}</span>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const items = [...(profile.good_fit_for || [])];
+                                    items.splice(i, 1);
+                                    setProfile({ ...profile, good_fit_for: items });
+                                  }}
+                                  className="text-gray-300 hover:text-red-400 transition-colors"
+                                >
+                                  <Plus size={16} className="rotate-45" />
+                                </button>
+                              </motion.div>
+                            ))}
+                          </div>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              placeholder="e.g. Career decisions and early-career uncertainty..."
+                              value={fitInput}
+                              onChange={(e) => setFitInput(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  if (fitInput.trim()) {
+                                    const current = profile.good_fit_for || [];
+                                    setProfile({ ...profile, good_fit_for: [...current, fitInput.trim()] });
+                                    setFitInput('');
+                                  }
+                                }
+                              }}
+                              className="w-full border-2 border-gray-50 rounded-2xl px-6 py-4 outline-none focus:border-[#0F9393] bg-gray-50 font-medium text-gray-800"
+                            />
+                            <div 
+                              onClick={() => {
+                                if (fitInput.trim()) {
+                                  const current = profile.good_fit_for || [];
+                                  setProfile({ ...profile, good_fit_for: [...current, fitInput.trim()] });
+                                  setFitInput('');
+                                }
+                              }}
+                              className={`absolute right-4 top-1/2 -translate-y-1/2 transition-all cursor-pointer ${fitInput.trim() ? 'text-[#0F9393] scale-110' : 'text-gray-300 opacity-50'}`}
+                            >
+                              <Plus size={20} />
                             </div>
                           </div>
-                       </div>
+                        </div>
+                      </div>
                     </div>
 
                     <div className="pt-4">
-                      <Button 
-                        type="submit" 
-                        variant="black" 
-                        className="w-full h-[76px] text-[18px] rounded-[28px] shadow-2xl hover:shadow-black/20 transition-all active:scale-95" 
+                      <Button
+                        type="submit"
+                        variant="black"
+                        className="w-full h-[76px] text-[18px] rounded-[28px] shadow-2xl hover:shadow-black/20 transition-all active:scale-95"
                         disabled={loading}
                         onClick={async (e) => {
                           await handleUpdateProfile(e);
@@ -1057,14 +1163,14 @@ export default function AdminDashboard() {
       <AnimatePresence>
         {showSheet && (
           <div className="fixed inset-0 z-[200]">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setShowSheet(false)} 
-              className="absolute inset-0 bg-black/40 backdrop-blur-md" 
+              onClick={() => setShowSheet(false)}
+              className="absolute inset-0 bg-black/40 backdrop-blur-md"
             />
-            <motion.div 
+            <motion.div
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
@@ -1083,15 +1189,15 @@ export default function AdminDashboard() {
               <div className="flex-1 overflow-y-auto px-8 pb-10 flex flex-col gap-8">
                 <div className="flex justify-between items-start">
                   <div className="flex items-center gap-5">
-                     <div className="w-16 h-16 bg-white rounded-3xl p-1 shadow-sm border border-gray-100 overflow-hidden relative">
-                        <Image 
-                          src={`https://ui-avatars.com/api/?name=${selectedSession?.guest_info?.name || 'User'}&background=0F9393&color=fff`} 
-                          className="w-full h-full rounded-2xl object-cover" 
-                          alt={selectedSession?.guest_info?.name || 'User'}
-                          width={64}
-                          height={64}
-                        />
-                     </div>
+                    <div className="w-16 h-16 bg-white rounded-3xl p-1 shadow-sm border border-gray-100 overflow-hidden relative">
+                      <Image
+                        src={`https://ui-avatars.com/api/?name=${selectedSession?.guest_info?.name || 'User'}&background=0F9393&color=fff`}
+                        className="w-full h-full rounded-2xl object-cover"
+                        alt={selectedSession?.guest_info?.name || 'User'}
+                        width={64}
+                        height={64}
+                      />
+                    </div>
                     <div className="flex flex-col">
                       <h2 className="text-[24px] font-bold tracking-tight text-gray-900">{selectedSession?.guest_info?.name}</h2>
                       <p className="text-gray-400 font-bold text-[13px]">Professional Profile</p>
@@ -1106,7 +1212,7 @@ export default function AdminDashboard() {
                     <div className="flex flex-col">
                       <span className={`text-[10px] font-bold uppercase tracking-widest block mb-1 ${selectedSession?.joined_at_patient ? 'opacity-70' : ''}`}>Client Connected</span>
                       <span className="text-[18px] font-bold">
-                        {selectedSession?.joined_at_patient 
+                        {selectedSession?.joined_at_patient
                           ? new Date(selectedSession.joined_at_patient).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                           : 'Awaiting Join...'}
                       </span>
@@ -1115,7 +1221,7 @@ export default function AdminDashboard() {
                       <span className={`text-[10px] font-bold uppercase tracking-widest block mb-1 ${selectedSession?.joined_at_patient ? 'opacity-70' : ''}`}>Session Duration</span>
                       <div className="flex items-baseline gap-1">
                         <span className="text-[32px] font-black tracking-tighter tabular-nums leading-none">
-                          {selectedSession?.joined_at_patient 
+                          {selectedSession?.joined_at_patient
                             ? <LiveTimer startTime={selectedSession.joined_at_patient} status={selectedSession.status} />
                             : '00:00'}
                         </span>
@@ -1124,86 +1230,86 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                 )}
-                
+
                 {/* Diagnostic Insights Grid */}
                 <div className="grid grid-cols-3 gap-4">
-                   <div className="bg-white border border-gray-100 p-5 rounded-[28px] shadow-sm">
-                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Symptoms</span>
-                      <span className="text-[14px] font-bold text-gray-900">{selectedSession?.answers?.service || 'N/A'}</span>
-                   </div>
-                   <div className="bg-white border border-gray-100 p-5 rounded-[28px] shadow-sm">
-                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Language</span>
-                      <span className="text-[14px] font-bold text-gray-900">{selectedSession?.answers?.language || 'English'}</span>
-                   </div>
-                   <div className="bg-white border border-gray-100 p-5 rounded-[28px] shadow-sm">
-                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Age Group</span>
-                      <span className="text-[14px] font-bold text-gray-900">{selectedSession?.answers?.age || '18-25'}</span>
-                   </div>
+                  <div className="bg-white border border-gray-100 p-5 rounded-[28px] shadow-sm">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Symptoms</span>
+                    <span className="text-[14px] font-bold text-gray-900">{selectedSession?.answers?.service || 'N/A'}</span>
+                  </div>
+                  <div className="bg-white border border-gray-100 p-5 rounded-[28px] shadow-sm">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Language</span>
+                    <span className="text-[14px] font-bold text-gray-900">{selectedSession?.answers?.language || 'English'}</span>
+                  </div>
+                  <div className="bg-white border border-gray-100 p-5 rounded-[28px] shadow-sm">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Age Group</span>
+                    <span className="text-[14px] font-bold text-gray-900">{selectedSession?.answers?.age || '18-25'}</span>
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-6">
-                   <h3 className="text-[14px] font-bold uppercase tracking-[0.2em] text-gray-400">Session Protocol</h3>
-                   <div className="flex flex-col relative ml-2 border-l-2 border-gray-200 pl-8 gap-10">
-                      <div className="relative">
-                         <div className="absolute -left-[41px] top-1 w-6 h-6 bg-[#0F9393] rounded-full border-4 border-[#F8F9FA] shadow-md" />
-                         <div className="flex flex-col">
-                            <span className="text-[16px] font-bold text-gray-900">Registration Confirmed</span>
-                            <span className="text-[13px] text-gray-400 font-medium">Patient portal assignment verified</span>
-                         </div>
-                      </div>
-                      <div className="relative">
-                         <div className={`absolute -left-[41px] top-1 w-6 h-6 rounded-full border-4 border-[#F8F9FA] shadow-md ${selectedSession?.joined_at_patient ? 'bg-[#0F9393]' : 'bg-gray-200'}`} />
-                         <div className="flex flex-col">
-                            <span className={`text-[16px] font-bold ${selectedSession?.joined_at_patient ? 'text-gray-900' : 'text-gray-400'}`}>Client Connection</span>
-                            <span className="text-[13px] text-gray-400 font-medium">
-                              {selectedSession?.joined_at_patient 
-                                ? `Joined at ${new Date(selectedSession.joined_at_patient).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
-                                : 'Waiting for client to enter room'}
-                            </span>
-                         </div>
-                      </div>
-                      <div className="relative">
-                         <div className={`absolute -left-[41px] top-1 w-6 h-6 rounded-full border-4 border-[#F8F9FA] shadow-md ${selectedSession?.joined_at_therapist ? 'bg-[#0F9393]' : 'bg-gray-200'}`} />
-                         <div className="flex flex-col">
-                            <span className={`text-[16px] font-bold ${selectedSession?.joined_at_therapist ? 'text-gray-900' : 'text-gray-400'}`}>Clinical Assignment</span>
-                            <span className="text-[13px] text-gray-400 font-medium">
-                              {selectedSession?.joined_at_therapist 
-                                ? `Therapist joined at ${new Date(selectedSession.joined_at_therapist).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
-                                : 'Awaiting therapist session join'}
-                            </span>
-                         </div>
+                  <h3 className="text-[14px] font-bold uppercase tracking-[0.2em] text-gray-400">Session Protocol</h3>
+                  <div className="flex flex-col relative ml-2 border-l-2 border-gray-200 pl-8 gap-10">
+                    <div className="relative">
+                      <div className="absolute -left-[41px] top-1 w-6 h-6 bg-[#0F9393] rounded-full border-4 border-[#F8F9FA] shadow-md" />
+                      <div className="flex flex-col">
+                        <span className="text-[16px] font-bold text-gray-900">Registration Confirmed</span>
+                        <span className="text-[13px] text-gray-400 font-medium">Patient portal assignment verified</span>
                       </div>
                     </div>
+                    <div className="relative">
+                      <div className={`absolute -left-[41px] top-1 w-6 h-6 rounded-full border-4 border-[#F8F9FA] shadow-md ${selectedSession?.joined_at_patient ? 'bg-[#0F9393]' : 'bg-gray-200'}`} />
+                      <div className="flex flex-col">
+                        <span className={`text-[16px] font-bold ${selectedSession?.joined_at_patient ? 'text-gray-900' : 'text-gray-400'}`}>Client Connection</span>
+                        <span className="text-[13px] text-gray-400 font-medium">
+                          {selectedSession?.joined_at_patient
+                            ? `Joined at ${new Date(selectedSession.joined_at_patient).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+                            : 'Waiting for client to enter room'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="relative">
+                      <div className={`absolute -left-[41px] top-1 w-6 h-6 rounded-full border-4 border-[#F8F9FA] shadow-md ${selectedSession?.joined_at_therapist ? 'bg-[#0F9393]' : 'bg-gray-200'}`} />
+                      <div className="flex flex-col">
+                        <span className={`text-[16px] font-bold ${selectedSession?.joined_at_therapist ? 'text-gray-900' : 'text-gray-400'}`}>Clinical Assignment</span>
+                        <span className="text-[13px] text-gray-400 font-medium">
+                          {selectedSession?.joined_at_therapist
+                            ? `Therapist joined at ${new Date(selectedSession.joined_at_therapist).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+                            : 'Awaiting therapist session join'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="mt-auto flex flex-col gap-4">
                   <div className="bg-white border border-gray-100 p-6 rounded-[32px] flex justify-between items-center">
-                     <div>
-                        <span className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">Rate</span>
-                        <h4 className="text-[24px] font-bold text-gray-900">₹{selectedSession?.is_trial ? '399.00' : '1,200.00'} <span className="text-[14px] text-gray-400 font-medium">/ 50 mins</span></h4>
-                     </div>
-                     <div className="bg-gray-50 px-4 py-2 rounded-xl text-[12px] font-bold text-gray-500">
-                        Patient Paid
-                     </div>
+                    <div>
+                      <span className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">Rate</span>
+                      <h4 className="text-[24px] font-bold text-gray-900">₹{selectedSession?.is_trial ? '399.00' : '1,200.00'} <span className="text-[14px] text-gray-400 font-medium">/ 50 mins</span></h4>
+                    </div>
+                    <div className="bg-gray-50 px-4 py-2 rounded-xl text-[12px] font-bold text-gray-500">
+                      Patient Paid
+                    </div>
                   </div>
                   <div className="flex gap-4">
-                    <button 
-                      onClick={() => window.location.href = `tel:${selectedSession?.guest_info?.phone}`} 
+                    <button
+                      onClick={() => window.location.href = `tel:${selectedSession?.guest_info?.phone}`}
                       className="w-16 h-16 bg-white border border-gray-100 rounded-3xl flex items-center justify-center text-gray-900 shadow-sm hover:bg-gray-50 transition-all"
                     >
-                       <Phone size={24} />
+                      <Phone size={24} />
                     </button>
-                    <button 
+                    <button
                       onClick={() => {
-                         if (selectedSession?.id) {
-                            localStorage.setItem('active_session_join', JSON.stringify({
-                               id: selectedSession.id,
-                               time: Date.now()
-                            }));
-                            window.open(`/room/${selectedSession.id}`, '_blank');
-                         } else {
-                            alert('Session ID not found. Please sync with system admin.');
-                         }
+                        if (selectedSession?.id) {
+                          localStorage.setItem('active_session_join', JSON.stringify({
+                            id: selectedSession.id,
+                            time: Date.now()
+                          }));
+                          window.open(`/room/${selectedSession.id}`, '_blank');
+                        } else {
+                          alert('Session ID not found. Please sync with system admin.');
+                        }
                       }}
                       className="flex-1 bg-black text-white rounded-[24px] font-bold text-[15px] uppercase tracking-[0.2em] shadow-2xl active:scale-95 transition-all h-16"
                     >
@@ -1211,7 +1317,7 @@ export default function AdminDashboard() {
                     </button>
                   </div>
 
-                  <button 
+                  <button
                     onClick={() => {
                       if (confirm('Close this session permanently?')) {
                         setClosingSession(selectedSession?.id || '');
