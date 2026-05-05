@@ -109,7 +109,7 @@ export class NotificationController {
    * Notification for therapist invite
    */
   static async notifyTherapistInvite({ email, phone, name, inviteLink }: { email: string, phone: string, name: string, inviteLink: string }) {
-    const waMessage = `Hi ${name || 'there'},\n\nYou have been invited to join unHeard as a specialized therapist.\n\n🔗 *Login Link:* ${inviteLink}\n\nInstall the app when prompted and then head to profile and complete the profile. Happy Day!\n\n`;
+    const waMessage = `Hi ${name || 'there'},\n\nYou have been invited to join unHeard as a specialized therapist.\n\n🔗 *Login Link:* ${inviteLink}\n\nInstall the app when prompted and then head to profile and complete the profile. Happy Day!\n\n💡 *Note:* If links are not clickable, please reply with a "Hi" to this message.`;
     
     await Promise.all([
       this.sendEmail({
@@ -137,7 +137,7 @@ export class NotificationController {
   static async notifySessionSummary({ email, phone, name, summary }: { email: string, phone: string, name: string, summary: string }) {
     const portalLink = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://unheard.co.in'}/login`;
     const chromePortalLink = portalLink.replace('https://', 'googlechromes://');
-    const waMessage = `*Session Summary* 📝\n\nHi ${name}, thank you for your session with unHeard today.\n\n*Therapist's Note:* ${summary}\n\n🔗 *View Portal:* ${portalLink}\n\n🚀 *Open in Chrome (iOS):* ${chromePortalLink}\n\nWe hope this brought you some clarity.`;
+    const waMessage = `*Session Summary* 📝\n\nHi ${name}, thank you for your session with unHeard today.\n\n*Therapist's Note:* ${summary}\n\n🔗 *View Portal:* ${portalLink}\n\n🚀 *Open in Chrome (iOS):* ${chromePortalLink}\n\nWe hope this brought you some clarity.\n\n💡 *Note:* If links are not clickable, please reply with a "Hi" to this message.`;
 
     await Promise.all([
       this.sendEmail({

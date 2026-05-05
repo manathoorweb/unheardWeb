@@ -134,7 +134,7 @@ export async function POST(req: Request) {
     console.log(`Checking therapist notification: Phone found? ${!!therapistProfile?.phone}`, therapistProfile?.phone);
     if (therapistProfile?.phone) {
       const tGatewayLink = `${gateway_link}?type=therapist`;
-      const therapistMsg = `*New Appointment Assigned!* ✅\n\nDr. ${therapistProfile.full_name}, an admin has assigned a new session to you.\n\n*Patient:* ${patientName}\n*Date:* ${formattedDate}\n*Time:* ${formattedTime}\n*Type:* ${qAnswers.type || 'Individual'} (${qAnswers.service || 'General'})\n\n🔗 *Join Session Room:* ${tGatewayLink}\n\nPlease check your dashboard for details.`;
+      const therapistMsg = `*New Appointment Assigned!* ✅\n\nDr. ${therapistProfile.full_name}, an admin has assigned a new session to you.\n\n*Patient:* ${patientName}\n*Date:* ${formattedDate}\n*Time:* ${formattedTime}\n*Type:* ${qAnswers.type || 'Individual'} (${qAnswers.service || 'General'})\n\n🔗 *Join Session Room:* ${tGatewayLink}\n\nPlease check your dashboard for details.\n\n💡 *Note:* If links are not clickable, please reply with a "Hi" to this message.`;
       await WhatsAppManager.enqueueMessage(therapistProfile.phone, therapistMsg);
     }
 
@@ -149,12 +149,12 @@ export async function POST(req: Request) {
         msgAction = `🔗 *Test Link (Dev Mode):* ${gateway_link}\n\nNote: In production, this link is only shared 6 hours before.`;
       }
 
-      const patientMsg = `*Therapist Assigned & Confirmed!* 🎉\n\nHi ${patientName}, great news! Your session has been officially confirmed.\n\nYou have been matched with *Dr. ${therapistName}* who is highly experienced and specifically trained for your needs.${therapistQual}\n\n🗓️ *Date:* ${formattedDate}\n⏰ *Time:* ${formattedTime}\n\n${msgAction}\n\nSee you soon!`;
+      const patientMsg = `*Therapist Assigned & Confirmed!* 🎉\n\nHi ${patientName}, great news! Your session has been officially confirmed.\n\nYou have been matched with *Dr. ${therapistName}* who is highly experienced and specifically trained for your needs.${therapistQual}\n\n🗓️ *Date:* ${formattedDate}\n⏰ *Time:* ${formattedTime}\n\n${msgAction}\n\nSee you soon!\n\n💡 *Note:* If links are not clickable, please reply with a "Hi" to this message.`;
       await WhatsAppManager.enqueueMessage(patientPhone, patientMsg);
 
       if (process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_SITE_URL?.includes('localhost')) {
          const pGatewayLink = `${gateway_link}?type=patient`;
-         const reminderMsg = `*Your Session is Starting Soon!* ⏳ (Dev Test)\n\nHi ${patientName}, your session is starting in *15 minutes*.\n\n🔗 *Join Now:* ${pGatewayLink}\n\nPlease join 2 minutes early to test your audio and video.`;
+         const reminderMsg = `*Your Session is Starting Soon!* ⏳ (Dev Test)\n\nHi ${patientName}, your session is starting in *15 minutes*.\n\n🔗 *Join Now:* ${pGatewayLink}\n\nPlease join 2 minutes early to test your audio and video.\n\n💡 *Note:* If links are not clickable, please reply with a "Hi" to this message.`;
          await WhatsAppManager.enqueueMessage(patientPhone, reminderMsg);
       }
     }

@@ -13,7 +13,7 @@ export default async function RoomGateway({ params, searchParams }: {
 
   const { data: appointment, error } = await adminSupabase
     .from('appointments')
-    .select('id, start_time, status, meeting_link, joined_at_patient, joined_at_therapist, guest_name, guest_phone, therapist_id')
+    .select('id, start_time, status, meeting_link, joined_at_patient, joined_at_therapist, guest_name, guest_phone, therapist_id, pre_booking_id')
     .eq('id', id)
     .single();
 
@@ -27,6 +27,7 @@ export default async function RoomGateway({ params, searchParams }: {
       </div>
     );
   }
+
 
   if (appointment.status !== 'confirmed' && appointment.status !== 'approved') {
     return (
@@ -105,7 +106,7 @@ export default async function RoomGateway({ params, searchParams }: {
        const { data: tProfile } = await adminSupabase.from('therapist_profiles').select('full_name').eq('user_id', appointment.therapist_id).single();
        const therapistName = tProfile?.full_name || 'Your therapist';
        const pRoomLink = `${redirectBase}?type=patient`;
-       const pMsg = `*Therapist has joined the room!* 🩺\n\nHi ${appointment.guest_name || ''}, Dr. ${therapistName} is waiting for you in the session room.\n\n🔗 *Join Room Now:* ${pRoomLink}\n\nPlease join immediately to begin your session.`;
+       const pMsg = `*Therapist has joined the room!* 🩺\n\nHi ${appointment.guest_name || ''}, Dr. ${therapistName} is waiting for you in the session room.\n\n🔗 *Join Room Now:* ${pRoomLink}\n\nPlease join immediately to begin your session.\n\n💡 *Note:* If links are not clickable, please reply with a "Hi" to this message.`;
        await WhatsAppManager.enqueueMessage(appointment.guest_phone, pMsg);
        // Trigger queue processing
        fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.unheard.co.in'}/api/whatsapp/process-queue`).catch(() => {});
@@ -117,7 +118,7 @@ export default async function RoomGateway({ params, searchParams }: {
        if (tProfile?.phone) {
           const patientName = appointment.guest_name || 'Your patient';
           const tRoomLink = `${redirectBase}?type=therapist`;
-          const tMsg = `*Patient has joined the room!* 👤\n\nDr. ${tProfile.full_name}, your patient *${patientName}* has entered the session room and is waiting.\n\n🔗 *Join Session Now:* ${tRoomLink}`;
+          const tMsg = `*Patient has joined the room!* 👤\n\nDr. ${tProfile.full_name}, your patient *${patientName}* has entered the session room and is waiting.\n\n🔗 *Join Session Now:* ${tRoomLink}\n\n💡 *Note:* If links are not clickable, please reply with a "Hi" to this message.`;
           await WhatsAppManager.enqueueMessage(tProfile.phone, tMsg);
           // Trigger queue processing
           fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.unheard.co.in'}/api/whatsapp/process-queue`).catch(() => {});
@@ -133,6 +134,47 @@ export default async function RoomGateway({ params, searchParams }: {
     }
   }
 
-  // If valid, boot directly to the secure virtual space.
-  redirect(appointment.meeting_link || `https://meet.jit.si/unHeard-Session-${id.substring(0,8)}`);
+  // If therapist, redirect immediately
+  if (type === 'therapist') {
+    redirect(appointment.meeting_link || `https://meet.jit.si/unHeard-Session-${id.substring(0,8)}`);
+  }
+
+  // If patient, show the "Check-in" gate
+  const { data: q } = appointment.pre_booking_id ? 
+    await adminSupabase.from('pre_booking_questionnaires').select('guest_email').eq('id', appointment.pre_booking_id).single() : 
+    { data: null };
+
+  const displayEmail = q?.guest_email || 'the email used during booking';
+
+  return (
+    <div className="min-h-screen bg-[#FEFEFC] flex items-center justify-center p-6 font-nunito">
+      <div className="max-w-md w-full bg-white rounded-[40px] shadow-2xl p-10 border border-gray-100 text-center">
+        <div className="w-20 h-20 bg-[#0F9393]/10 rounded-full flex items-center justify-center mx-auto mb-8">
+           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0F9393" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        
+        <h1 className="text-3xl font-bold text-gray-900 mb-2 font-georgia">Secure Check-in</h1>
+        <p className="text-gray-500 mb-8 text-sm">Welcome back, {appointment.guest_name || 'there'}.</p>
+        
+        <div className="bg-gray-50 rounded-3xl p-6 mb-8 border border-gray-100 text-left">
+          <p className="text-[10px] uppercase tracking-widest font-bold text-[#0F9393] mb-1">Registered Email</p>
+          <p className="text-[15px] font-bold text-gray-800 break-all">{displayEmail}</p>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <a 
+            href={appointment.meeting_link || '#'} 
+            className="w-full bg-black text-white rounded-3xl py-5 font-bold uppercase tracking-widest text-sm shadow-xl hover:scale-[1.02] active:scale-95 transition-all block"
+          >
+            Enter Session Room
+          </a>
+          
+          <div className="flex items-center gap-3 justify-center text-xs text-gray-400 mt-2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <p>Please join using your registered Google account.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
