@@ -53,8 +53,6 @@ export async function GET(req: Request) {
       // 1. PATIENT: 6 HOURS BEFORE - LINK DELIVERY
       // ==========================================
       const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://unheard.co.in';
-      const gatewayLink = `${baseUrl}/room/${appt.id}`;
-
       if (diffHours <= 6.2 && diffHours > 5.5 && !appt.reminded_6h_patient && patientPhone) {
         const pGatewayLink = `${baseUrl}/api/room-redirect/${appt.id}?type=patient`;
         const msg = `*Your Session is at ${istTime} IST* 🔒\n\nHi ${patientName}, your session is scheduled for today at *${istTime}*.\n\n🔗 *Join Room:* ${pGatewayLink}\n\nNote: This link will become active 30 minutes before your session. See you soon!`;

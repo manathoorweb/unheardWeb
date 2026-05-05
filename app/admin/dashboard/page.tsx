@@ -6,9 +6,9 @@ import Button from '@/components/ui/Button'
 import Image from 'next/image'
 import {
   Plus, UserCircle,
-  Trash2, LayoutDashboard,
-  Ticket, CheckCircle2, AlertCircle,
-  Smartphone, Calendar, Sparkles, Phone, LogOut,
+  LayoutDashboard,
+  AlertCircle,
+  Calendar, Sparkles, Phone, LogOut,
   ChevronRight
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -59,32 +59,12 @@ interface Registration {
   completed_at?: string;
 }
 
-interface Therapist {
-  user_id: string;
-  full_name: string;
-  qualification: string;
-  display_hours: string;
-  display_rating: string;
-  is_available: boolean;
-  avatar_url: string;
-}
-
-interface Coupon {
-  id: string;
-  code: string;
-  discount_type: string;
-  value: number;
-  usage_count: number;
-  is_active: boolean;
-}
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('registrations')
   const [supabase] = useState(() => createClient())
 
   const [registrations, setRegistrations] = useState<Registration[]>([])
-  const [therapists, setTherapists] = useState<Therapist[]>([])
-  const [coupons, setCoupons] = useState<Coupon[]>([])
 
   const [isAdmin, setIsAdmin] = useState(false)
   const [role, setRole] = useState<string | null>(null)
@@ -171,17 +151,6 @@ export default function AdminDashboard() {
     }
   }, [supabase])
 
-  const fetchTherapists = useCallback(async () => {
-    const { data } = await supabase
-      .from('therapist_profiles')
-      .select('*')
-    if (data) setTherapists(data)
-  }, [supabase])
-
-  const fetchCoupons = useCallback(async () => {
-    const { data } = await supabase.from('coupons').select('*').order('created_at', { ascending: false })
-    if (data) setCoupons(data)
-  }, [supabase])
 
   const fetchProfile = useCallback(async (existingUser?: any) => {
     try {
@@ -207,15 +176,13 @@ export default function AdminDashboard() {
         await checkUserPermissions()
         await Promise.all([
           fetchRegistrations(user),
-          fetchTherapists(),
-          fetchCoupons(),
           fetchProfile(user)
         ])
       }
       setLoading(false)
     }
     init()
-  }, [checkUserPermissions, fetchRegistrations, fetchTherapists, fetchCoupons, fetchProfile])
+  }, [checkUserPermissions, fetchRegistrations, fetchProfile, supabase.auth])
 
   // Periodic Refresh
   useEffect(() => {
@@ -255,7 +222,7 @@ export default function AdminDashboard() {
           }
 
           localStorage.removeItem('active_session_join');
-        } catch (e) {
+        } catch {
           localStorage.removeItem('active_session_join');
         }
       }
