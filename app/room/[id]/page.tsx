@@ -98,17 +98,17 @@ export default async function RoomGateway({ params, searchParams }: {
     }
 
     // 3. WHATSAPP NOTIFICATIONS: Triggered on FIRST join of each party
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://unheard.co.in';
-    const roomLink = `${baseUrl}/room/${id}`;
+    const redirectBase = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.unheard.co.in'}/api/room-redirect/${id}`;
 
     if (userType === 'therapist' && !appointment.joined_at_therapist && appointment.guest_phone) {
        // Notify Patient that therapist has arrived
        const { data: tProfile } = await adminSupabase.from('therapist_profiles').select('full_name').eq('user_id', appointment.therapist_id).single();
        const therapistName = tProfile?.full_name || 'Your therapist';
-       const pMsg = `*Therapist has joined the room!* 🩺\n\nHi ${appointment.guest_name || ''}, Dr. ${therapistName} is waiting for you in the session room.\n\n🔗 *Join Room Now:* ${roomLink}?type=patient\n\nPlease join immediately to begin your session.`;
+       const pRoomLink = `${redirectBase}?type=patient`;
+       const pMsg = `*Therapist has joined the room!* 🩺\n\nHi ${appointment.guest_name || ''}, Dr. ${therapistName} is waiting for you in the session room.\n\n🔗 *Join Room Now:* ${pRoomLink}\n\nPlease join immediately to begin your session.`;
        await WhatsAppManager.enqueueMessage(appointment.guest_phone, pMsg);
        // Trigger queue processing
-       fetch(`${baseUrl}/api/whatsapp/process-queue`).catch(() => {});
+       fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.unheard.co.in'}/api/whatsapp/process-queue`).catch(() => {});
     } 
     
     if (userType === 'patient' && !appointment.joined_at_patient && appointment.therapist_id) {
@@ -116,10 +116,11 @@ export default async function RoomGateway({ params, searchParams }: {
        const { data: tProfile } = await adminSupabase.from('therapist_profiles').select('full_name, phone').eq('user_id', appointment.therapist_id).single();
        if (tProfile?.phone) {
           const patientName = appointment.guest_name || 'Your patient';
-          const tMsg = `*Patient has joined the room!* 👤\n\nDr. ${tProfile.full_name}, your patient *${patientName}* has entered the session room and is waiting.\n\n🔗 *Join Session Now:* ${roomLink}?type=therapist`;
+          const tRoomLink = `${redirectBase}?type=therapist`;
+          const tMsg = `*Patient has joined the room!* 👤\n\nDr. ${tProfile.full_name}, your patient *${patientName}* has entered the session room and is waiting.\n\n🔗 *Join Session Now:* ${tRoomLink}`;
           await WhatsAppManager.enqueueMessage(tProfile.phone, tMsg);
           // Trigger queue processing
-          fetch(`${baseUrl}/api/whatsapp/process-queue`).catch(() => {});
+          fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.unheard.co.in'}/api/whatsapp/process-queue`).catch(() => {});
        }
     }
 

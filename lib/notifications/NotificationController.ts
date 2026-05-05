@@ -49,8 +49,8 @@ export class NotificationController {
           <p>A new appointment has been scheduled through the unHeard platform.</p>
           <div style="background: #f4f4f4; padding: 15px; border-radius: 8px; margin: 20px 0;">
             <p><strong>Client:</strong> ${appointment.client_name || 'New Client'}</p>
-            <p><strong>Date:</strong> ${appointment.date}</p>
-            <p><strong>Time:</strong> ${appointment.time}</p>
+            <p><strong>Date:</strong> ${new Date(appointment.date).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>
+            <p><strong>Time:</strong> ${new Date(appointment.date + ' ' + (appointment.time || '')).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: true })} IST</p>
           </div>
           <p>Please log in to your dashboard to confirm or manage this session.</p>
           <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
@@ -109,7 +109,7 @@ export class NotificationController {
    * Notification for therapist invite
    */
   static async notifyTherapistInvite({ email, phone, name, inviteLink }: { email: string, phone: string, name: string, inviteLink: string }) {
-    const waMessage = `Hi ${name || 'there'},\n\nYou have been invited to join unHeard as a specialized therapist.\n\nPlease login at ${inviteLink} with your phone number and OTP to complete your setup. \n\nInstall the app when prompted and then head to profile and complete the profile Happy Day!\n\n`;
+    const waMessage = `Hi ${name || 'there'},\n\nYou have been invited to join unHeard as a specialized therapist.\n\n🔗 *Login Link:* ${inviteLink}\n\nInstall the app when prompted and then head to profile and complete the profile. Happy Day!\n\n`;
     
     await Promise.all([
       this.sendEmail({
@@ -135,7 +135,9 @@ export class NotificationController {
    * Notification for session summary
    */
   static async notifySessionSummary({ email, phone, name, summary }: { email: string, phone: string, name: string, summary: string }) {
-    const waMessage = `*Session Summary* 📝\n\nHi ${name}, thank you for your session with unHeard today.\n\n*Therapist's Note:* ${summary}\n\nWe hope this brought you some clarity. Feel free to book your next session anytime through your portal.`;
+    const portalLink = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://unheard.co.in'}/login`;
+    const chromePortalLink = portalLink.replace('https://', 'googlechromes://');
+    const waMessage = `*Session Summary* 📝\n\nHi ${name}, thank you for your session with unHeard today.\n\n*Therapist's Note:* ${summary}\n\n🔗 *View Portal:* ${portalLink}\n\n🚀 *Open in Chrome (iOS):* ${chromePortalLink}\n\nWe hope this brought you some clarity.`;
 
     await Promise.all([
       this.sendEmail({

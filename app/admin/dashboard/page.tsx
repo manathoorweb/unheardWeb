@@ -1306,7 +1306,7 @@ export default function AdminDashboard() {
                             id: selectedSession.id,
                             time: Date.now()
                           }));
-                          window.open(`/room/${selectedSession.id}`, '_blank');
+                          window.open(`/api/room-redirect/${selectedSession.id}?type=therapist`, '_blank');
                         } else {
                           alert('Session ID not found. Please sync with system admin.');
                         }

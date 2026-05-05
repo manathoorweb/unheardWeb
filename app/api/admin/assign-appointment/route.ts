@@ -113,8 +113,8 @@ export async function POST(req: Request) {
       })
       .eq('id', questionnaire.id);
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://unheard.co.in';
-    const gateway_link = `${baseUrl}/room/${appointment.id}`;
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.unheard.co.in';
+    const gateway_link = `${baseUrl}/api/room-redirect/${appointment.id}`;
 
     // 5. Fetch Therapist info to dispatch WhatsApp
     const { data: therapistProfile } = await adminSupabase
@@ -123,8 +123,8 @@ export async function POST(req: Request) {
       .eq('user_id', therapist_id)
       .maybeSingle();
 
-    const formattedDate = new Date(startIso).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-    const formattedTime = new Date(startIso).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    const formattedDate = new Date(startIso).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    const formattedTime = new Date(startIso).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: true }) + ' IST';
 
     const qAnswers = questionnaire.answers || {};
     const patientPhone = questionnaire.guest_phone;

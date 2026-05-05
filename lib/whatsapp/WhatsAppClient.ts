@@ -139,12 +139,15 @@ export class WhatsAppManager {
           const { data: lock } = await supabase.from('whatsapp_auth').select('data, updated_at').eq('id', 'connection_lock').single();
           if (lock) {
             const lastUpdate = new Date(lock.updated_at).getTime();
-            const isLocked = (Date.now() - lastUpdate) < 20000; // 20 second lock
+            const isLocked = (Date.now() - lastUpdate) < 30000; // 30 second lock
             if (isLocked && lock.data?.instanceId !== instanceId && !force) {
-              console.log(`WhatsApp connection locked by another instance (${lock.data?.instanceId}). Skipping initialization.`);
+              console.log(`[WhatsApp] Lock held by instance ${lock.data?.instanceId} (updated ${Math.round((Date.now() - lastUpdate)/1000)}s ago). Skipping.`);
               globalForWhatsApp.status = 'disconnected';
               globalForWhatsApp.connectionPromise = null;
               return null;
+            }
+            if (!isLocked) {
+              console.log(`[WhatsApp] Lock for ${lock.data?.instanceId} is stale. Taking over.`);
             }
           }
           
@@ -267,14 +270,24 @@ export class WhatsAppManager {
             // Start Background Worker (High Frequency Queue Processor)
             if (workerInterval) clearInterval(workerInterval);
             workerInterval = setInterval(async () => {
-               // Only the instance that holds the active 'authenticated' lock should run the worker
                try {
                  const sb = await createAdminClient();
-                 const { data: lock } = await sb.from('whatsapp_auth').select('data').eq('id', 'connection_lock').single();
+                 const { data: lock } = await sb.from('whatsapp_auth').select('data, updated_at').eq('id', 'connection_lock').single();
                  
-                 if (lock?.data?.instanceId === instanceId) {
-                    console.log('🤖 [Background Worker] Processing messaging queue & sync...');
-                    
+                 const lastUpdate = lock ? new Date(lock.updated_at).getTime() : 0;
+                 const isLockedByMe = lock?.data?.instanceId === instanceId;
+                 const isStale = (Date.now() - lastUpdate) > 45000;
+
+                 if (isLockedByMe || isStale) {
+                    if (isStale && !isLockedByMe) {
+                       console.log('🤖 [Worker] Lock was stale. Re-claiming and processing...');
+                       await sb.from('whatsapp_auth').upsert({
+                         id: 'connection_lock',
+                         data: { instanceId, status: 'authenticated' },
+                         updated_at: new Date().toISOString()
+                       });
+                    }
+
                     // A. Trigger Notification Cron (Reminders)
                     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
                     fetch(`${baseUrl}/api/cron/notifications`, {
@@ -282,34 +295,35 @@ export class WhatsAppManager {
                     }).catch(() => {});
 
                     // B. Process whatsapp_queue (Async Messages)
-                    const { data: pending } = await sb
+                    const { data: pending, error: qError } = await sb
                       .from('whatsapp_queue')
                       .select('*')
                       .eq('status', 'pending')
                       .lte('scheduled_time', new Date().toISOString())
                       .order('created_at', { ascending: true })
-                      .limit(5);
+                      .limit(10);
+
+                    if (qError) console.error('Worker Queue Fetch Error:', qError);
 
                     if (pending && pending.length > 0) {
+                      console.log(`🤖 [Worker] Processing ${pending.length} pending messages...`);
                       for (const msg of pending) {
                          const result = await this.sendMessage(msg.phone, msg.message, false);
                          if (result.success) {
-                            await sb.from('whatsapp_queue').update({ status: 'sent', attempts: msg.attempts + 1 }).eq('id', msg.id);
+                            await sb.from('whatsapp_queue').update({ status: 'sent', attempts: (msg.attempts || 0) + 1 }).eq('id', msg.id);
+                            console.log(`✅ [Worker] Sent message to ${msg.phone}`);
                          } else {
                             const newAttempts = (msg.attempts || 0) + 1;
-                            const newStatus = newAttempts >= 3 ? 'failed' : 'pending';
+                            const newStatus = newAttempts >= 5 ? 'failed' : 'pending';
                             await sb.from('whatsapp_queue').update({ 
                               status: newStatus, 
                               attempts: newAttempts,
                               error: result.error?.toString() || 'Unknown error'
                             }).eq('id', msg.id);
+                            console.warn(`❌ [Worker] Failed message to ${msg.phone}: ${result.error}`);
                          }
                       }
                     }
-
-                    // C. Cleanup old entries (older than 24 hours)
-                    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-                    await sb.from('whatsapp_queue').delete().lt('created_at', oneDayAgo);
                  }
                } catch (e) {
                  console.warn('Background Worker execution failed:', e);

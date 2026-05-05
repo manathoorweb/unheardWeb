@@ -41,6 +41,13 @@ export async function GET(req: Request) {
 
       const patientPhone = appt.guest_phone;
       const patientName = appt.guest_name || 'there';
+      
+      const istTime = new Date(appt.start_time).toLocaleTimeString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
 
       // ==========================================
       // 1. PATIENT: 6 HOURS BEFORE - LINK DELIVERY
@@ -49,8 +56,8 @@ export async function GET(req: Request) {
       const gatewayLink = `${baseUrl}/room/${appt.id}`;
 
       if (diffHours <= 6.2 && diffHours > 5.5 && !appt.reminded_6h_patient && patientPhone) {
-        const pGatewayLink = `${gatewayLink}?type=patient`;
-        const msg = `*Your Secure Meeting Link* 🔒\n\nHi ${patientName}, your session is scheduled for today.\n\n🔗 *Join Room:* ${pGatewayLink}\n\nNote: This link will become active 30 minutes before your session. See you soon!`;
+        const pGatewayLink = `${baseUrl}/api/room-redirect/${appt.id}?type=patient`;
+        const msg = `*Your Session is at ${istTime} IST* 🔒\n\nHi ${patientName}, your session is scheduled for today at *${istTime}*.\n\n🔗 *Join Room:* ${pGatewayLink}\n\nNote: This link will become active 30 minutes before your session. See you soon!`;
         
         await WhatsAppManager.sendMessage(patientPhone, msg);
         await adminSupabase.from('appointments').update({ reminded_6h_patient: true }).eq('id', appt.id);
@@ -61,8 +68,8 @@ export async function GET(req: Request) {
       // 2. PATIENT: 15 MINUTES BEFORE NOTIFICATION
       // ==========================================
       if (diffMinutes <= 15 && diffMinutes > 0 && !appt.reminded_15m_patient && patientPhone) {
-        const pGatewayLink = `${gatewayLink}?type=patient`;
-        const msg = `*Your Session is Starting Soon!* ⏳\n\nHi ${patientName}, your session is starting in *15 minutes*.\n\n🔗 *Join Now:* ${pGatewayLink}\n\nPlease join 2 minutes early to test your audio and video.`;
+        const pGatewayLink = `${baseUrl}/api/room-redirect/${appt.id}?type=patient`;
+        const msg = `*Starting at ${istTime} IST* ⏳\n\nHi ${patientName}, your session is starting in *15 minutes* (at ${istTime}).\n\n🔗 *Join Now:* ${pGatewayLink}\n\nPlease join 2 minutes early to test your audio and video.`;
         
         await WhatsAppManager.sendMessage(patientPhone, msg);
         await adminSupabase.from('appointments').update({ reminded_15m_patient: true }).eq('id', appt.id);
@@ -81,9 +88,9 @@ export async function GET(req: Request) {
           .single();
 
         if (tProfile?.phone) {
-          const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://unheard.co.in';
-          const tGatewayLink = `${baseUrl}/room/${appt.id}?type=therapist`;
-          const msg = `*Session Starting Soon!* ⏳\n\nDr. ${tProfile.full_name}, your session with *${patientName}* begins in *15 minutes*.\n\n🔗 *Join Space:* ${tGatewayLink}\n\nPlease be ready.`;
+          const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.unheard.co.in';
+          const tGatewayLink = `${baseUrl}/api/room-redirect/${appt.id}?type=therapist`;
+          const msg = `*Session at ${istTime} IST* ⏳\n\nDr. ${tProfile.full_name}, your session with *${patientName}* begins in *15 minutes* (at ${istTime}).\n\n🔗 *Join Space:* ${tGatewayLink}\n\nPlease be ready.`;
           
           await WhatsAppManager.sendMessage(tProfile.phone, msg);
           

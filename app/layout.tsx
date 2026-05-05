@@ -21,10 +21,16 @@ const nunito = Nunito({
 export const metadata: Metadata = {
   title: "unHeard - Clarity For Your Inner World",
   description: "Professional psychological counseling that listens, understands context, and responds with clarity. Begin with understanding at unHeard.",
+  manifest: '/manifest.json',
   icons: {
     icon: '/assets/logo unherd white.svg',
     apple: '/assets/logo unherd white.svg',
-  }
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'unHeard',
+  },
 };
 
 import { BookingProvider } from "@/components/BookingContext";
