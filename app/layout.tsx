@@ -37,6 +37,7 @@ import { BookingProvider } from "@/components/BookingContext";
 import { Footer } from "@/components/Footer";
 
 import { NotificationProvider } from "@/components/NotificationContext";
+import { PushInitializer } from "@/components/PushInitializer";
 
 export default function RootLayout({
   children,
@@ -50,6 +51,7 @@ export default function RootLayout({
       >
         <BookingProvider>
           <NotificationProvider>
+            <PushInitializer />
             <Navbar />
             {children}
             <Footer />

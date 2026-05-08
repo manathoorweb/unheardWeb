@@ -243,9 +243,9 @@ export const LandingStack = () => {
               </div>
 
               {/* Centered CTA */}
-              <div className="mt-20 w-full flex flex-col items-center">
+              <div className="mt-20 mb-12 md:mb-20 w-full flex flex-col items-center">
                 <div ref={cta1Ref} className="flex flex-row items-center justify-center gap-4 md:gap-6">
-                  <Button variant="black" className="w-[200px] md:w-[240px] h-[52px] md:h-[58px] text-[14px] md:text-[18px] px-4 md:px-8 whitespace-nowrap" onClick={openBookingModal}>Begin with understanding.</Button>
+                  <Button variant="black" className="w-[180px] sm:w-[200px] md:w-[240px] h-[48px] md:h-[56px] text-[13px] sm:text-[14px] md:text-[17px] px-4 sm:px-6 md:px-8 whitespace-nowrap shadow-xl" onClick={openBookingModal}>Begin with understanding.</Button>
                   <Image src="/assets/Group 54.svg" alt="Try now!" width={55} height={55} className="h-[40px] md:h-[55px] w-auto invert -mt-3" />
                 </div>
               </div>
@@ -340,10 +340,10 @@ export const LandingStack = () => {
                     )}
                   </div>
 
-                  <div className="flex flex-col sm:flex-row items-center gap-6">
+                  <div className="flex flex-col sm:flex-row items-center gap-6 mb-8 md:mb-12">
                     <Button
                       variant="black"
-                      className="w-[200px] md:w-[240px] h-[52px] md:h-[58px] !rounded-full text-[14px] md:text-[16px] px-4 md:px-8 whitespace-nowrap shadow-xl"
+                      className="w-[180px] sm:w-[200px] md:w-[240px] h-[48px] md:h-[56px] text-[13px] sm:text-[14px] md:text-[17px] px-4 sm:px-6 md:px-8 whitespace-nowrap shadow-xl"
                       onClick={openBookingModal}
                     >
                       Begin with understanding.

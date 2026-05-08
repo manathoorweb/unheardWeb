@@ -247,7 +247,7 @@ export default function Login() {
                       required
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      placeholder="+91 98765 43210" 
+                      placeholder="9876543210" 
                       className="w-full border-2 border-gray-100 rounded-[20px] pl-14 pr-6 py-4 font-bold text-[16px] text-gray-900 focus:outline-none focus:border-[#0F9393] transition-all bg-gray-50/50" 
                     />
                   </div>

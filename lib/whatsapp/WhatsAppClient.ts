@@ -4,6 +4,7 @@ import pino from 'pino';
 import { NotificationController } from '../notifications/NotificationController';
 import { getSupabaseAuthState } from './getSupabaseAuthState';
 import { createAdminClient } from '../supabase/admin';
+import { normalizePhone } from '@/utils/phone';
 
 // Global state container to prevent hot-reloads from spawning multiple connections
 const globalForWhatsApp = global as unknown as { 
@@ -365,7 +366,8 @@ export class WhatsAppManager {
       }
     }
 
-    let formattedNumber = phoneNumber.replace(/\D/g, ''); 
+    let normalizedPhone = normalizePhone(phoneNumber);
+    let formattedNumber = normalizedPhone.replace(/\D/g, ''); 
     if (formattedNumber.length === 10) formattedNumber = '91' + formattedNumber;
     if (!formattedNumber.endsWith('@s.whatsapp.net')) formattedNumber = `${formattedNumber}@s.whatsapp.net`;
 
@@ -384,9 +386,10 @@ export class WhatsAppManager {
    */
   static async enqueueMessage(phone: string, message: string, scheduledTime?: string) {
     try {
+      const normalizedPhone = normalizePhone(phone);
       const sb = await createAdminClient();
       const { error } = await sb.from('whatsapp_queue').insert({
-        phone,
+        phone: normalizedPhone,
         message,
         scheduled_time: scheduledTime || new Date().toISOString(),
         status: 'pending'

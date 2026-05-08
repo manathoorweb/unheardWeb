@@ -1,5 +1,23 @@
 import { resend } from '@/lib/resend';
 import { WhatsAppManager } from '../whatsapp/WhatsAppClient';
+import webpush from 'web-push';
+import { createAdminClient } from '../supabase/admin';
+import { normalizePhone } from '@/utils/phone';
+
+// VAPID keys should be in .env.local
+if (process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+  try {
+    webpush.setVapidDetails(
+      'mailto:notifications@unheard.co.in',
+      process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+      process.env.VAPID_PRIVATE_KEY
+    );
+  } catch (err) {
+    console.error('Failed to initialize VAPID details for web-push:', err);
+  }
+} else {
+  console.warn('VAPID keys missing. Web push notifications will be disabled.');
+}
 
 export class NotificationController {
   /**
@@ -31,6 +49,49 @@ export class NotificationController {
       return result;
     } catch (err) {
       console.error('WhatsApp Exception:', err);
+      return { success: false, error: err };
+    }
+  }
+  /**
+   * Sends a Web Push notification to all subscriptions associated with a phone number
+   */
+  static async sendPush(phone: string, title: string, body: string, url = '/') {
+    try {
+      const supabase = await createAdminClient();
+      
+      // Clean phone for lookup
+      let formattedPhone = normalizePhone(phone);
+
+      const { data: subscriptions } = await supabase
+        .from('push_subscriptions')
+        .select('*')
+        .eq('phone', formattedPhone);
+
+      if (!subscriptions || subscriptions.length === 0) return { success: false, error: 'No push subscriptions found' };
+
+      const payload = JSON.stringify({ title, body, url });
+
+      const results = await Promise.all(subscriptions.map(async (sub) => {
+        try {
+          // Reconstruct subscription object for web-push
+          const pushSubscription = {
+            endpoint: sub.endpoint,
+            keys: sub.keys
+          };
+          await webpush.sendNotification(pushSubscription, payload);
+          return { success: true };
+        } catch (err: any) {
+          if (err.statusCode === 410 || err.statusCode === 404) {
+            // Subscription has expired or is no longer valid, delete it
+            await supabase.from('push_subscriptions').delete().eq('id', sub.id);
+          }
+          return { success: false, error: err.message };
+        }
+      }));
+
+      return { success: true, results };
+    } catch (err) {
+      console.error('Web Push Exception:', err);
       return { success: false, error: err };
     }
   }
@@ -127,7 +188,8 @@ export class NotificationController {
           </div>
         `,
       }),
-      this.sendWhatsApp(phone, waMessage)
+      this.sendWhatsApp(phone, waMessage),
+      this.sendPush(phone, 'Team Invite 🤝', 'You have been invited to join the professional therapist team.', inviteLink)
     ]);
   }
 
@@ -157,7 +219,8 @@ export class NotificationController {
           </div>
         `,
       }),
-      this.sendWhatsApp(phone, waMessage)
+      this.sendWhatsApp(phone, waMessage),
+      this.sendPush(phone, 'Session Summary 📝', `Hi ${name}, your session summary is ready to view.`, portalLink)
     ]);
   }
 }

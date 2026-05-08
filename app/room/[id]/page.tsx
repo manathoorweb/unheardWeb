@@ -2,6 +2,7 @@ import { createAdminClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { logAdminActivity } from '@/utils/logger';
 import { WhatsAppManager } from '@/lib/whatsapp/WhatsAppClient';
+import { NotificationController } from '@/lib/notifications/NotificationController';
 
 export default async function RoomGateway({ params, searchParams }: { 
   params: Promise<{ id: string }>, 
@@ -29,11 +30,46 @@ export default async function RoomGateway({ params, searchParams }: {
   }
 
 
+  // 1. CHECK IF SESSION IS COMPLETED
+  if (appointment.status === 'completed') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FEFEFC] font-georgia text-center p-8">
+        <div className="max-w-md">
+           <div className="w-20 h-20 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg width="40" height="40" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+           </div>
+           <h1 className="text-3xl font-bold text-gray-900 mb-4">Session Completed </h1>
+           <p className="text-gray-600 font-nunito leading-relaxed">
+             This therapy session has been successfully concluded and securely archived. Thank you for choosing unHeard.
+           </p>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. CHECK IF SESSION IS CANCELLED
+  if (appointment.status === 'cancelled') {
+     return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FEFEFC] font-georgia text-center p-8">
+        <div className="max-w-md">
+           <div className="w-20 h-20 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg width="40" height="40" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+           </div>
+           <h1 className="text-3xl font-bold text-gray-900 mb-4">Session Cancelled</h1>
+           <p className="text-gray-600 font-nunito leading-relaxed">
+             This session has been cancelled. Please contact support if you believe this is an error.
+           </p>
+        </div>
+      </div>
+    );
+  }
+
+  // 3. CHECK FOR PENDING CONFIRMATION
   if (appointment.status !== 'confirmed' && appointment.status !== 'approved') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FEFEFC] font-georgia text-center p-8">
         <div className="max-w-md">
-           <h1 className="text-3xl font-bold text-yellow-600 mb-4">Pending Confirmation ⏳</h1>
+           <h1 className="text-3xl font-bold text-yellow-600 mb-4">Pending Confirmation </h1>
            <p className="text-gray-600 font-nunito leading-relaxed">
              The session has not yet been confirmed by our admins. Check your WhatsApp for updates!
            </p>
@@ -80,7 +116,8 @@ export default async function RoomGateway({ params, searchParams }: {
 
   // LOG JOIN EVENT
   const userType = type;
-  if (userType === 'patient' || userType === 'therapist') {
+  // Ensure we only log and notify for ACTIVE sessions
+  if ((userType === 'patient' || userType === 'therapist') && (appointment.status === 'confirmed' || appointment.status === 'approved')) {
     // 1. Create a detailed audit log entry
     await adminSupabase.from('session_logs').insert([{
         appointment_id: id,
@@ -118,8 +155,16 @@ export default async function RoomGateway({ params, searchParams }: {
        if (tProfile?.phone) {
           const patientName = appointment.guest_name || 'Your patient';
           const tRoomLink = `${redirectBase}?type=therapist`;
-          const tMsg = `*Patient has joined the room!* 👤\n\nDr. ${tProfile.full_name}, your patient *${patientName}* has entered the session room and is waiting.\n\n🔗 *Join Session Now:* ${tRoomLink}\n\n💡 *Note:* If links are not clickable, please reply with a "Hi" to this message.`;
-          await WhatsAppManager.enqueueMessage(tProfile.phone, tMsg);
+          const tMsg = `*Patient has joined the room!* 👤\n\n ${tProfile.full_name}, your patient *${patientName}* has entered the session room and is waiting.\n\n🔗 *Join Session Now:* ${tRoomLink}\n\n💡 *Note:* If links are not clickable, please reply with a "Hi" to this message.`;
+          await Promise.all([
+            NotificationController.sendWhatsApp(tProfile.phone, tMsg),
+            NotificationController.sendPush(
+              tProfile.phone, 
+              'Patient Joined! 👤', 
+              `${patientName} has entered the session room and is waiting.`, 
+              tRoomLink
+            )
+          ]);
           // Trigger queue processing
           fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.unheard.co.in'}/api/whatsapp/process-queue`).catch(() => {});
        }

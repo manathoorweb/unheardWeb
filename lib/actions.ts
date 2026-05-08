@@ -83,9 +83,14 @@ export async function submitContactInquiry(data: {
   const supabase = await createClient()
 
   // 1. Save to DB
+  const insertData = { ...data };
+  if (insertData.phone) {
+    insertData.phone = normalizePhone(insertData.phone);
+  }
+
   const { error } = await supabase
     .from('contact_inquiries')
-    .insert([data])
+    .insert([insertData])
 
   if (error) throw error
 
@@ -242,7 +247,7 @@ export async function requestSession(data: {
     // A. Notify Patient
     if (data.phone) {
       const patientMsg = `*Registration Under Review!* 🧘‍♀️\n\nHi ${displayName}, we have successfully received your session request for *${formattedDate}* at *${formattedTime}*.\n\nYour problems are being carefully assessed by a real human expert to ensure you get the most appropriate care. We are currently matching you and assigning the best therapist for your specific needs.\n\nYou will receive an update confirming your assigned therapist within *30 mins*.\n\nFor any issues, please contact +919606083755.\n\nThanks, and take care!`;
-      WhatsAppManager.sendMessage(data.phone, patientMsg).catch(console.error);
+      WhatsAppManager.enqueueMessage(data.phone, patientMsg).catch(console.error);
     }
 
     // B. Notify Super Admin (Optional, but useful since it's a new request)

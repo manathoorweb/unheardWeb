@@ -9,8 +9,10 @@ import {
   LayoutDashboard,
   AlertCircle,
   Calendar, Sparkles, Phone, LogOut,
-  ChevronRight
+  ChevronRight,
+  ChevronLeft, History, Settings, CheckCircle2, Clock, MapPin, Mail, User, Shield, ExternalLink, Search, Filter, RefreshCcw, Bell
 } from 'lucide-react'
+import { subscribeToPush } from '@/lib/push/pushService'
 import { motion, AnimatePresence } from 'framer-motion'
 import PWAInstallPrompt from '@/components/PWAInstallPrompt'
 
@@ -57,6 +59,8 @@ interface Registration {
   joined_at_patient?: string;
   joined_at_therapist?: string;
   completed_at?: string;
+  session_summary?: string;
+  therapist_name?: string;
 }
 
 
@@ -79,6 +83,7 @@ export default function AdminDashboard() {
   const [closingSession, setClosingSession] = useState<string | null>(null);
   const [summary, setSummary] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+  const [isPushLoading, setIsPushLoading] = useState(false);
   const [expertiseInput, setExpertiseInput] = useState('');
   const [fitInput, setFitInput] = useState('');
 
@@ -112,7 +117,8 @@ export default function AdminDashboard() {
       .from('appointments')
       .select(`
         *,
-        pre_booking_questionnaires(answers)
+        pre_booking_questionnaires(answers),
+        therapist_profiles!therapist_id(full_name)
       `)
       .order('start_time', { ascending: false })
 
@@ -135,16 +141,18 @@ export default function AdminDashboard() {
           status: a.status,
           assignment_status: a.assignment_status,
           guest_info: {
-            name: guestName,
-            phone: guestPhone,
-            email: a.pre_booking_questionnaires?.[0]?.answers?.guest_info?.email
+            name: a.guest_name || a.pre_booking_questionnaires?.[0]?.answers?.guest_info?.name || 'Anonymous',
+            phone: a.guest_phone || a.pre_booking_questionnaires?.[0]?.answers?.guest_info?.phone || 'N/A',
+            email: a.guest_email || a.pre_booking_questionnaires?.[0]?.answers?.guest_info?.email
           },
           answers: a.pre_booking_questionnaires?.[0]?.answers,
           session_count: fpMap.get(guestPhone) || 0,
           meeting_link: a.meeting_link,
           joined_at_patient: a.joined_at_patient,
           joined_at_therapist: a.joined_at_therapist,
-          completed_at: a.completed_at
+          completed_at: a.completed_at,
+          session_summary: a.session_summary,
+          therapist_name: a.therapist_profiles?.full_name
         };
       })
       setRegistrations(formatted)
@@ -401,7 +409,7 @@ export default function AdminDashboard() {
                 <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-gray-100 p-1">
                   <div className="w-full h-full bg-gray-50 rounded-lg overflow-hidden">
                     <Image
-                      src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${profile?.full_name || 'Admin'}`}
+                      src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name?.trim() || 'Admin')}`}
                       className="w-full h-full object-cover"
                       alt={profile?.full_name || 'Admin'}
                       width={48}
@@ -482,19 +490,21 @@ export default function AdminDashboard() {
                     .filter(r => new Date(r.start_time).toDateString() === selectedDate.toDateString())
                     .map((r, i) => {
                       const isFirst = i === 0;
+                      const isCompleted = r.status === 'completed';
+                      
                       return (
                         <div key={r.id} className="relative">
-                          <div className={`absolute -left-[30px] top-3.5 w-4 h-4 rounded-full border-[3px] border-[#F8F9FA] transition-all ${isFirst ? 'bg-[#0F9393] scale-110 shadow-md' : 'bg-gray-200'}`} />
+                          <div className={`absolute -left-[30px] top-3.5 w-4 h-4 rounded-full border-[3px] border-[#F8F9FA] transition-all ${isCompleted ? 'bg-gray-300' : isFirst ? 'bg-[#0F9393] scale-110 shadow-md' : 'bg-gray-200'}`} />
                           <div
                             onClick={() => { setSelectedSession(r); setShowSheet(true); }}
-                            className={`p-5 rounded-[22px] transition-all cursor-pointer group hover:scale-[1.02] active:scale-95 ${isFirst ? 'bg-[#0F9393] text-white shadow-xl' : 'bg-white text-gray-900 shadow-sm border border-gray-50'}`}
+                            className={`p-5 rounded-[22px] transition-all cursor-pointer group hover:scale-[1.02] active:scale-95 ${isCompleted ? 'bg-gray-50 border border-gray-100 text-gray-400' : isFirst ? 'bg-[#0F9393] text-white shadow-xl' : 'bg-white text-gray-900 shadow-sm border border-gray-50'}`}
                           >
                             <div className="flex justify-between items-start">
                               <div className="flex flex-col">
-                                <span className={`text-[16px] font-bold tracking-tight ${isFirst ? 'text-white' : 'text-gray-900'}`}>{r.guest_info?.name}</span>
-                                <span className={`text-[11px] font-medium ${isFirst ? 'text-white/70' : 'text-gray-400'}`}>{r.is_trial ? 'Discovery' : 'Therapy'}</span>
+                                <span className={`text-[16px] font-bold tracking-tight ${isCompleted ? 'text-gray-400' : isFirst ? 'text-white' : 'text-gray-900'}`}>{r.guest_info?.name}</span>
+                                <span className={`text-[11px] font-medium ${isCompleted ? 'text-gray-300' : isFirst ? 'text-white/70' : 'text-gray-400'}`}>{isCompleted ? 'Session Completed' : r.is_trial ? 'Discovery' : 'Therapy'}</span>
                               </div>
-                              <span className={`text-[13px] font-bold ${isFirst ? 'text-white' : 'text-[#0F9393]'}`}>
+                              <span className={`text-[13px] font-bold ${isCompleted ? 'text-gray-300' : isFirst ? 'text-white' : 'text-[#0F9393]'}`}>
                                 {new Date(r.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
                               </span>
                             </div>
@@ -595,30 +605,74 @@ export default function AdminDashboard() {
                   if (filterStatus === 'completed') return r.status === 'completed';
                   return true;
                 })
-                .map((reg) => (
-                  <div
-                    key={reg.id}
-                    onClick={() => { setSelectedSession(reg); setShowSheet(true); }}
-                    className="bg-white p-6 rounded-[28px] border border-gray-50 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-6 group"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-[#0F9393] font-bold">
-                        {reg.guest_info?.name?.[0] || 'A'}
+                .map((reg, idx, arr) => {
+                  // Calculate gap between this session and the PREVIOUS one chronologically (which is the NEXT one in this descending list)
+                  let dayGap = null;
+                  const prevSession = arr[idx + 1];
+                  if (prevSession && prevSession.guest_info?.phone === reg.guest_info?.phone) {
+                    const current = new Date(reg.start_time).getTime();
+                    const prev = new Date(prevSession.start_time).getTime();
+                    dayGap = Math.floor((current - prev) / (1000 * 60 * 60 * 24));
+                  }
+
+                  return (
+                    <div key={reg.id} className="relative flex items-stretch gap-3 md:gap-8 group">
+                      {/* Timeline Thread */}
+                      <div className="flex flex-col items-center w-8 md:w-16 flex-shrink-0">
+                        <div className={`w-1 flex-grow ${idx === 0 ? 'bg-transparent' : 'bg-gray-100'}`} />
+                        <div className={`w-4 h-4 rounded-full border-4 border-white shadow-sm flex-shrink-0 z-10 ${reg.status === 'completed' ? 'bg-[#0F9393]' : 'bg-yellow-500 animate-pulse'}`} />
+                        <div className={`w-1 flex-grow ${idx === arr.length - 1 ? 'bg-transparent' : 'bg-gray-100'}`} />
+                        
+                        {/* Gap Badge - Positioned between nodes */}
+                        {dayGap !== null && (
+                          <div className="absolute top-[100%] left-4 md:left-8 -translate-x-1/2 -translate-y-1/2 z-20">
+                            <div className="bg-white px-2 py-1 rounded-full border border-gray-100 shadow-sm">
+                              <span className="text-[9px] font-black text-[#0F9393] whitespace-nowrap">+{dayGap}d</span>
+                            </div>
+                          </div>
+                        )}
                       </div>
-                      <div className="flex flex-col">
-                        <span className="text-[16px] font-bold text-gray-900">{reg.guest_info?.name || 'Anonymous'}</span>
-                        <span className="text-[12px] text-gray-400 font-medium">{reg.guest_info?.phone}</span>
+
+                      <div
+                        onClick={() => { setSelectedSession(reg); setShowSheet(true); }}
+                        className="flex-1 bg-white p-6 md:p-8 rounded-[32px] border border-gray-50 shadow-sm hover:shadow-xl transition-all cursor-pointer flex flex-col gap-6 my-2"
+                      >
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 md:w-14 md:h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-[#0F9393] font-bold text-xl">
+                              {reg.guest_info?.name?.[0] || 'A'}
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-[16px] md:text-[18px] font-bold text-gray-900">{reg.guest_info?.name || 'Anonymous'}</span>
+                              <span className="text-[12px] text-gray-400 font-medium">{reg.guest_info?.phone}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-6 md:gap-8">
+                            <div className="flex flex-col md:items-center">
+                              <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1">Therapist</span>
+                              <span className="text-[13px] md:text-[14px] font-bold text-gray-700">{reg.therapist_name || 'Admin'}</span>
+                            </div>
+                            <div className="flex flex-col md:items-end">
+                              <span className="text-[13px] md:text-[14px] font-bold text-gray-900">{new Date(reg.start_time).toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                              <span className={`text-[9px] md:text-[10px] font-bold uppercase tracking-widest ${reg.status === 'completed' ? 'text-[#0F9393]' : 'text-yellow-600'}`}>
+                                {reg.status === 'completed' ? 'Session Closed' : 'In Progress'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {reg.session_summary && (
+                          <div className="bg-gray-50/50 rounded-2xl p-5 border border-gray-100/50">
+                            <p className="text-[13px] text-gray-600 leading-relaxed italic line-clamp-2 text-ellipsis">
+                              &quot;{reg.session_summary}&quot;
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </div>
-                    <div className="flex flex-col md:items-end">
-                      <span className="text-[14px] font-bold text-gray-900">{new Date(reg.start_time).toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric' })}</span>
-                      <span className="text-[11px] font-bold text-[#0F9393] uppercase tracking-widest">{reg.status === 'completed' ? 'Diagnostic Closed' : 'Active Record'}</span>
-                    </div>
-                    <button className="px-5 py-2 bg-gray-50 text-gray-400 rounded-xl text-[10px] font-bold uppercase tracking-widest group-hover:bg-black group-hover:text-white transition-all">
-                      View Details
-                    </button>
-                  </div>
-                ))}
+                  );
+                })}
               {registrations.length === 0 && (
                 <div className="py-20 text-center flex flex-col items-center gap-4">
                   <LayoutDashboard size={48} className="text-gray-100" />
@@ -663,7 +717,7 @@ export default function AdminDashboard() {
                       >
                         <div className="w-full h-full rounded-full overflow-hidden bg-gray-50 border-4 border-gray-50">
                           <Image
-                            src={profile.avatar_url || `https://ui-avatars.com/api/?name=${profile.full_name}&background=0F9393&color=fff&size=256`}
+                            src={profile.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.full_name?.trim() || 'Therapist')}&background=0F9393&color=fff&size=256`}
                             className="w-full h-full object-cover"
                             alt={profile.full_name}
                             width={176}
@@ -851,7 +905,7 @@ export default function AdminDashboard() {
                       <div className="flex items-center gap-6 mb-4">
                         <div className="w-24 h-24 rounded-3xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden relative group">
                           <Image
-                            src={profile.avatar_url || `https://ui-avatars.com/api/?name=${profile.full_name}&background=0F9393&color=fff`}
+                            src={profile.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.full_name?.trim() || 'Therapist')}&background=0F9393&color=fff`}
                             width={96} height={96} className="w-full h-full object-cover group-hover:opacity-50 transition-opacity" alt="Avatar"
                           />
                           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
@@ -1096,6 +1150,35 @@ export default function AdminDashboard() {
                       >
                         {loading ? 'Publishing Changes...' : 'Publish to Showcase'}
                       </Button>
+                      <button 
+                        type="button"
+                        onClick={async () => {
+                          setIsPushLoading(true);
+                          try {
+                            await subscribeToPush(profile?.phone);
+                            alert('Notifications enabled! You will now receive alerts here.');
+                          } catch (err: any) {
+                            alert(err.message);
+                          } finally {
+                            setIsPushLoading(false);
+                          }
+                        }}
+                        disabled={isPushLoading}
+                        className="w-full mt-4 flex items-center justify-between p-6 bg-white rounded-[28px] border-2 border-gray-50 hover:border-[#0F9393]/20 hover:bg-[#0F9393]/5 transition-all group"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-[#0F9393] shadow-sm group-hover:bg-white transition-all">
+                            <Bell size={20} />
+                          </div>
+                          <div className="flex flex-col items-start text-left">
+                            <span className="text-[16px] font-bold text-gray-900">Enable Push Notifications</span>
+                            <span className="text-[12px] text-gray-400 font-medium">{isPushLoading ? 'Establishing secure link...' : 'Get real-time alerts in this browser'}</span>
+                          </div>
+                        </div>
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isPushLoading ? 'bg-gray-100' : 'bg-white'} shadow-sm group-hover:scale-110 transition-all`}>
+                          <ExternalLink size={16} className="text-gray-400" />
+                        </div>
+                      </button>
                     </div>
                   </form>
                 </motion.div>
@@ -1106,25 +1189,60 @@ export default function AdminDashboard() {
       </main>
 
       {/* Close Session Modal */}
-      {closingSession && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-6">
-          <div className="bg-white w-full max-w-lg rounded-[32px] p-10 shadow-2xl flex flex-col gap-6 animate-in fade-in zoom-in duration-300">
-            <h2 className="text-[28px] font-bold tracking-tighter text-gray-900 mb-2">Close Therapy Session</h2>
-            <textarea
-              value={summary}
-              onChange={(e) => setSummary(e.target.value)}
-              placeholder="Enter session summary..."
-              className="w-full h-[150px] border border-gray-200 rounded-[20px] p-6 text-[14px] font-medium outline-none focus:border-[#0F9393] transition-all resize-none"
+      <AnimatePresence>
+        {closingSession && (
+          <div className="fixed inset-0 z-[300] flex items-center justify-center p-6">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setClosingSession(null)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             />
-            <div className="flex gap-4">
-              <button onClick={() => setClosingSession(null)} className="flex-1 h-[55px] font-bold text-gray-500 hover:bg-gray-50 rounded-2xl transition-all">Go Back</button>
-              <button onClick={handleCloseSession} disabled={loading || !summary.trim()} className="flex-[2] h-[55px] bg-black text-white font-bold rounded-2xl hover:bg-gray-800 transition-all shadow-lg">
-                {loading ? 'Closing...' : 'Close & Save Summary'}
-              </button>
-            </div>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-white w-full max-w-lg rounded-[40px] p-10 shadow-2xl flex flex-col gap-6 relative z-10"
+            >
+              <div className="flex flex-col gap-2">
+                <h2 className="text-[32px] font-bold tracking-tight text-gray-900 leading-none">Clinical Closure</h2>
+                <p className="text-[13px] text-gray-400 font-bold uppercase tracking-widest">Final Diagnostic Summary</p>
+              </div>
+              
+              <div className="relative">
+                <textarea
+                  value={summary}
+                  onChange={(e) => setSummary(e.target.value)}
+                  placeholder="Enter detailed clinical observation and path forward..."
+                  className="w-full h-[200px] border-2 border-gray-50 bg-gray-50 rounded-[32px] p-8 text-[15px] font-medium outline-none focus:border-[#0F9393] focus:bg-white transition-all resize-none shadow-inner"
+                />
+                {!summary && (
+                  <div className="absolute top-8 left-8 pointer-events-none opacity-40">
+                    <Sparkles size={20} className="text-[#0F9393]" />
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <button 
+                  onClick={handleCloseSession} 
+                  disabled={loading || !summary.trim()} 
+                  className="w-full h-[72px] bg-black text-white font-bold rounded-[24px] hover:bg-gray-800 transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 text-[16px]"
+                >
+                  {loading ? 'Finalizing...' : 'Close Session & Archive'}
+                </button>
+                <button 
+                  onClick={() => setClosingSession(null)} 
+                  className="w-full h-[60px] font-bold text-gray-400 hover:text-gray-600 rounded-[24px] transition-all text-[14px]"
+                >
+                  Continue Session
+                </button>
+              </div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
 
       {/* Premium Session Details Bottom Sheet */}
       <AnimatePresence>
@@ -1158,7 +1276,7 @@ export default function AdminDashboard() {
                   <div className="flex items-center gap-5">
                     <div className="w-16 h-16 bg-white rounded-3xl p-1 shadow-sm border border-gray-100 overflow-hidden relative">
                       <Image
-                        src={`https://ui-avatars.com/api/?name=${selectedSession?.guest_info?.name || 'User'}&background=0F9393&color=fff`}
+                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(selectedSession?.guest_info?.name?.trim() || 'User')}&background=0F9393&color=fff`}
                         className="w-full h-full rounded-2xl object-cover"
                         alt={selectedSession?.guest_info?.name || 'User'}
                         width={64}
@@ -1259,42 +1377,68 @@ export default function AdminDashboard() {
                       Patient Paid
                     </div>
                   </div>
-                  <div className="flex gap-4">
-                    <button
-                      onClick={() => window.location.href = `tel:${selectedSession?.guest_info?.phone}`}
-                      className="w-16 h-16 bg-white border border-gray-100 rounded-3xl flex items-center justify-center text-gray-900 shadow-sm hover:bg-gray-50 transition-all"
-                    >
-                      <Phone size={24} />
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (selectedSession?.id) {
-                          localStorage.setItem('active_session_join', JSON.stringify({
-                            id: selectedSession.id,
-                            time: Date.now()
-                          }));
-                          window.open(`/api/room-redirect/${selectedSession.id}?type=therapist`, '_blank');
-                        } else {
-                          alert('Session ID not found. Please sync with system admin.');
-                        }
-                      }}
-                      className="flex-1 bg-black text-white rounded-[24px] font-bold text-[15px] uppercase tracking-[0.2em] shadow-2xl active:scale-95 transition-all h-16"
-                    >
-                      Join Session
-                    </button>
-                  </div>
+                  {selectedSession?.status === 'completed' ? (
+                    <div className="flex flex-col gap-6">
+                      <div className="bg-white border border-gray-100 p-8 rounded-[36px] flex flex-col gap-3 shadow-sm">
+                        <div className="flex items-center gap-2 text-[#0F9393]">
+                          <Sparkles size={18} />
+                          <span className="text-[12px] font-bold uppercase tracking-widest">Session Outcome</span>
+                        </div>
+                        <p className="text-[14px] text-gray-600 font-medium leading-relaxed italic">
+                           &quot;{selectedSession?.session_summary || 'No detailed summary provided.'}&quot;
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setSearchQuery(selectedSession?.guest_info?.phone || '');
+                          setFilterStatus('all');
+                          setActiveTab('history');
+                          setShowSheet(false);
+                        }}
+                        className="w-full h-[76px] bg-black text-white rounded-[28px] font-bold text-[16px] shadow-2xl hover:bg-gray-800 transition-all flex items-center justify-center gap-3"
+                      >
+                        See Whole History
+                        <ChevronRight size={20} />
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex gap-4">
+                        <button
+                          onClick={() => window.location.href = `tel:${selectedSession?.guest_info?.phone}`}
+                          className="w-16 h-16 bg-white border border-gray-100 rounded-3xl flex items-center justify-center text-gray-900 shadow-sm hover:bg-gray-50 transition-all"
+                        >
+                          <Phone size={24} />
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (selectedSession?.id) {
+                              localStorage.setItem('active_session_join', JSON.stringify({
+                                id: selectedSession.id,
+                                time: Date.now()
+                              }));
+                              window.open(`/api/room-redirect/${selectedSession.id}?type=therapist`, '_blank');
+                            } else {
+                              alert('Session ID not found. Please sync with system admin.');
+                            }
+                          }}
+                          className="flex-1 bg-black text-white rounded-[24px] font-bold text-[15px] uppercase tracking-[0.2em] shadow-2xl active:scale-95 transition-all h-16"
+                        >
+                          Join Session
+                        </button>
+                      </div>
 
-                  <button
-                    onClick={() => {
-                      if (confirm('Close this session permanently?')) {
-                        setClosingSession(selectedSession?.id || '');
-                        setShowSheet(false);
-                      }
-                    }}
-                    className="w-full text-center text-gray-400 font-bold text-[12px] uppercase tracking-widest py-2 hover:text-red-400 transition-all cursor-pointer"
-                  >
-                    Clinical Closure Request
-                  </button>
+                      <button
+                        onClick={() => {
+                          setClosingSession(selectedSession?.id || '');
+                          setShowSheet(false);
+                        }}
+                        className="w-full text-center text-gray-400 font-bold text-[12px] uppercase tracking-widest py-2 hover:text-red-400 transition-all cursor-pointer"
+                      >
+                        Clinical Closure Report
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </motion.div>

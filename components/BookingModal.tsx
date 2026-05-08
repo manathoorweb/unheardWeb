@@ -47,6 +47,7 @@ export default function BookingModal({ isOpen, onClose, initialConfig }: Booking
     service: '',
     therapist_id: '',
     is_trial: true,
+    plan_type: 'Trial Session',
     scheduled_date: '',
     scheduled_time: ''
   });
@@ -257,7 +258,8 @@ export default function BookingModal({ isOpen, onClose, initialConfig }: Booking
           age: formData.age,
           language: formData.language,
           type: formData.type,
-          service: formData.service
+          service: formData.service,
+          plan_type: formData.plan_type
         }
       };
 
@@ -553,13 +555,13 @@ export default function BookingModal({ isOpen, onClose, initialConfig }: Booking
                             { label: 'Standard Pack', price: currentPricing.standard, isTrial: false, available: true },
                             { label: 'Premium Pack', price: currentPricing.premium, isTrial: false, available: true }
                           ].map((plan, i) => {
-                            const isSelected = (plan.isTrial && formData.is_trial) || (!plan.isTrial && !formData.is_trial && i === 1);
+                            const isSelected = formData.plan_type === plan.label;
                             const isDisabled = !plan.available;
 
                             return (
                               <div 
                                 key={i} 
-                                onClick={() => !isDisabled && setFormData({...formData, is_trial: plan.isTrial})}
+                                onClick={() => !isDisabled && setFormData({...formData, is_trial: plan.isTrial, plan_type: plan.label})}
                                 className={`group relative border-2 ${isSelected ? 'border-[#0F9393] bg-[#0F9393]/5 transform scale-[1.02]' : 'border-gray-100'} ${isDisabled ? 'opacity-60 grayscale cursor-not-allowed' : 'hover:border-gray-200 cursor-pointer'} rounded-3xl p-6 transition-all flex flex-col items-center justify-center text-center overflow-hidden`}
                               >
                                 {plan.isTrial && plan.available && (

@@ -136,6 +136,11 @@ export async function POST(req: Request) {
       const tGatewayLink = `${gateway_link}?type=therapist`;
       const therapistMsg = `*New Appointment Assigned!* ✅\n\nDr. ${therapistProfile.full_name}, an admin has assigned a new session to you.\n\n*Patient:* ${patientName}\n*Date:* ${formattedDate}\n*Time:* ${formattedTime}\n*Type:* ${qAnswers.type || 'Individual'} (${qAnswers.service || 'General'})\n\n🔗 *Join Session Room:* ${tGatewayLink}\n\nPlease check your dashboard for details.\n\n💡 *Note:* If links are not clickable, please reply with a "Hi" to this message.`;
       await WhatsAppManager.enqueueMessage(therapistProfile.phone, therapistMsg);
+      
+      // Schedule 15-minute reminder for therapist
+      const reminderTime = new Date(new Date(startIso).getTime() - 15 * 60 * 1000).toISOString();
+      const tReminderMsg = `*Session at ${formattedTime}* ⏳\n\nDr. ${therapistProfile.full_name}, your session with *${patientName}* begins in *15 minutes*.\n\n🔗 *Join Space:* ${tGatewayLink}\n\nPlease be ready.\n\n💡 *Note:* If links are not clickable, please reply with a "Hi" to this message.`;
+      await WhatsAppManager.enqueueMessage(therapistProfile.phone, tReminderMsg, reminderTime);
     }
 
     // 7. Send WhatsApp to Patient
@@ -157,6 +162,12 @@ export async function POST(req: Request) {
          const reminderMsg = `*Your Session is Starting Soon!* ⏳ (Dev Test)\n\nHi ${patientName}, your session is starting in *15 minutes*.\n\n🔗 *Join Now:* ${pGatewayLink}\n\nPlease join 2 minutes early to test your audio and video.\n\n💡 *Note:* If links are not clickable, please reply with a "Hi" to this message.`;
          await WhatsAppManager.enqueueMessage(patientPhone, reminderMsg);
       }
+
+      // Schedule 15-minute reminder for patient
+      const reminderTime = new Date(new Date(startIso).getTime() - 15 * 60 * 1000).toISOString();
+      const pGatewayLink = `${gateway_link}?type=patient`;
+      const pReminderMsg = `*Your Session is Starting Soon!* ⏳\n\nHi ${patientName}, your session is starting in *15 minutes*.\n\n🔗 *Join Now:* ${pGatewayLink}\n\nPlease join 2 minutes early to test your audio and video.\n\n💡 *Note:* If links are not clickable, please reply with a "Hi" to this message.`;
+      await WhatsAppManager.enqueueMessage(patientPhone, pReminderMsg, reminderTime);
     }
 
     // Trigger immediate queue processing for snappy delivery
