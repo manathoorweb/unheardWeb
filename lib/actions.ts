@@ -247,7 +247,10 @@ export async function requestSession(data: {
     // A. Notify Patient
     if (data.phone) {
       const patientMsg = `*Registration Under Review!* 🧘‍♀️\n\nHi ${displayName}, we have successfully received your session request for *${formattedDate}* at *${formattedTime}*.\n\nYour problems are being carefully assessed by a real human expert to ensure you get the most appropriate care. We are currently matching you and assigning the best therapist for your specific needs.\n\nYou will receive an update confirming your assigned therapist within *30 mins*.\n\nFor any issues, please contact +919606083755.\n\nThanks, and take care!`;
-      WhatsAppManager.enqueueMessage(data.phone, patientMsg).catch(console.error);
+      await WhatsAppManager.enqueueMessage(data.phone, patientMsg);
+      
+      const baseUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.unheard.co.in');
+      await fetch(`${baseUrl}/api/whatsapp/process-queue`).catch(console.error);
     }
 
     // B. Notify Super Admin (Optional, but useful since it's a new request)

@@ -11,10 +11,6 @@ export default function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   useEffect(() => {
-    // Check if user has already accepted or dismissed
-    const isDismissed = localStorage.getItem('pwa_prompt_dismissed');
-    if (isDismissed) return;
-
     // Detect iOS
     const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     setIsIOS(ios);
@@ -48,14 +44,11 @@ export default function PWAInstallPrompt() {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      localStorage.setItem('pwa_prompt_dismissed', 'true');
-    }
+    // We rely on the browser not firing beforeinstallprompt again once installed
     setShowPrompt(false);
   };
 
   const handleDismiss = () => {
-    localStorage.setItem('pwa_prompt_dismissed', 'true');
     setShowPrompt(false);
   };
 

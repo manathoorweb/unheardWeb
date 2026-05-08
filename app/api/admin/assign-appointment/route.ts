@@ -171,7 +171,7 @@ export async function POST(req: Request) {
     }
 
     // Trigger immediate queue processing for snappy delivery
-    fetch(`${baseUrl}/api/whatsapp/process-queue`).catch(() => {});
+    await fetch(`${baseUrl}/api/whatsapp/process-queue`).catch(() => {});
 
     // 8. Log the activity
     const { data: { user } } = await adminSupabase.auth.getUser();
