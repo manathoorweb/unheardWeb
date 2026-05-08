@@ -12,20 +12,22 @@ const globalForWhatsApp = global as unknown as {
   status: 'disconnected' | 'initializing' | 'pending_qr' | 'authenticated' | 'error';
   qrDataUrl: string | null;
   connectionPromise: Promise<any> | null;
+  workerInterval: NodeJS.Timeout | null;
+  heartbeatInterval: NodeJS.Timeout | null;
 };
 
 // Initialize default state
 if (!globalForWhatsApp.status) globalForWhatsApp.status = 'disconnected';
 if (!globalForWhatsApp.qrDataUrl) globalForWhatsApp.qrDataUrl = null;
 if (!globalForWhatsApp.connectionPromise) globalForWhatsApp.connectionPromise = null;
+if (globalForWhatsApp.workerInterval === undefined) globalForWhatsApp.workerInterval = null;
+if (globalForWhatsApp.heartbeatInterval === undefined) globalForWhatsApp.heartbeatInterval = null;
 
 // Reusable Logger Singleton to save RAM
 const logger = pino({ level: 'silent' });
 
 // Unique ID for this instance to prevent multi-instance connection wars
 const instanceId = Math.random().toString(36).substring(7);
-let heartbeatInterval: NodeJS.Timeout | null = null;
-let workerInterval: NodeJS.Timeout | null = null;
 let lastCredsSave = 0;
 const CREDS_SAVE_THROTTLE = 2000; // 2 seconds
 const WORKER_INTERVAL_MS = 60 * 1000; // 1 minute (high frequency for queue)
@@ -219,13 +221,13 @@ export class WhatsAppManager {
             globalForWhatsApp.qrDataUrl = null;
             globalForWhatsApp.connectionPromise = null; // Clear promise on close
 
-            if (heartbeatInterval) {
-              clearInterval(heartbeatInterval);
-              heartbeatInterval = null;
+            if (globalForWhatsApp.heartbeatInterval) {
+              clearInterval(globalForWhatsApp.heartbeatInterval);
+              globalForWhatsApp.heartbeatInterval = null;
             }
-            if (workerInterval) {
-              clearInterval(workerInterval);
-              workerInterval = null;
+            if (globalForWhatsApp.workerInterval) {
+              clearInterval(globalForWhatsApp.workerInterval);
+              globalForWhatsApp.workerInterval = null;
             }
 
             if (shouldReconnect) {
@@ -249,8 +251,8 @@ export class WhatsAppManager {
             globalForWhatsApp.connectionPromise = null; // Clear promise on success
 
             // Start Heartbeat
-            if (heartbeatInterval) clearInterval(heartbeatInterval);
-            heartbeatInterval = setInterval(async () => {
+            if (globalForWhatsApp.heartbeatInterval) clearInterval(globalForWhatsApp.heartbeatInterval);
+            globalForWhatsApp.heartbeatInterval = setInterval(async () => {
               if (globalForWhatsApp.status === 'authenticated') {
                 try {
                   const sb = await createAdminClient();
@@ -261,16 +263,16 @@ export class WhatsAppManager {
                   });
                 } catch {}
               } else {
-                if (heartbeatInterval) {
-                  clearInterval(heartbeatInterval);
-                  heartbeatInterval = null;
+                if (globalForWhatsApp.heartbeatInterval) {
+                  clearInterval(globalForWhatsApp.heartbeatInterval);
+                  globalForWhatsApp.heartbeatInterval = null;
                 }
               }
             }, 15000);
 
             // Start Background Worker (High Frequency Queue Processor)
-            if (workerInterval) clearInterval(workerInterval);
-            workerInterval = setInterval(async () => {
+            if (globalForWhatsApp.workerInterval) clearInterval(globalForWhatsApp.workerInterval);
+            globalForWhatsApp.workerInterval = setInterval(async () => {
                try {
                  const sb = await createAdminClient();
                  const { data: lock } = await sb.from('whatsapp_auth').select('data, updated_at').eq('id', 'connection_lock').single();
@@ -366,7 +368,7 @@ export class WhatsAppManager {
       }
     }
 
-    let normalizedPhone = normalizePhone(phoneNumber);
+    const normalizedPhone = normalizePhone(phoneNumber);
     let formattedNumber = normalizedPhone.replace(/\D/g, ''); 
     if (formattedNumber.length === 10) formattedNumber = '91' + formattedNumber;
     if (!formattedNumber.endsWith('@s.whatsapp.net')) formattedNumber = `${formattedNumber}@s.whatsapp.net`;

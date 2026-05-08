@@ -60,7 +60,7 @@ export class NotificationController {
       const supabase = await createAdminClient();
       
       // Clean phone for lookup
-      let formattedPhone = normalizePhone(phone);
+      const formattedPhone = normalizePhone(phone);
 
       const { data: subscriptions } = await supabase
         .from('push_subscriptions')

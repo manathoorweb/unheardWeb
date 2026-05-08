@@ -113,7 +113,7 @@ export async function POST(req: Request) {
       })
       .eq('id', questionnaire.id);
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.unheard.co.in';
+    const baseUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.unheard.co.in');
     const gateway_link = `${baseUrl}/api/room-redirect/${appointment.id}`;
 
     // 5. Fetch Therapist info to dispatch WhatsApp

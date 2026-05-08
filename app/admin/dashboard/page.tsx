@@ -10,7 +10,7 @@ import {
   AlertCircle,
   Calendar, Sparkles, Phone, LogOut,
   ChevronRight,
-  ChevronLeft, History, Settings, CheckCircle2, Clock, MapPin, Mail, User, Shield, ExternalLink, Search, Filter, RefreshCcw, Bell
+  ChevronLeft, ExternalLink, Bell
 } from 'lucide-react'
 import { subscribeToPush } from '@/lib/push/pushService'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -132,7 +132,6 @@ export default function AdminDashboard() {
     if (apts) {
       const formatted = apts.map((a: any) => {
         const guestPhone = a.pre_booking_questionnaires?.[0]?.answers?.guest_info?.phone || 'N/A';
-        const guestName = a.pre_booking_questionnaires?.[0]?.answers?.guest_info?.name || 'Anonymous';
 
         return {
           id: a.id,

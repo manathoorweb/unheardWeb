@@ -36,7 +36,6 @@ export async function GET(req: Request) {
     for (const appt of upcomingAppointments) {
       const startTime = new Date(appt.start_time).getTime();
       const differenceMs = startTime - now.getTime();
-      const diffHours = differenceMs / (1000 * 60 * 60);
       const diffMinutes = differenceMs / (1000 * 60);
 
       const patientPhone = appt.guest_phone;
