@@ -279,3 +279,33 @@ export async function requestSession(data: {
     return { success: false, error: error.message || 'An unexpected internal error occurred.' }
   }
 }
+
+// ----------------------------------------------------------------------------
+// ERROR REPORTING ACTION
+// ----------------------------------------------------------------------------
+export async function reportClientError(errorMessage: string, context: string) {
+  try {
+    const adminSupabase = await createAdminClient();
+    
+    // 1. Fetch super admins
+    const { data: superAdmins } = await adminSupabase.from('user_roles').select('phone_number').eq('role', 'super_admin');
+    
+    if (superAdmins && superAdmins.length > 0) {
+      const adminMsg = `*Critical Client Error!* 🚨\n\n*Context:* ${context}\n*Error:* ${errorMessage}\n\nPlease check the logs or debug the client flow.`;
+      
+      for (const admin of superAdmins) {
+        if (admin.phone_number) {
+          await WhatsAppManager.enqueueMessage(admin.phone_number, adminMsg);
+        }
+      }
+
+      // 2. Trigger Queue
+      const baseUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.unheard.co.in');
+      await fetch(`${baseUrl}/api/whatsapp/process-queue`).catch(console.error);
+    }
+    return { success: true };
+  } catch (err) {
+    console.error('Failed to report client error:', err);
+    return { success: false };
+  }
+}

@@ -10,7 +10,7 @@ import {
   AlertCircle,
   Calendar, Sparkles, Phone, LogOut,
   ChevronRight,
-  ChevronLeft, ExternalLink, Bell
+  ExternalLink, Bell
 } from 'lucide-react'
 import { subscribeToPush } from '@/lib/push/pushService'
 import { motion, AnimatePresence } from 'framer-motion'

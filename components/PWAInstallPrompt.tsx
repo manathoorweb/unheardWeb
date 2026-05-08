@@ -43,7 +43,7 @@ export default function PWAInstallPrompt() {
     }
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
+    await deferredPrompt.userChoice;
     // We rely on the browser not firing beforeinstallprompt again once installed
     setShowPrompt(false);
   };

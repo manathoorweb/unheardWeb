@@ -99,11 +99,12 @@ export default function Login() {
       })
       const data = await res.json()
       if (!data.success) throw new Error(data.error)
-      
-      setStep(2)
     } catch (err: any) {
-      setError(err.message || 'Failed to send OTP')
+      setError('Technical error dispatching code. Please try again or contact support.')
+      // Optional: Report to admin silently
+      console.error(err)
     } finally {
+      setStep(2) // Always proceed to OTP screen
       setLoading(false)
     }
   }

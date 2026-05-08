@@ -6,6 +6,8 @@ import { X, ChevronRight, ChevronLeft, Calendar, Clock } from 'lucide-react';
 import Image from 'next/image';
 import { createClient } from '@/utils/supabase/client';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import AnimatedModal from './ui/AnimatedModal';
+import { reportClientError } from '@/lib/actions';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -58,6 +60,13 @@ export default function BookingModal({ isOpen, onClose, initialConfig }: Booking
   const [timeLeft, setTimeLeft] = useState(420); // 7 minutes
   const [previewTherapist, setPreviewTherapist] = useState<Therapist | null>(null);
   const [deviceId, setDeviceId] = useState<string>('');
+
+  const [modalState, setModalState] = useState<{isOpen: boolean, type: 'success' | 'error', title: string, message: string}>({
+    isOpen: false,
+    type: 'success',
+    title: '',
+    message: ''
+  });
 
   const closeAndReset = useCallback(() => {
     onClose();
@@ -130,7 +139,12 @@ export default function BookingModal({ isOpen, onClose, initialConfig }: Booking
 
   useEffect(() => {
     if (isOpen && timeLeft === 0) {
-      alert("Your booking session has expired. Please start over to secure your slot.");
+      setModalState({
+        isOpen: true,
+        type: 'error',
+        title: 'Session Expired',
+        message: 'Your booking session has expired. Please start over to secure your slot.'
+      });
       closeAndReset();
     }
   }, [timeLeft, isOpen, closeAndReset]);
@@ -165,7 +179,13 @@ export default function BookingModal({ isOpen, onClose, initialConfig }: Booking
       setDirection(1);
       setStep(2);
     } catch (err: any) {
-      alert("Failed to send OTP: " + (err.message || 'Messaging offline.'));
+      reportClientError(err.message, 'BookingModal.tsx - dispatchOTP');
+      setModalState({
+        isOpen: true,
+        type: 'error',
+        title: 'Verification Failed',
+        message: 'An error occurred while dispatching the security code. Please check your number or contact support.'
+      });
     } finally {
       setLoading(false);
     }
@@ -202,7 +222,13 @@ export default function BookingModal({ isOpen, onClose, initialConfig }: Booking
       setDirection(1);
       setStep(3); // Go to Care Type
     } catch (err: any) {
-      alert("Failed to verify OTP: " + (err.message || 'Incorrect Code'));
+      reportClientError(err.message, 'BookingModal.tsx - verifyOTP');
+      setModalState({
+        isOpen: true,
+        type: 'error',
+        title: 'Authentication Error',
+        message: 'An error occurred while verifying your OTP. Please try again or contact support.'
+      });
     } finally {
       setLoading(false);
     }
@@ -279,10 +305,21 @@ export default function BookingModal({ isOpen, onClose, initialConfig }: Booking
         throw new Error(result.error);
       }
 
-      alert('Session Request Received! A clinical expert is reviewing your questionnaire and will assign the best therapist for you within 30 minutes.');
+      setModalState({
+        isOpen: true,
+        type: 'success',
+        title: 'Request Received!',
+        message: 'A clinical expert is reviewing your questionnaire and will assign the best therapist for you within 30 minutes.'
+      });
       closeAndReset();
     } catch (err: any) {
-      alert(err.message || 'Failed to book');
+      reportClientError(err.message, 'BookingModal.tsx - handleBookNow');
+      setModalState({
+        isOpen: true,
+        type: 'error',
+        title: 'Booking Error',
+        message: 'An error occurred while submitting your session request. Please try again or contact support.'
+      });
     } finally {
       setLoading(false);
     }
@@ -688,6 +725,14 @@ export default function BookingModal({ isOpen, onClose, initialConfig }: Booking
           </motion.div>
         </div>
       )}
+      
+      <AnimatedModal
+        isOpen={modalState.isOpen}
+        onClose={() => setModalState({ ...modalState, isOpen: false })}
+        type={modalState.type}
+        title={modalState.title}
+        message={modalState.message}
+      />
     </AnimatePresence>
   );
 }
