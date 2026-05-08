@@ -95,12 +95,9 @@ export default function PWAInstallPrompt() {
           </div>
         ) : (
           <div className="flex gap-3">
-            <Button onClick={handleInstall} variant="black" className="flex-1 bg-white text-black hover:bg-gray-100 h-[56px] rounded-2xl font-bold text-[15px]">
+            <Button onClick={handleInstall} variant="black" className="w-full bg-white text-black hover:bg-gray-100 h-[56px] rounded-2xl font-bold text-[15px]">
               Install Now
             </Button>
-            <button onClick={handleDismiss} className="flex-1 text-gray-500 font-bold hover:text-white transition-colors text-[14px]">
-              Maybe Later
-            </button>
           </div>
         )}
         

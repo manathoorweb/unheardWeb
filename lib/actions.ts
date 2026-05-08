@@ -253,8 +253,16 @@ export async function requestSession(data: {
       await fetch(`${baseUrl}/api/whatsapp/process-queue`).catch(console.error);
     }
 
-    // B. Notify Super Admin (Optional, but useful since it's a new request)
-    // ...
+    // B. Notify Super Admin
+    const { data: superAdmins } = await adminSupabase.from('user_roles').select('phone_number').eq('role', 'super_admin');
+    if (superAdmins && superAdmins.length > 0) {
+      const adminMsg = `*New Session Request!* 🚨\n\n*${displayName}* (${cleanPhone}) has just submitted a new session request for ${formattedDate} at ${formattedTime}.\n\nPlease check the admin dashboard to review and assign a therapist.`;
+      for (const admin of superAdmins) {
+        if (admin.phone_number) {
+          await WhatsAppManager.enqueueMessage(admin.phone_number, adminMsg);
+        }
+      }
+    }
   } catch (error) {
     console.error('Non-blocking WhatsApp Notification Error:', error)
   }
