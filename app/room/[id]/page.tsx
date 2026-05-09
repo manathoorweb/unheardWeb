@@ -143,7 +143,7 @@ export default async function RoomGateway({ params, searchParams }: {
        const { data: tProfile } = await adminSupabase.from('therapist_profiles').select('full_name').eq('user_id', appointment.therapist_id).single();
        const therapistName = tProfile?.full_name || 'Your therapist';
        const pRoomLink = `${redirectBase}?type=patient`;
-       const pMsg = `*Therapist has joined the room!* 🩺\n\nHi ${appointment.guest_name || ''}, Dr. ${therapistName} is waiting for you in the session room.\n\n🔗 *Join Room Now:* ${pRoomLink}\n\nPlease join immediately to begin your session.\n\n💡 *Note:* If links are not clickable, please reply with a "Hi" to this message.`;
+       const pMsg = `*Therapist has joined the room!* 🩺\n\nHi ${appointment.guest_name || ''}, ${therapistName} is waiting for you in the session room.\n\n🔗 *Join Room Now:* ${pRoomLink}\n\nPlease join immediately to begin your session.\n\n💡 *Note:* If links are not clickable, please reply with a "Hi" to this message.`;
        await WhatsAppManager.enqueueMessage(appointment.guest_phone, pMsg);
        // Trigger queue processing
        fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.unheard.co.in'}/api/whatsapp/process-queue`).catch(() => {});

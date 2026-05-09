@@ -134,12 +134,12 @@ export async function POST(req: Request) {
     console.log(`Checking therapist notification: Phone found? ${!!therapistProfile?.phone}`, therapistProfile?.phone);
     if (therapistProfile?.phone) {
       const tGatewayLink = `${gateway_link}?type=therapist`;
-      const therapistMsg = `*New Appointment Assigned!* ✅\n\nDr. ${therapistProfile.full_name}, an admin has assigned a new session to you.\n\n*Patient:* ${patientName}\n*Date:* ${formattedDate}\n*Time:* ${formattedTime}\n*Type:* ${qAnswers.type || 'Individual'} (${qAnswers.service || 'General'})\n\n🔗 *Join Session Room:* ${tGatewayLink}\n\nPlease check your dashboard for details.\n\n💡 *Note:* If links are not clickable, please reply with a "Hi" to this message.`;
+      const therapistMsg = `*New Appointment Assigned!* ✅\n\n${therapistProfile.full_name}, an admin has assigned a new session to you.\n\n*Patient:* ${patientName}\n*Date:* ${formattedDate}\n*Time:* ${formattedTime}\n*Type:* ${qAnswers.type || 'Individual'} (${qAnswers.service || 'General'})\n\n🔗 *Join Session Room:* ${tGatewayLink}\n\nPlease check your dashboard for details.\n\n💡 *Note:* If links are not clickable, please reply with a "Hi" to this message.`;
       await WhatsAppManager.enqueueMessage(therapistProfile.phone, therapistMsg);
       
       // Schedule 15-minute reminder for therapist
       const reminderTime = new Date(new Date(startIso).getTime() - 15 * 60 * 1000).toISOString();
-      const tReminderMsg = `*Session at ${formattedTime}* ⏳\n\nDr. ${therapistProfile.full_name}, your session with *${patientName}* begins in *15 minutes*.\n\n🔗 *Join Space:* ${tGatewayLink}\n\nPlease be ready.\n\n💡 *Note:* If links are not clickable, please reply with a "Hi" to this message.`;
+      const tReminderMsg = `*Session at ${formattedTime}* ⏳\n\n${therapistProfile.full_name}, your session with *${patientName}* begins in *15 minutes*.\n\n🔗 *Join Space:* ${tGatewayLink}\n\nPlease be ready.\n\n💡 *Note:* If links are not clickable, please reply with a "Hi" to this message.`;
       await WhatsAppManager.enqueueMessage(therapistProfile.phone, tReminderMsg, reminderTime);
     }
 
@@ -154,7 +154,7 @@ export async function POST(req: Request) {
         msgAction = `🔗 *Test Link (Dev Mode):* ${gateway_link}\n\nNote: In production, this link is only shared 6 hours before.`;
       }
 
-      const patientMsg = `*Therapist Assigned & Confirmed!* 🎉\n\nHi ${patientName}, great news! Your session has been officially confirmed.\n\nYou have been matched with *Dr. ${therapistName}* who is highly experienced and specifically trained for your needs.${therapistQual}\n\n🗓️ *Date:* ${formattedDate}\n⏰ *Time:* ${formattedTime}\n\n${msgAction}\n\nSee you soon!\n\n💡 *Note:* If links are not clickable, please reply with a "Hi" to this message.`;
+      const patientMsg = `*Therapist Assigned & Confirmed!* 🎉\n\nHi ${patientName}, great news! Your session has been officially confirmed.\n\nYou have been matched with *${therapistName}* who is highly experienced and specifically trained for your needs.${therapistQual}\n\n🗓️ *Date:* ${formattedDate}\n⏰ *Time:* ${formattedTime}\n\n${msgAction}\n\nSee you soon!\n\n💡 *Note:* If links are not clickable, please reply with a "Hi" to this message.`;
       await WhatsAppManager.enqueueMessage(patientPhone, patientMsg);
 
       if (process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_SITE_URL?.includes('localhost')) {

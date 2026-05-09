@@ -30,7 +30,7 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#111111] text-white font-nunito pt-32 pb-20 px-6">
+    <div className="min-h-screen bg-[#111111] text-white font-nunito pt-40 pb-20 px-6">
       <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20">
         
         {/* Left Side: Info */}

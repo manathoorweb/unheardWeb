@@ -122,7 +122,7 @@ const Navbar = () => {
         <div className="hidden md:flex items-center justify-center gap-4 lg:gap-8 xl:gap-[50px] z-10 py-2 px-6 rounded-full transition-all">
           {navLinks.map((link) => (
             <Link
-              key={link.name}
+              key={link.href}
               href={link.href}
               className={cn(
                 "text-[14px] lg:text-[16px] xl:text-[20px] font-bold font-nunito whitespace-nowrap transition-all hover:scale-105",
@@ -180,7 +180,7 @@ const Navbar = () => {
             <div className="relative z-10 flex flex-col gap-5">
               {navLinks.map((link) => (
                 <Link
-                  key={link.name}
+                  key={`${link.href}-mobile`}
                   href={link.href}
                   onClick={() => setIsOpen(false)}
                   className="text-[20px] md:text-[24px] font-black text-white/90 font-nunito hover:text-[#0F9393] transition-all py-3 flex items-center justify-between border-b border-white/5 last:border-0"

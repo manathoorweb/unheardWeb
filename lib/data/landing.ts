@@ -35,7 +35,7 @@ export const testimonialData = [
 export const blogData = [
   {
     title: "Understanding Your Inner Narrative",
-    author: "Dr. Ananya Iyer",
+    author: "Ananya Iyer",
     date: "Dec 12, 2023",
     readTime: "5 min read",
     image: "/assets/section_2_1.webp",
@@ -43,7 +43,7 @@ export const blogData = [
   },
   {
     title: "The Science of Silent Struggles",
-    author: "Dr. Vikram Seth",
+    author: "Vikram Seth",
     date: "Dec 14, 2023",
     readTime: "7 min read",
     image: "/assets/section_2_2.webp",

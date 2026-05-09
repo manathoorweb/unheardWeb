@@ -1,7 +1,15 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 
 export function Footer() {
+  const pathname = usePathname();
+  const isExcludedPage = pathname?.startsWith('/admin') || pathname?.startsWith('/super-admin') || pathname === '/login';
+
+  if (isExcludedPage) return null;
+
   return (
     <footer className="bg-black text-white py-12 px-6 md:px-12 w-full relative z-40 border-t border-[#333]">
       <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
@@ -28,6 +36,7 @@ export function Footer() {
           <div className="flex flex-col gap-3">
             <h4 className="font-bold text-white mb-2">Legal</h4>
             <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="/refund" className="text-gray-400 hover:text-white transition-colors">Refund Policy</Link>
             <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">Terms of Service</Link>
           </div>
         </div>

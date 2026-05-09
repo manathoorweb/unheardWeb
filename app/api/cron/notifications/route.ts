@@ -2,20 +2,13 @@ import { createAdminClient } from '@/utils/supabase/server';
 import { NextResponse } from 'next/server';
 import { WhatsAppManager } from '@/lib/whatsapp/WhatsAppClient';
 
-// This API should be called periodically by Vercel Cron (e.g. every 5 minutes)
-// Keep in mind to secure it with a cron secret in production
-export async function GET(req: Request) {
+// Called internally by the WhatsApp background worker for session reminders
+export async function GET() {
   try {
-    // Basic auth guard for CRON secret if deployed
-    const authHeader = req.headers.get('authorization');
-    if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-      return NextResponse.json({ success: false, error: 'Unauthorized Cron Request' }, { status: 401 });
-    }
 
     const adminSupabase = await createAdminClient();
     const now = new Date();
 
-    // Look for upcoming appointments that haven't passed yet
     const timeWindowStart = now.toISOString();
     const timeWindowMax = new Date(now.getTime() + (7 * 60 * 60 * 1000)).toISOString(); // Look up to 7h ahead
 

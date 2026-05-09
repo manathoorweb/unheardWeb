@@ -540,7 +540,6 @@ export const LandingStack = () => {
             <div className="text-center mb-24 max-w-[900px]">
               <h2 className="font-georgia text-[36px] md:text-[48px] font-bold leading-tight text-black flex flex-col items-center">
                 <span className="text-[#0F9393] mb-4">Unheard Truth:</span>
-                <span className="opacity-40 text-[24px] md:text-[32px] font-medium italic leading-relaxed text-center">Discover, Reflect, and Grow</span>
               </h2>
               <div className="mt-8 w-24 h-1 bg-[#0F9393]/20 mx-auto rounded-full" />
             </div>

@@ -103,75 +103,38 @@ export default function SuperAdminDashboard() {
     } catch {}
   }, []);
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (activeTab === 'whatsapp') {
-      // Fetch immediately, then poll
-      fetchStatus();
-      interval = setInterval(fetchStatus, 3000);
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [activeTab, fetchStatus]);
-
-  const triggerCron = async () => {
-    setCronStatus(prev => ({ ...prev, loading: true }));
-    try {
-      const res = await fetch('/api/cron/notifications');
-      const data = await res.json();
-      if (data.success) {
-        setCronStatus({ lastRun: new Date().toLocaleTimeString(), loading: false });
-      } else {
-        setCronStatus(prev => ({ ...prev, loading: false }));
-      }
-    } catch {
-      setCronStatus(prev => ({ ...prev, loading: false }));
-    }
-  };
-
-  // Passive Auto-Trigger: Every 15 mins while dashboard is open
-  useEffect(() => {
-    triggerCron(); // Run once on mount
-    const interval = setInterval(triggerCron, 15 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleWhatsappReconnect = async () => {
-    setWhatsappStatus({ status: 'initializing', qrDataUrl: null });
-    await fetch('/api/whatsapp/reconnect', { method: 'POST' });
-  };
-
-  const fetchAdmins = useCallback(async () => {
-    // Fetch roles
-    const { data: roles } = await supabase
-      .from('user_roles')
-      .select('*, phone_number')
-      .in('role', ['admin', 'super_admin', 'blogger'])
-    
-    // Fetch profiles
-    const { data: profiles } = await supabase
-      .from('therapist_profiles')
-      .select('user_id, full_name, qualification')
-
-    if (roles) {
-      setAdmins(roles.map((role: any) => {
-        const profile = profiles?.find(p => p.user_id === role.user_id)
-        return {
-          ...role,
-          full_name: profile?.full_name || 'Admin User',
-          qualification: profile?.qualification
-        }
-      }))
-    }
-  }, [supabase]);
-
   const fetchBlogs = useCallback(async () => {
     const { data } = await supabase
       .from('blogs')
       .select('*, author_id(id)')
       .order('created_at', { ascending: false })
     if (data) setBlogs(data)
+  }, [supabase]);
+
+  const fetchAdmins = useCallback(async () => {
+    const { data: profiles } = await supabase
+      .from('therapist_profiles')
+      .select('*')
+      .order('full_name', { ascending: true })
+    
+    const { data: roles } = await supabase
+      .from('user_roles')
+      .select('user_id, role, is_blogger, phone_number')
+
+    if (profiles) {
+      setAdmins(profiles.map((profile: any) => {
+        const roleData = roles?.find(r => r.user_id === profile.user_id)
+        return {
+          id: profile.id,
+          user_id: profile.user_id,
+          role: roleData?.role || 'therapist',
+          is_blogger: roleData ? !!roleData.is_blogger : false,
+          phone_number: roleData?.phone_number || profile.phone,
+          full_name: profile.full_name || 'Anonymous Professional',
+          qualification: profile.qualification || 'Therapist'
+        }
+      }))
+    }
   }, [supabase]);
 
   const fetchCoupons = useCallback(async () => {
@@ -200,6 +163,47 @@ export default function SuperAdminDashboard() {
     const { data } = await supabase.from('virtual_rooms').select('*').order('created_at', { ascending: false });
     if (data) setVirtualRooms(data);
   }, [supabase]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (activeTab === 'whatsapp') {
+      fetchStatus();
+      interval = setInterval(fetchStatus, 3000);
+    }
+    if (window.location.hash === '#blogs') {
+      setActiveTab('blogs');
+      fetchBlogs();
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [activeTab, fetchStatus, fetchBlogs]);
+
+  const triggerCron = async () => {
+    setCronStatus(prev => ({ ...prev, loading: true }));
+    try {
+      const res = await fetch('/api/cron/notifications');
+      const data = await res.json();
+      if (data.success) {
+        setCronStatus({ lastRun: new Date().toLocaleTimeString(), loading: false });
+      } else {
+        setCronStatus(prev => ({ ...prev, loading: false }));
+      }
+    } catch {
+      setCronStatus(prev => ({ ...prev, loading: false }));
+    }
+  };
+
+  useEffect(() => {
+    triggerCron();
+    const interval = setInterval(triggerCron, 15 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleWhatsappReconnect = async () => {
+    setWhatsappStatus({ status: 'initializing', qrDataUrl: null });
+    await fetch('/api/whatsapp/reconnect', { method: 'POST' });
+  };
 
   useEffect(() => {
     async function init() {
@@ -310,6 +314,35 @@ export default function SuperAdminDashboard() {
       }
     } catch {
       alert('Error assigning therapist');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleProfileImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, userId: string) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setLoading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${userId}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('therapist-assets')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('therapist-assets')
+        .getPublicUrl(filePath);
+
+      setEditingProfile({ ...editingProfile, avatar_url: publicUrl });
+      alert('Avatar uploaded! Please save the profile to finalize.');
+    } catch (error: any) {
+      alert('Error: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -567,29 +600,24 @@ export default function SuperAdminDashboard() {
 
             {/* Desktop Blog View */}
             <div className="hidden md:flex flex-col gap-8">
-             <div className="flex justify-between items-center bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm">
-                <div className="flex flex-col">
-                  <h2 className="text-[24px] font-georgia font-bold text-black">Global Blog Repository</h2>
-                  <p className="text-gray-400 font-bold text-[14px] uppercase tracking-widest">Monitor and curate all platform content</p>
-                </div>
-                {!editingBlog && (
-                  <Button 
-                    variant="black" 
-                    className="h-[50px] gap-2"
-                    onClick={() => setEditingBlog({ title: '', content: [], published: false })}
-                  >
-                    Write Official Blog
-                  </Button>
-                )}
-             </div>
-
               {editingBlog ? (
                <BlogEditor 
                  onSave={handleSaveBlog}
+                 onBack={() => setEditingBlog(null)}
                  initialData={(editingBlog || undefined) as any}
                />
              ) : (
-               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+               <div className="flex flex-col gap-8">
+                 <div className="flex justify-end">
+                   <Button 
+                     variant="black" 
+                     className="h-[50px] gap-2 px-8"
+                     onClick={() => setEditingBlog({ title: '', content: [], published: false })}
+                   >
+                     Write Official Blog
+                   </Button>
+                 </div>
+                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                  {blogs.map((blog: Blog) => (
                     <div key={blog.id} className="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100 flex flex-col gap-6 hover:shadow-md transition-all">
                        <div className="flex justify-between items-start">
@@ -618,15 +646,15 @@ export default function SuperAdminDashboard() {
                                 await supabase.from('blogs').delete().eq('id', blog.id)
                                 fetchBlogs()
                               }
-                            }}
-                          >
-                            <Trash2 size={18} />
-                          </button>
+                             }}>
+                             <Trash2 size={18} />
+                           </button>
                        </div>
                     </div>
                  ))}
-               </div>
-             )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -663,22 +691,25 @@ export default function SuperAdminDashboard() {
                     <p className="text-gray-400 text-[14px]">No pending intakes require clinical assessment.</p>
                   </div>
                 ) : (
-                  queue.map((request) => {
+                  queue.map((request, i) => {
                     const qAnswers = request.answers || {};
                     const isAllotted = request.status === 'allotted';
+                    const displayName = qAnswers.name || qAnswers.guest_info?.name || (request.guest_name !== 'Guest' ? request.guest_name : 'Anonymous User');
                     
                     return (
                       <div 
-                        key={request.id} 
+                        key={request.id || i} 
                         onClick={() => { setSelectedQueueItem(request); setShowQueueSheet(true); }}
                         className={`p-6 border rounded-[28px] shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-6 group ${isAllotted ? 'bg-gray-50/50 border-gray-100 grayscale' : 'bg-white border-[#0F9393]/10'}`}
                       >
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 bg-[#0F9393]/10 rounded-2xl flex items-center justify-center text-[#0F9393] font-bold">
-                            {request.guest_name?.[0] || 'A'}
+                            {displayName[0]}
                           </div>
                           <div className="flex flex-col">
-                            <span className="text-[16px] font-bold text-gray-900">{request.guest_name || 'Anonymous'}</span>
+                            <span className="text-[16px] font-bold text-gray-900">
+                              {displayName}
+                            </span>
                             <span className={`text-[11px] font-black uppercase tracking-widest mt-1 ${isAllotted ? 'text-gray-400' : 'text-[#0F9393]'}`}>{request.is_trial ? 'Discovery' : 'Standard'}</span>
                           </div>
                         </div>
@@ -795,8 +826,8 @@ export default function SuperAdminDashboard() {
                   {coupons.length === 0 ? (
                     <p className="text-gray-400 italic">No coupons created yet.</p>
                   ) : (
-                    coupons.map((coupon) => (
-                      <div key={coupon.id} className="p-5 border border-gray-100 rounded-2xl hover:bg-gray-50/50 transition-all group">
+                    coupons.map((coupon, i) => (
+                      <div key={coupon.id || i} className="p-5 border border-gray-100 rounded-2xl hover:bg-gray-50/50 transition-all group">
                          <div className="flex justify-between items-start mb-4">
                             <div className="flex flex-col">
                                <span className="text-[20px] font-black text-[#0F9393] tracking-wider">{coupon.code}</span>
@@ -934,8 +965,8 @@ export default function SuperAdminDashboard() {
                       <p className="text-gray-400 font-bold">No virtual rooms configured.</p>
                    </div>
                  ) : (
-                   virtualRooms.map((room) => (
-                     <div key={room.id} className="p-6 rounded-2xl border border-gray-100 flex flex-col gap-4 shadow-sm bg-gray-50/50">
+                   virtualRooms.map((room, i) => (
+                     <div key={room.id || i} className="p-6 rounded-2xl border border-gray-100 flex flex-col gap-4 shadow-sm bg-gray-50/50">
                         <div className="flex justify-between items-center">
                           <h4 className="font-bold text-[18px]">{room.name}</h4>
                           <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${room.is_active ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
@@ -969,6 +1000,33 @@ export default function SuperAdminDashboard() {
               </div>
 
               <form onSubmit={handleUpdateProfile} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="col-span-full flex items-center gap-6 mb-4">
+                  <div 
+                    className="w-24 h-24 rounded-3xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden relative group cursor-pointer"
+                    onClick={() => document.getElementById('admin-avatar-upload')?.click()}
+                  >
+                    <Image
+                      src={editingProfile.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(editingProfile.full_name?.trim() || 'Therapist')}&background=0F9393&color=fff`}
+                      width={96} height={96} className="w-full h-full object-cover group-hover:opacity-50 transition-opacity" alt="Avatar"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Plus size={24} className="text-[#0F9393]" />
+                    </div>
+                    <input 
+                      id="admin-avatar-upload"
+                      type="file" 
+                      accept="image/*"
+                      className="hidden" 
+                      onChange={(e) => handleProfileImageUpload(e, editingProfile.user_id)}
+                      disabled={loading}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[14px] font-bold text-gray-900">{loading ? 'Uploading...' : 'Therapist Portrait'}</span>
+                    <span className="text-[12px] text-gray-400">Click to change professional photo</span>
+                  </div>
+                </div>
+
                 <div className="flex flex-col gap-2">
                   <label className="text-[12px] font-black text-gray-400 uppercase">Full Name</label>
                   <input 
@@ -1114,11 +1172,13 @@ export default function SuperAdminDashboard() {
                 <div className="flex items-center gap-5">
                   <div className="w-16 h-16 bg-white rounded-3xl p-1 shadow-sm border border-gray-100">
                     <div className="w-full h-full bg-[#0F9393]/10 rounded-2xl flex items-center justify-center text-[#0F9393] text-2xl font-bold">
-                      {selectedQueueItem.guest_name?.[0] || 'A'}
+                      {(selectedQueueItem.guest_name !== 'Guest' && selectedQueueItem.guest_name) ? selectedQueueItem.guest_name[0] : (selectedQueueItem.answers?.name?.[0] || selectedQueueItem.answers?.guest_info?.name?.[0] || 'A')}
                     </div>
                   </div>
                   <div className="flex flex-col">
-                    <h2 className="text-[24px] font-bold tracking-tight text-gray-900">{selectedQueueItem.guest_name}</h2>
+                    <h2 className="text-[24px] font-bold tracking-tight text-gray-900">
+                      {selectedQueueItem.answers?.name || selectedQueueItem.answers?.guest_info?.name || (selectedQueueItem.guest_name !== 'Guest' ? selectedQueueItem.guest_name : 'Anonymous User')}
+                    </h2>
                     <p className="text-[#0F9393] font-bold text-[13px] uppercase tracking-widest">{selectedQueueItem.is_trial ? 'Discovery Session' : 'Standard Session'}</p>
                   </div>
                 </div>
@@ -1180,8 +1240,8 @@ export default function SuperAdminDashboard() {
                          className="w-full h-[64px] border-none rounded-2xl px-6 bg-white/5 text-white font-bold outline-none focus:ring-2 focus:ring-[#0F9393] transition-all"
                        >
                          <option value="" disabled className="text-black">Choose Professional...</option>
-                         {admins.filter(a => a.full_name).map(admin => (
-                           <option key={admin.user_id} value={admin.user_id} className="text-black">Dr. {admin.full_name}</option>
+                         {admins.map((admin, i) => (
+                           <option key={admin.user_id || i} value={admin.user_id} className="text-black">{admin.full_name || 'Professional'}</option>
                          ))}
                        </select>
                     </div>

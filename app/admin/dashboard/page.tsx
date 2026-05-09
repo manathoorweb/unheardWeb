@@ -10,7 +10,7 @@ import {
   AlertCircle,
   Calendar, Sparkles, Phone, LogOut,
   ChevronRight,
-  ExternalLink, Bell
+  ExternalLink, Bell, PenTool
 } from 'lucide-react'
 import { subscribeToPush } from '@/lib/push/pushService'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -99,13 +99,14 @@ export default function AdminDashboard() {
 
     const { data } = await supabase
       .from('user_roles')
-      .select('role')
+      .select('role, is_blogger')
       .eq('user_id', user.id)
       .single()
 
     if (data) {
       setRole(data.role)
       setIsAdmin(['admin', 'super_admin'].includes(data.role))
+      setProfile((prev: any) => ({ ...(prev || {}), is_blogger: !!data.is_blogger }))
     }
   }, [supabase])
 
@@ -118,7 +119,7 @@ export default function AdminDashboard() {
       .select(`
         *,
         pre_booking_questionnaires(answers),
-        therapist_profiles!therapist_id(full_name)
+        therapist_profiles(full_name)
       `)
       .order('start_time', { ascending: false })
 
@@ -249,6 +250,38 @@ export default function AdminDashboard() {
   }, [registrations, selectedSession])
 
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('therapist-assets')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('therapist-assets')
+        .getPublicUrl(filePath);
+
+      setProfile({ ...profile, avatar_url: publicUrl });
+      alert('Avatar uploaded successfully!');
+    } catch (error: any) {
+      alert('Error uploading image: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCloseSession = async () => {
     if (!closingSession) return;
     setLoading(true);
@@ -355,6 +388,14 @@ export default function AdminDashboard() {
           >
             <UserCircle size={16} /> Profile
           </button>
+          {profile?.is_blogger && (
+            <button
+              onClick={() => { setActiveTab('blogs'); window.location.href='/super-admin#blogs'; }}
+              className={`flex items-center gap-4 px-5 py-3.5 rounded-[18px] font-bold text-[13px] transition-all duration-300 cursor-pointer ${activeTab === 'blogs' ? 'bg-[#0F9393] text-white shadow-xl' : 'text-gray-400 hover:bg-gray-50'}`}
+            >
+              <PenTool size={16} /> Content
+            </button>
+          )}
         </nav>
 
         {isAdmin && (
@@ -902,18 +943,29 @@ export default function AdminDashboard() {
 
                       {/* Avatar Upload */}
                       <div className="flex items-center gap-6 mb-4">
-                        <div className="w-24 h-24 rounded-3xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden relative group">
+                        <div 
+                          className="w-24 h-24 rounded-3xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden relative group cursor-pointer"
+                          onClick={() => document.getElementById('avatar-upload')?.click()}
+                        >
                           <Image
                             src={profile.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.full_name?.trim() || 'Therapist')}&background=0F9393&color=fff`}
                             width={96} height={96} className="w-full h-full object-cover group-hover:opacity-50 transition-opacity" alt="Avatar"
                           />
-                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                             <Plus size={24} className="text-[#0F9393]" />
                           </div>
+                          <input 
+                            id="avatar-upload"
+                            type="file" 
+                            accept="image/*"
+                            className="hidden" 
+                            onChange={handleImageUpload}
+                            disabled={loading}
+                          />
                         </div>
                         <div className="flex flex-col gap-1">
-                          <span className="text-[14px] font-bold text-gray-900">Profile Image</span>
-                          <span className="text-[12px] text-gray-400">Square SVG or PNG (Max 2MB)</span>
+                          <span className="text-[14px] font-bold text-gray-900">{loading ? 'Uploading...' : 'Profile Image'}</span>
+                          <span className="text-[12px] text-gray-400">Tap circle to upload (SVG, PNG, JPG)</span>
                         </div>
                       </div>
 

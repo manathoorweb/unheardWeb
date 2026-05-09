@@ -281,22 +281,21 @@ export default function BookingModal({ isOpen, onClose, initialConfig }: Booking
         phone: formData.phone,
         deviceId, // For anti-exploit
         questionnaire: {
+          name: formData.name, // Save name inside answers for redundancy
           age: formData.age,
           language: formData.language,
           type: formData.type,
           service: formData.service,
           plan_type: formData.plan_type
+        },
+        patient_details: {
+          name: formData.name,
+          email: formData.email
         }
       };
 
       if (formData.therapist_id) {
         payload.therapist_id = formData.therapist_id;
-      }
-      if (!user) {
-        payload.patient_details = {
-          name: formData.name,
-          email: formData.email
-        };
       }
 
       const result = await requestSession(payload);

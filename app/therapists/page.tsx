@@ -136,39 +136,12 @@ export default function TherapistListing() {
   }
 
   return (
-    <div className="relative w-full bg-[#111111] overflow-x-clip">
+    <div className="relative w-full bg-[#111111] overflow-x-clip pt-40">
       
-      {/* 
-        HERO SECTION - NORMAL SCROLL
-      */}
-      <section className="relative w-full h-[65vh] max-h-[800px] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-black">
-          <Image 
-            src="/assets/section_2_1.webp" 
-            alt="Therapists Hero" 
-            fill 
-            className="object-cover opacity-50"
-            priority
-          />
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#111111]/30 to-[#111111]"></div>
-        <div className="relative z-10 w-full max-w-[2440px] px-[5vw] flex flex-col items-center text-center gap-8 -mt-10">
-          <div className="flex flex-col items-center gap-4">
-             <span className="text-[#0F9393] font-black uppercase tracking-[0.4em] text-[14px]">Discover Excellence</span>
-             <h1 className="text-[56px] md:text-[80px] font-bold font-georgia text-white leading-[1] tracking-[-0.04em]">
-              The minds behind <br /> the <span className="text-[#0F9393] italic">restructuring.</span>
-            </h1>
-          </div>
-          <p className="text-[18px] md:text-[22px] font-medium text-gray-300 max-w-[850px] leading-relaxed font-nunito opacity-90">
-            Our counselors are selected for their clinical precision and strategic empathy. Find the resonance that matches your unique mental architecture.
-          </p>
-        </div>
-      </section>
-
       <div className="relative z-10 w-full flex flex-col items-center gap-16 lg:gap-24 mb-40">
         
         {/* FILTER BAR SECTION */}
-        <div className="w-[97vw] max-w-[2440px] -mt-10">
+        <div className="w-[97vw] max-w-[2440px]">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8 bg-[#1a1a1a]/40 backdrop-blur-3xl p-10 rounded-[50px] border border-white/5 shadow-3xl">
              {/* Specialty Pills */}
              <div className="flex flex-wrap justify-center md:justify-start gap-3.5 flex-grow order-2 md:order-1">

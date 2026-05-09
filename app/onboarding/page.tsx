@@ -50,7 +50,7 @@ export default function TherapistOnboarding() {
                 type="text" 
                 value={formData.full_name}
                 onChange={(e) => setFormData({...formData, full_name: e.target.value})}
-                placeholder="Dr. Ashaya Rathor" 
+                placeholder="Ashaya Rathor" 
                 className="mt-1 border border-gray-300 rounded-full px-5 py-3 font-normal focus:outline-none focus:border-[#0F9393]" 
                 required
               />

@@ -365,7 +365,6 @@ export default function AboutPage() {
           <div className="text-center mb-20 text-white">
             <h2 className="font-georgia text-[36px] font-bold leading-tight flex flex-col items-center text-center">
               <span className="text-[#0F9393]">Unheard Truth:</span>
-              <span>Discover, Reflect, and Grow</span>
             </h2>
           </div>
           <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">

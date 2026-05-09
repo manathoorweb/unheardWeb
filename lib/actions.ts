@@ -214,9 +214,9 @@ export async function requestSession(data: {
   // 4. CREATE PENDING QUESTIONNAIRE (Primary Entry Point)
   const questionnairePayload: any = {
     patient_id: user?.id || null,
-    guest_name: user?.user_metadata?.full_name || data.patient_details?.name || 'Guest',
+    guest_name: data.patient_details?.name || user?.user_metadata?.full_name || user?.user_metadata?.name || 'Guest',
     guest_phone: cleanPhone,
-    guest_email: user?.email || data.patient_details?.email || '',
+    guest_email: data.patient_details?.email || user?.email || '',
     requested_start_time: start.toISOString(),
     is_trial: data.is_trial,
     status: 'pending',
