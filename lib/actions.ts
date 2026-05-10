@@ -212,6 +212,7 @@ export async function requestSession(data: {
   }
 
   // 4. CREATE PENDING QUESTIONNAIRE (Primary Entry Point)
+  const amount = data.is_trial ? 0 : 999; // Standard session price
   const questionnairePayload: any = {
     patient_id: user?.id || null,
     guest_name: data.patient_details?.name || user?.user_metadata?.full_name || user?.user_metadata?.name || 'Guest',
@@ -220,6 +221,9 @@ export async function requestSession(data: {
     requested_start_time: start.toISOString(),
     is_trial: data.is_trial,
     status: 'pending',
+    payment_status: data.is_trial ? 'completed' : 'pending',
+    amount: amount,
+    expires_at: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours expiry
     answers: {
       ...data.questionnaire,
       ip_address: ip
@@ -237,17 +241,55 @@ export async function requestSession(data: {
       return { success: false, error: 'Database error: Could not save session request.' }
     }
 
-  // 6. WHATSAPP NOTIFICATIONS
-  try {
-    const formattedDate = start.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
-    const formattedTime = start.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
+  // If payment is required, return early and let client handle payment gateway
+  if (!data.is_trial) {
+    return { 
+      success: true, 
+      questionnaireId: questionnaire.id, 
+      requiresPayment: true,
+      amount: amount 
+    };
+  }
 
-    const displayName = user?.user_metadata?.full_name || data.patient_details?.name || 'there'
+  // Finalize for Free Trial
+  await finalizeBooking(questionnaire.id);
+
+  // 7. RECORD IDENTITY UPDATE & COUPON CLAIM
+  if (identity) {
+    await IdentityManager.claimCoupon(identity.id, data.is_trial ? 'FREE_TRIAL' : 'STANDARD', data.is_trial);
+  }
+
+  revalidatePath('/super-admin')
+  return { success: true, questionnaireId: questionnaire.id }
+} catch (error: any) {
+    console.error('CRITICAL SESSION REQUEST ERROR:', error)
+    return { success: false, error: error.message || 'An unexpected internal error occurred.' }
+  }
+}
+
+/**
+ * FINALIZES BOOKING (Notifications, Admin Alerts, Identity Update)
+ * Called after successful payment or for free trials.
+ */
+export async function finalizeBooking(questionnaireId: string) {
+  try {
+    const adminSupabase = await createAdminClient();
+    const { data: q, error } = await adminSupabase
+      .from('pre_booking_questionnaires')
+      .select('*')
+      .eq('id', questionnaireId)
+      .single();
+
+    if (error || !q) throw new Error('Questionnaire not found');
+
+    const start = new Date(q.requested_start_time);
+    const formattedDate = start.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    const formattedTime = start.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
 
     // A. Notify Patient
-    if (data.phone) {
-      const patientMsg = `*Registration Under Review!* 🧘‍♀️\n\nHi ${displayName}, we have successfully received your session request for *${formattedDate}* at *${formattedTime}*.\n\nYour problems are being carefully assessed by a real human expert to ensure you get the most appropriate care. We are currently matching you and assigning the best therapist for your specific needs.\n\nYou will receive an update confirming your assigned therapist within *30 mins*.\n\nFor any issues, please contact +919606083755.\n\nThanks, and take care!`;
-      await WhatsAppManager.enqueueMessage(data.phone, patientMsg);
+    if (q.guest_phone) {
+      const patientMsg = `*Registration Under Review!* 🧘‍♀️\n\nHi ${q.guest_name}, we have successfully received your session request for *${formattedDate}* at *${formattedTime}*.\n\nYour problems are being carefully assessed by a real human expert to ensure you get the most appropriate care. We are currently matching you and assigning the best therapist for your specific needs.\n\nYou will receive an update confirming your assigned therapist within *30 mins*.\n\nFor any issues, please contact +919606083755.\n\nThanks, and take care!`;
+      await WhatsAppManager.enqueueMessage(q.guest_phone, patientMsg);
       
       const baseUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.unheard.co.in');
       await fetch(`${baseUrl}/api/whatsapp/process-queue`).catch(console.error);
@@ -256,27 +298,23 @@ export async function requestSession(data: {
     // B. Notify Super Admin
     const { data: superAdmins } = await adminSupabase.from('user_roles').select('phone_number').eq('role', 'super_admin');
     if (superAdmins && superAdmins.length > 0) {
-      const adminMsg = `*New Session Request!* 🚨\n\n*${displayName}* (${cleanPhone}) has just submitted a new session request for ${formattedDate} at ${formattedTime}.\n\nPlease check the admin dashboard to review and assign a therapist.`;
+      const adminMsg = `*New Session Request!* 🚨\n\n*${q.guest_name}* (${q.guest_phone}) has just submitted a new session request for ${formattedDate} at ${formattedTime}.\n\nPlease check the admin dashboard to review and assign a therapist.`;
       for (const admin of superAdmins) {
         if (admin.phone_number) {
           await WhatsAppManager.enqueueMessage(admin.phone_number, adminMsg);
         }
       }
     }
-  } catch (error) {
-    console.error('Non-blocking WhatsApp Notification Error:', error)
-  }
 
-    // 7. RECORD IDENTITY UPDATE & COUPON CLAIM
-    if (identity) {
-      await IdentityManager.claimCoupon(identity.id, data.is_trial ? 'FREE_TRIAL' : 'STANDARD', data.is_trial);
-    }
+    // C. Record Identity Update & Coupon Claim
+    // We need to fetch the identity if possible, but for now we skip this as it needs user/device context
+    // In post-payment callback, we might not have the device ID easily.
 
-    revalidatePath('/super-admin')
-    return { success: true, questionnaireId: questionnaire.id }
-  } catch (error: any) {
-    console.error('CRITICAL SESSION REQUEST ERROR:', error)
-    return { success: false, error: error.message || 'An unexpected internal error occurred.' }
+    revalidatePath('/super-admin');
+    return { success: true };
+  } catch (err) {
+    console.error('Finalize Booking Error:', err);
+    return { success: false };
   }
 }
 

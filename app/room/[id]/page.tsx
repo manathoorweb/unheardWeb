@@ -82,7 +82,7 @@ export default async function RoomGateway({ params, searchParams }: {
   const now = new Date().getTime();
   const diffHours = (now - start) / (1000 * 60 * 60);
 
-  if (diffHours < -0.5) {
+  if (diffHours < -0.25) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FEFEFC] font-georgia text-center p-8">
          <div className="max-w-md">
@@ -91,7 +91,7 @@ export default async function RoomGateway({ params, searchParams }: {
            </div>
            <h1 className="text-3xl font-bold text-gray-900 mb-4">You're a bit early!</h1>
            <p className="text-gray-600 font-nunito leading-relaxed">
-             This session has not started yet.<br/>The secure meeting room will unlock <strong>30 minutes</strong> before your scheduled time.
+             This session has not started yet.<br/>The secure meeting room will unlock <strong>15 minutes</strong> before your scheduled time.
            </p>
          </div>
       </div>

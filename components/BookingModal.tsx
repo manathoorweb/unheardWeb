@@ -304,11 +304,63 @@ export default function BookingModal({ isOpen, onClose, initialConfig }: Booking
         throw new Error(result.error);
       }
 
+      // ----------------------------------------------------------------------
+      // PHONEPE PAYMENT INTEGRATION (IFrame Flow)
+      // ----------------------------------------------------------------------
+      if (result.requiresPayment) {
+        setLoading(true);
+        try {
+          const payInitRes = await fetch('/api/payment/phonepe/init', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              questionnaireId: result.questionnaireId,
+              amount: result.amount,
+              phone: formData.phone,
+              name: formData.name
+            })
+          });
+
+          const payData = await payInitRes.json();
+          if (payData.success && payData.redirectUrl) {
+            // Using the new IFrame Transaction helper
+            const { initiatePhonePeTransaction } = await import('@/components/PhonePeProvider');
+            
+            initiatePhonePeTransaction(payData.redirectUrl, (status) => {
+              console.log("PAYMENT CALLBACK STATUS:", status);
+              if (status === 'CONCLUDED') {
+                setModalState({
+                  isOpen: true,
+                  type: 'success',
+                  title: 'Booking Confirmed!',
+                  message: 'Your payment was successful. We are now preparing your session.'
+                });
+                closeAndReset();
+              } else if (status === 'USER_CANCEL') {
+                setLoading(false); // Let them try again
+                setModalState({
+                  isOpen: true,
+                  type: 'error',
+                  title: 'Payment Cancelled',
+                  message: 'The payment process was interrupted. You can try again to secure your slot.'
+                });
+              }
+            });
+            return; // Don't close modal yet
+          } else {
+            throw new Error(payData.error || 'Failed to initialize payment gateway.');
+          }
+        } catch (payErr: any) {
+          console.error("PAYMENT INIT ERROR:", payErr);
+          throw new Error("Payment Gateway Initialization Failed. Please try again or contact support.");
+        }
+      }
+
       setModalState({
         isOpen: true,
         type: 'success',
         title: 'Request Received!',
-        message: 'A clinical expert is reviewing your questionnaire and will assign the best therapist for you within 30 minutes.'
+        message: 'A clinical expert is reviewing your questionnaire and will assign the best therapist for your success.'
       });
       closeAndReset();
     } catch (err: any) {

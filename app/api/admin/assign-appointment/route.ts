@@ -148,10 +148,10 @@ export async function POST(req: Request) {
       const therapistName = therapistProfile?.full_name || 'your assigned therapist';
       const therapistQual = therapistProfile?.qualification ? `\n*Specialization:* ${therapistProfile.qualification}` : '';
       
-      let msgAction = `🔒 *Meeting Access:* A secure Google Meet link will be generated and shared with you strictly *6 hours* before your session starts.`;
+      let msgAction = `🔒 *Meeting Access:* A secure Google Meet link will be generated and shared with you strictly *15 minutes* before your session starts.`;
       
       if (process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_SITE_URL?.includes('localhost')) {
-        msgAction = `🔗 *Test Link (Dev Mode):* ${gateway_link}\n\nNote: In production, this link is only shared 6 hours before.`;
+        msgAction = `🔗 *Test Link (Dev Mode):* ${gateway_link}\n\nNote: In production, this link is only shared 15 minutes before.`;
       }
 
       const patientMsg = `*Therapist Assigned & Confirmed!* 🎉\n\nHi ${patientName}, great news! Your session has been officially confirmed.\n\nYou have been matched with *${therapistName}* who is highly experienced and specifically trained for your needs.${therapistQual}\n\n🗓️ *Date:* ${formattedDate}\n⏰ *Time:* ${formattedTime}\n\n${msgAction}\n\nSee you soon!\n\n💡 *Note:* If links are not clickable, please reply with a "Hi" to this message.`;
